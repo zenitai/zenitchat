@@ -1,11 +1,11 @@
-import { SiteConfig } from "@/types"
+import { SiteConfig } from "@/types";
 
 export const siteConfig: SiteConfig = {
   name: "NextSpark",
   title: "Next.js + React Router",
   description:
     "A minimal template showcasing React Router integration within Next.js for client-side routing",
-  origin: "https://nextspark.vercel.app",
+  origin: "https://nextspark-sigma.vercel.app",
   keywords: [
     "React Router",
     "Next.js",
@@ -14,7 +14,7 @@ export const siteConfig: SiteConfig = {
     "TypeScript",
     "Template",
   ],
-  og: "https://nextspark.vercel.app/og.png",
+  og: "https://nextspark-sigma.vercel.app/og.png",
   creator: {
     name: "chargerhustle",
     url: "https://github.com/chargerhustle",
@@ -23,4 +23,4 @@ export const siteConfig: SiteConfig = {
     github: "https://github.com/chargerhustle/nextspark",
     x: "https://x.com/chargersh",
   },
-}
+};

@@ -7,7 +7,7 @@ A minimal template showcasing React Router integration within Next.js for client
 ## 🚀 Quick Start
 
 ```bash
-git clone https://github.com/chargerhustle/nextspark
+git clone https://github.com/chargersh/nextspark
 cd nextspark
 bun install
 bun dev
@@ -99,4 +99,4 @@ BSD Zero Clause License - see [LICENSE](LICENSE) for details.
 
 ## 👤 Author
 
-Created by [chargerhustle](https://github.com/chargerhustle) • [GitHub](https://github.com/chargerhustle/nextspark) • [Twitter](https://x.com/chargersh)
+Created by [chargersh](https://github.com/chargersh) • [GitHub](https://github.com/chargersh/nextspark) • [Twitter](https://x.com/chargersh)

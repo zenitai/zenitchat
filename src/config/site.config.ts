@@ -16,11 +16,11 @@ export const siteConfig: SiteConfig = {
   ],
   og: "https://nextspark-sigma.vercel.app/og.png",
   creator: {
-    name: "chargerhustle",
-    url: "https://github.com/chargerhustle",
+    name: "chargersh",
+    url: "https://github.com/chargersh",
   },
   socials: {
-    github: "https://github.com/chargerhustle/nextspark",
+    github: "https://github.com/chargersh/nextspark",
     x: "https://x.com/chargersh",
   },
 };

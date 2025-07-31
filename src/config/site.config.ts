@@ -1,26 +1,18 @@
 import { SiteConfig } from "@/types";
 
 export const siteConfig: SiteConfig = {
-  name: "NextSpark",
-  title: "Next.js + React Router",
-  description:
-    "A minimal template showcasing React Router integration within Next.js for client-side routing",
-  origin: "https://nextspark-sigma.vercel.app",
-  keywords: [
-    "React Router",
-    "Next.js",
-    "Client-side routing",
-    "React",
-    "TypeScript",
-    "Template",
-  ],
-  og: "https://nextspark-sigma.vercel.app/og.png",
+  name: "Zenit",
+  title: "Zenit - AI Chat Application",
+  description: "An AI chat application built with Next.js and React Router",
+  origin: "https://zenit.chat",
+  keywords: ["AI Chat", "Next.js", "React Router", "React", "TypeScript", "AI"],
+  og: "https://zenit.chat/og.png",
   creator: {
-    name: "chargersh",
-    url: "https://github.com/chargersh",
+    name: "zenitai",
+    url: "https://github.com/zenitai",
   },
   socials: {
-    github: "https://github.com/chargersh/nextspark",
-    x: "https://x.com/chargersh",
+    github: "https://github.com/zenitai/zenitchat",
+    x: "https://x.com/zenitchat",
   },
 };

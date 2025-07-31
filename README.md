@@ -1,14 +1,14 @@
-# NextSpark
+# Zenit
 
-A minimal template showcasing React Router integration within Next.js for client-side routing
+An AI chat application built with Next.js and React Router
 
-![nextspark](./public/og.png)
+![zenit](./public/og.png)
 
 ## 🚀 Quick Start
 
 ```bash
-git clone https://github.com/chargersh/nextspark
-cd nextspark
+git clone https://github.com/zenitai/zenitchat
+cd zenitchat
 bun install
 bun dev
 ```
@@ -17,7 +17,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the app.
 
 ## 🏗️ Architecture
 
-NextSpark combines Next.js with React Router for pure client-side routing:
+Zenit combines Next.js with React Router for pure client-side routing:
 
 1. **Route Redirection**: All routes redirect to `/shell` via `next.config.ts`
 2. **Shell Loading**: Shell page loads React Router app with `ssr: false`
@@ -95,8 +95,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📄 License
 
-BSD Zero Clause License - see [LICENSE](LICENSE) for details.
+MIT License - see [LICENSE](LICENSE) for details.
 
 ## 👤 Author
 
-Created by [chargersh](https://github.com/chargersh) • [GitHub](https://github.com/chargersh/nextspark) • [Twitter](https://x.com/chargersh)
+Created by [zenitai](https://github.com/zenitai) • [GitHub](https://github.com/zenitai/zenitchat) • [Website](https://zenit.chat)

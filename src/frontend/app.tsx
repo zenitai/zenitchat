@@ -1,5 +1,5 @@
-import { BrowserRouter, Route, Routes } from "react-router"
-import { Layout, Home, Docs, NotFound } from "@/routes"
+import { BrowserRouter, Route, Routes } from "react-router";
+import { Layout, Home, Docs, NotFound } from "@/routes";
 
 export default function App() {
   return (
@@ -13,5 +13,5 @@ export default function App() {
         </Routes>
       </Layout>
     </BrowserRouter>
-  )
+  );
 }

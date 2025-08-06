@@ -1,24 +1,24 @@
-import type { Metadata } from "next"
-import { Geist, Geist_Mono, Inter } from "next/font/google"
-import "@/styles/globals.css"
-import { siteConfig } from "@/config/site.config"
-import { cn } from "@/lib/utils"
-import RootProviders from "@/components/providers"
+import type { Metadata } from "next";
+import { Geist, Geist_Mono, Inter } from "next/font/google";
+import "@/styles/globals.css";
+import { siteConfig } from "@/config/site.config";
+import { cn } from "@/lib/utils";
+import RootProviders from "@/components/providers";
 
 const fontSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-})
+});
 
 const fontMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-})
+});
 
 const fontHeading = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-})
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.origin),
@@ -58,12 +58,12 @@ export const metadata: Metadata = {
       alt: siteConfig.name,
     },
   },
-}
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -78,5 +78,5 @@ export default function RootLayout({
         <RootProviders>{children}</RootProviders>
       </body>
     </html>
-  )
+  );
 }

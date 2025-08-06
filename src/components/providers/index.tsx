@@ -1,9 +1,9 @@
-import { ThemeProvider } from "@/components/theme/provider"
+import { ThemeProvider } from "@/components/theme/provider";
 
 export default function RootProviders({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <ThemeProvider
@@ -14,5 +14,5 @@ export default function RootProviders({
     >
       {children}
     </ThemeProvider>
-  )
+  );
 }

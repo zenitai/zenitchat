@@ -8,10 +8,10 @@ import {
   ArrowRightIcon,
   Settings2,
   GithubIcon,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { siteConfig } from "@/config/site.config"
-import { Link } from "react-router"
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/config/site.config";
+import { Link } from "react-router";
 
 export function Home() {
   return (
@@ -120,5 +120,5 @@ export function Home() {
         </div>
       </div>
     </section>
-  )
+  );
 }

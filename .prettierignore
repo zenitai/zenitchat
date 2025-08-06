@@ -1,3 +1,47 @@
-# Ignore artifacts:
-build
-coverage
+# Dependencies
+node_modules/
+
+# Build and Generated outputs
+.next/
+out/
+build/
+dist/
+*_generated/
+
+# Testing
+coverage/
+
+# Environment files
+.env*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Package manager files
+bun.lock
+
+# Vercel
+.vercel
+
+# Git
+.git/
+
+# Cursor
+.cursor/

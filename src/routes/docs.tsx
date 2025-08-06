@@ -1,4 +1,4 @@
-import { siteConfig } from "@/config/site.config"
+import { siteConfig } from "@/config/site.config";
 import {
   Timeline,
   TimelineContent,
@@ -8,8 +8,8 @@ import {
   TimelineItem,
   TimelineSeparator,
   TimelineTitle,
-} from "@/components/ui/timeline"
-import CopyButton from "@/components/ui/copy-button"
+} from "@/components/ui/timeline";
+import CopyButton from "@/components/ui/copy-button";
 
 export function Docs() {
   return (
@@ -201,5 +201,5 @@ export function NewPage() {
         </TimelineItem>
       </Timeline>
     </div>
-  )
+  );
 }

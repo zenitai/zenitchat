@@ -1,4 +1,4 @@
-import type { NextConfig } from "next"
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -11,8 +11,8 @@ const nextConfig: NextConfig = {
         source: "/((?!api|_next/static|_next/image|favicon.ico|robots.txt).*)",
         destination: "/shell",
       },
-    ]
+    ];
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;

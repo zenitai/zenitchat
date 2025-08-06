@@ -1,28 +1,28 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { CheckIcon, CopyIcon } from "lucide-react"
+import { useState } from "react";
+import { CheckIcon, CopyIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface CopyButtonProps {
-  text: string
-  className?: string
+  text: string;
+  className?: string;
 }
 
 export default function CopyButton({ text, className }: CopyButtonProps) {
-  const [copied, setCopied] = useState<boolean>(false)
+  const [copied, setCopied] = useState<boolean>(false);
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(text)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
     } catch (err) {
-      console.error("Failed to copy text: ", err)
+      console.error("Failed to copy text: ", err);
     }
-  }
+  };
 
   return (
     <Button
@@ -50,5 +50,5 @@ export default function CopyButton({ text, className }: CopyButtonProps) {
         <CopyIcon size={16} aria-hidden="true" />
       </div>
     </Button>
-  )
+  );
 }

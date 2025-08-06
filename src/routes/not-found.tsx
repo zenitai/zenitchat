@@ -1,12 +1,12 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardFooter,
-} from "@/components/ui/card"
-import { Link } from "react-router"
+} from "@/components/ui/card";
+import { Link } from "react-router";
 
 export function NotFound() {
   return (
@@ -27,5 +27,5 @@ export function NotFound() {
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }

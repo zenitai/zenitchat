@@ -2,7 +2,6 @@ import { siteConfig } from "@/config/site.config";
 import {
   Timeline,
   TimelineContent,
-  TimelineDate,
   TimelineHeader,
   TimelineIndicator,
   TimelineItem,

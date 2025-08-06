@@ -1,7 +1,6 @@
 import {
   Package,
   Shield,
-  Settings,
   Rocket,
   Sparkles,
   Zap,

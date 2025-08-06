@@ -13,6 +13,9 @@ const compat = new FlatCompat({
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
   reactYouMightNotNeedAnEffect.configs.recommended,
+  {
+    ignores: ["src/components/ui/**/*"], // Ignore shadcn components
+  },
 ];
 
 export default eslintConfig;

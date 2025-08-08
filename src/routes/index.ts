@@ -6,3 +6,4 @@ export { Docs } from "./docs";
 export { NotFound } from "./not-found";
 export { SignupPage } from "./auth/signup";
 export { LoginPage } from "./auth/login";
+export { ProtectedRoute } from "./auth/protected-route";

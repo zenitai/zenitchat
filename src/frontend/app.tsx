@@ -1,5 +1,13 @@
 import { BrowserRouter, Route, Routes } from "react-router";
-import { Layout, Home, Docs, NotFound, SignupPage, LoginPage } from "@/routes";
+import {
+  Layout,
+  Home,
+  Docs,
+  NotFound,
+  SignupPage,
+  LoginPage,
+  ProtectedRoute,
+} from "@/routes";
 
 export default function App() {
   return (
@@ -8,7 +16,14 @@ export default function App() {
         {/* Routes with shared layout */}
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="docs" element={<Docs />} />
+          <Route
+            path="docs"
+            element={
+              <ProtectedRoute>
+                <Docs />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Route>
 

@@ -1,10 +1,10 @@
-import { NavLink } from "react-router";
+import { NavLink, Outlet } from "react-router";
 import { siteConfig } from "@/config/site.config";
 import ThemeToggler from "@/components/theme/toggler";
 import { Button } from "@/components/ui/button";
 import { GithubIcon } from "lucide-react";
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout({ children }: { children?: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       <nav className="">
@@ -62,7 +62,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </nav>
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {children}
+        {children || <Outlet />}
       </main>
     </div>
   );

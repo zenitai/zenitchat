@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@/components/theme/provider";
+import { ConvexClientProvider } from "./convex-provider";
 
 export default function RootProviders({
   children,
@@ -6,13 +7,15 @@ export default function RootProviders({
   children: React.ReactNode;
 }) {
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="light"
-      enableSystem
-      disableTransitionOnChange
-    >
-      {children}
-    </ThemeProvider>
+    <ConvexClientProvider>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="light"
+        enableSystem
+        disableTransitionOnChange
+      >
+        {children}
+      </ThemeProvider>
+    </ConvexClientProvider>
   );
 }

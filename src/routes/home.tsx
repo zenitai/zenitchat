@@ -7,12 +7,48 @@ import {
   ArrowRightIcon,
   Settings2,
   GithubIcon,
+  Heart,
+  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site.config";
 import { Link } from "react-router";
 
 export function Home() {
+  const colorVars = [
+    "background",
+    "foreground",
+    "card",
+    "card-foreground",
+    "popover",
+    "popover-foreground",
+    "primary",
+    "primary-foreground",
+    "secondary",
+    "secondary-foreground",
+    "muted",
+    "muted-foreground",
+    "accent",
+    "accent-foreground",
+    "destructive",
+    "border",
+    "input",
+    "ring",
+    "chart-1",
+    "chart-2",
+    "chart-3",
+    "chart-4",
+    "chart-5",
+    "sidebar",
+    "sidebar-foreground",
+    "sidebar-primary",
+    "sidebar-primary-foreground",
+    "sidebar-accent",
+    "sidebar-accent-foreground",
+    "sidebar-border",
+    "sidebar-ring",
+  ] as const;
+
   return (
     <section className="py-12 md:py-20">
       <div className="mx-auto max-w-5xl space-y-8 px-6 md:space-y-16">
@@ -45,6 +81,108 @@ export function Home() {
                 View on GitHub
               </a>
             </Button>
+          </div>
+        </div>
+
+        {/* Color Palette */}
+        <div className="space-y-4">
+          <div className="text-center">
+            <h3 className="text-2xl font-semibold">Color Palette</h3>
+            <p className="text-muted-foreground text-sm">
+              Showing all theme variables as swatches
+            </p>
+          </div>
+          <div
+            className="grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+            role="list"
+          >
+            {colorVars.map((name) => (
+              <div
+                key={name}
+                className="rounded-lg border overflow-hidden"
+                role="listitem"
+                aria-label={`--${name}`}
+              >
+                <div
+                  className="h-16 w-full border-b"
+                  style={{ backgroundColor: `var(--${name})` }}
+                />
+                <div className="p-2 text-xs flex items-center justify-between">
+                  <span className="font-mono">--{name}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Button Variants Showcase */}
+        <div className="space-y-8">
+          <div className="text-center">
+            <h3 className="text-2xl font-semibold mb-4">Button Variants</h3>
+            <p className="text-muted-foreground mb-8">
+              All available button variants and sizes
+            </p>
+          </div>
+
+          {/* Variants */}
+          <div className="space-y-6">
+            <div>
+              <h4 className="text-lg font-medium mb-4">Variants</h4>
+              <div className="flex flex-wrap gap-4">
+                <Button variant="default">Default</Button>
+                <Button variant="secondary">Secondary</Button>
+                <Button variant="destructive">Destructive</Button>
+                <Button variant="outline">Outline</Button>
+                <Button variant="ghost">Ghost</Button>
+                <Button variant="link">Link</Button>
+              </div>
+            </div>
+
+            {/* Sizes */}
+            <div>
+              <h4 className="text-lg font-medium mb-4">Sizes</h4>
+              <div className="flex flex-wrap items-center gap-4">
+                <Button size="sm">Small</Button>
+                <Button size="default">Default</Button>
+                <Button size="lg">Large</Button>
+                <Button size="icon">
+                  <Heart className="size-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Variants with Icons */}
+            <div>
+              <h4 className="text-lg font-medium mb-4">With Icons</h4>
+              <div className="flex flex-wrap gap-4">
+                <Button>
+                  <Heart className="size-4" />
+                  Default
+                </Button>
+                <Button variant="secondary">
+                  <Star className="size-4" />
+                  Secondary
+                </Button>
+                <Button variant="outline">
+                  <Zap className="size-4" />
+                  Outline
+                </Button>
+                <Button variant="ghost">
+                  <Sparkles className="size-4" />
+                  Ghost
+                </Button>
+              </div>
+            </div>
+
+            {/* States */}
+            <div>
+              <h4 className="text-lg font-medium mb-4">States</h4>
+              <div className="flex flex-wrap gap-4">
+                <Button>Normal</Button>
+                <Button disabled>Disabled</Button>
+                <Button aria-invalid>Invalid</Button>
+              </div>
+            </div>
           </div>
         </div>
 

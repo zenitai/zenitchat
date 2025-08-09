@@ -1,19 +1,17 @@
 import * as React from "react";
 
-import { SearchForm } from "@/features/sidebar/components/search-form";
-import { VersionSwitcher } from "@/features/sidebar/components/version-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { AppSidebarHeader } from "./components/app-sidebar-header";
 
 // This is sample data.
 const data = {
@@ -149,14 +147,8 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar {...props}>
-      <SidebarHeader>
-        <VersionSwitcher
-          versions={data.versions}
-          defaultVersion={data.versions[0]}
-        />
-        <SearchForm />
-      </SidebarHeader>
+    <Sidebar className="p-2 bg-sidebar" {...props}>
+      <AppSidebarHeader />
       <SidebarContent>
         {/* We create a SidebarGroup for each parent. */}
         {data.navMain.map((item) => (

@@ -16,9 +16,12 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Chat as primary interface at root */}
+        <Route path="/" element={<ChatPage />} />
+
         {/* Routes with shared layout */}
         <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
+          <Route path="home" element={<Home />} />
           <Route
             path="docs"
             element={
@@ -35,7 +38,6 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
-        <Route path="/chat" element={<ChatPage />} />
       </Routes>
     </BrowserRouter>
   );

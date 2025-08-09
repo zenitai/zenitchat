@@ -4,6 +4,7 @@ import "@/styles/globals.css";
 import { siteConfig } from "@/config/site.config";
 import { cn } from "@/lib/utils";
 import RootProviders from "@/components/providers";
+import { Toaster } from "@/components/ui/sonner";
 
 const fontSans = Geist({
   variable: "--font-geist-sans",
@@ -75,6 +76,7 @@ export default function RootLayout({
           fontMono.variable,
         )}
       >
+        <Toaster />
         <RootProviders>{children}</RootProviders>
       </body>
     </html>

@@ -18,6 +18,8 @@ export default function App() {
       <Routes>
         {/* Chat as primary interface at root */}
         <Route path="/" element={<ChatPage />} />
+        {/* Chat thread route renders the same ChatPage */}
+        <Route path="/chat/:threadId" element={<ChatPage />} />
 
         {/* Routes with shared layout */}
         <Route path="/" element={<Layout />}>

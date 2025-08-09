@@ -13,6 +13,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import ThemeToggler from "@/components/theme/toggler";
 
 export function ChatPage() {
   return (
@@ -38,6 +39,7 @@ export function ChatPage() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
+          <ThemeToggler />
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">
           <div className="grid auto-rows-min gap-4 md:grid-cols-3">

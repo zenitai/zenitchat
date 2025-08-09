@@ -1,144 +1,134 @@
 import * as React from "react";
+import { useLocation } from "react-router";
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarRail,
-} from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent, SidebarRail } from "@/components/ui/sidebar";
 import { AppSidebarHeader } from "./components/app-sidebar-header";
+import { ThreadGroup } from "./components/thread-group";
+import { PinnedThreadGroup } from "./components/pinned-thread-group";
 
-// This is sample data.
-const data = {
-  versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
-  navMain: [
+// Chat threads data structure
+type ThreadListItem = {
+  id: string;
+  title: string;
+  url: string;
+  isActive?: boolean;
+};
+
+type ThreadGroup = {
+  title: string;
+  items: ThreadListItem[];
+};
+
+const data: { threadGroups: ThreadGroup[] } = {
+  threadGroups: [
     {
-      title: "Getting Started",
-      url: "#",
+      title: "Pinned",
       items: [
         {
-          title: "Installation",
-          url: "#",
+          id: "pinned-001",
+          title: "Welcome thread",
+          url: "/chat/pinned-001",
         },
         {
-          title: "Project Structure",
-          url: "#",
+          id: "pinned-002",
+          title: "Team guidelines",
+          url: "/chat/pinned-002",
         },
       ],
     },
     {
-      title: "Building Your Application",
-      url: "#",
+      title: "Today",
       items: [
         {
-          title: "Routing",
-          url: "#",
-        },
-        {
-          title: "Data Fetching",
-          url: "#",
+          id: "a0b1c2d3-e4f5-6789-abcd-000000000001",
+          title: "Quick question",
+          url: "/chat/a0b1c2d3-e4f5-6789-abcd-000000000001",
           isActive: true,
         },
         {
-          title: "Rendering",
-          url: "#",
+          id: "a0b1c2d3-e4f5-6789-abcd-000000000002",
+          title: "Refactor sidebar layout",
+          url: "/chat/a0b1c2d3-e4f5-6789-abcd-000000000002",
         },
         {
-          title: "Caching",
-          url: "#",
-        },
-        {
-          title: "Styling",
-          url: "#",
-        },
-        {
-          title: "Optimizing",
-          url: "#",
-        },
-        {
-          title: "Configuring",
-          url: "#",
-        },
-        {
-          title: "Testing",
-          url: "#",
-        },
-        {
-          title: "Authentication",
-          url: "#",
-        },
-        {
-          title: "Deploying",
-          url: "#",
-        },
-        {
-          title: "Upgrading",
-          url: "#",
-        },
-        {
-          title: "Examples",
-          url: "#",
+          id: "a0b1c2d3-e4f5-6789-abcd-000000000003",
+          title: "API response caching",
+          url: "/chat/a0b1c2d3-e4f5-6789-abcd-000000000003",
         },
       ],
     },
     {
-      title: "API Reference",
-      url: "#",
+      title: "Yesterday",
       items: [
         {
-          title: "Components",
-          url: "#",
+          id: "a0b1c2d3-e4f5-6789-abcd-000000000004",
+          title: "Edge runtime notes",
+          url: "/chat/a0b1c2d3-e4f5-6789-abcd-000000000004",
         },
         {
-          title: "File Conventions",
-          url: "#",
-        },
-        {
-          title: "Functions",
-          url: "#",
-        },
-        {
-          title: "next.config.js Options",
-          url: "#",
-        },
-        {
-          title: "CLI",
-          url: "#",
-        },
-        {
-          title: "Edge Runtime",
-          url: "#",
+          id: "a0b1c2d3-e4f5-6789-abcd-000000000005",
+          title: "Auth state issues",
+          url: "/chat/a0b1c2d3-e4f5-6789-abcd-000000000005",
         },
       ],
     },
     {
-      title: "Architecture",
-      url: "#",
+      title: "Last 7 Days",
       items: [
         {
-          title: "Accessibility",
-          url: "#",
+          id: "a0b1c2d3-e4f5-6789-abcd-000000000006",
+          title: "Optimizing images",
+          url: "/chat/a0b1c2d3-e4f5-6789-abcd-000000000006",
         },
         {
-          title: "Fast Refresh",
-          url: "#",
+          id: "a0b1c2d3-e4f5-6789-abcd-000000000007",
+          title: "Rendering modes",
+          url: "/chat/a0b1c2d3-e4f5-6789-abcd-000000000007",
         },
         {
-          title: "Next.js Compiler",
-          url: "#",
+          id: "a0b1c2d3-e4f5-6789-abcd-000000000008",
+          title: "File conventions",
+          url: "/chat/a0b1c2d3-e4f5-6789-abcd-000000000008",
+        },
+      ],
+    },
+    {
+      title: "Last 30 Days",
+      items: [
+        {
+          id: "f44cc25f-7b70-4af6-9bba-1bb7656f875a",
+          title: "Greeting",
+          url: "/chat/f44cc25f-7b70-4af6-9bba-1bb7656f875a",
         },
         {
-          title: "Supported Browsers",
-          url: "#",
+          id: "e124f469-b696-4fa3-a895-4e1b45346c6f",
+          title: "Greeting",
+          url: "/chat/e124f469-b696-4fa3-a895-4e1b45346c6f",
         },
         {
-          title: "Turbopack",
-          url: "#",
+          id: "933a7708-d0ba-4945-9b58-ce8b1af234bf",
+          title: "Greeting",
+          url: "/chat/933a7708-d0ba-4945-9b58-ce8b1af234bf",
+        },
+        {
+          id: "f6f6270e-086c-4677-be14-441ff4e9b2e5",
+          title: "Daytona for code sandboxes",
+          url: "/chat/f6f6270e-086c-4677-be14-441ff4e9b2e5",
+        },
+      ],
+    },
+    {
+      title: "Older",
+      items: [
+        {
+          id: "a0b1c2d3-e4f5-6789-abcd-000000000009",
+          title: "Legacy migration plan",
+          url: "/chat/a0b1c2d3-e4f5-6789-abcd-000000000009",
+        },
+        {
+          id: "a0b1c2d3-e4f5-6789-abcd-00000000000a",
+          title: "CI/CD pipeline",
+          url: "/chat/a0b1c2d3-e4f5-6789-abcd-00000000000a",
         },
       ],
     },
@@ -146,27 +136,29 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const location = useLocation();
   return (
     <Sidebar className="p-2 bg-sidebar" {...props}>
       <AppSidebarHeader />
-      <SidebarContent>
-        {/* We create a SidebarGroup for each parent. */}
-        {data.navMain.map((item) => (
-          <SidebarGroup key={item.title}>
-            <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {item.items.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={item.isActive}>
-                      <a href={item.url}>{item.title}</a>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+      <SidebarContent className="scroll-shadow hidden-scrollbar">
+        {/* Thread groups */}
+        {data.threadGroups.map((group) =>
+          group.title === "Pinned" ? (
+            <PinnedThreadGroup
+              key={group.title}
+              title={group.title}
+              items={group.items}
+              currentPathname={location.pathname}
+            />
+          ) : (
+            <ThreadGroup
+              key={group.title}
+              title={group.title}
+              items={group.items}
+              currentPathname={location.pathname}
+            />
+          ),
+        )}
       </SidebarContent>
       <SidebarRail />
     </Sidebar>

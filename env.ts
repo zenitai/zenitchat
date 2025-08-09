@@ -8,6 +8,8 @@ export const env = createEnv({
     BETTER_AUTH_SECRET: v.pipe(v.string(), v.nonEmpty()),
     RESEND_API_KEY: v.pipe(v.string(), v.nonEmpty()),
     RESEND_WEBHOOK_SECRET: v.pipe(v.string(), v.nonEmpty()),
+    GOOGLE_CLIENT_ID: v.pipe(v.string(), v.nonEmpty()),
+    GOOGLE_CLIENT_SECRET: v.pipe(v.string(), v.nonEmpty()),
   },
   client: {
     //NEXT_PUBLIC_PUBLISHABLE_KEY: v.pipe(v.string(), v.nonEmpty()),

@@ -43,6 +43,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const navigate = useNavigate();
   const form = useForm<v.InferOutput<typeof formSchema>>({
     resolver: valibotResolver(formSchema),
@@ -51,6 +52,21 @@ export function LoginForm({
       password: "",
     },
   });
+
+  const signInWithGoogle = async () => {
+    try {
+      setIsGoogleLoading(true);
+      await authClient.signIn.social({
+        provider: "google",
+        //callbackURL: "/dashboard" //where to redirect after login
+      });
+    } catch (error) {
+      console.error("Google sign-in error:", error);
+      toast.error("An error occurred during login with Google");
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
 
   // 2. Define a submit handler.
   async function onSubmit(values: v.InferOutput<typeof formSchema>) {
@@ -138,8 +154,18 @@ export function LoginForm({
                       "Login"
                     )}
                   </Button>
-                  <Button variant="outline" className="w-full">
-                    Login with Google
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={signInWithGoogle}
+                    type="button"
+                    disabled={isGoogleLoading}
+                  >
+                    {isGoogleLoading ? (
+                      <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                      "Login with Google"
+                    )}
                   </Button>
                 </div>
               </div>

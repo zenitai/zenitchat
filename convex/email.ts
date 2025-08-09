@@ -6,6 +6,7 @@ import { Resend } from "@convex-dev/resend";
 import { type RunMutationCtx } from "@convex-dev/better-auth";
 import PasswordResetEmail from "./emails/reset_password_email";
 import VerificationEmail from "./emails/verification_email";
+//import { v.EmailId, v.EmailEvent } from "@convex-dev/resend";
 
 export const resend: Resend = new Resend(components.resend, {
   testMode: false,
@@ -17,7 +18,7 @@ export const resend: Resend = new Resend(components.resend, {
   /*
 export const handleEmailEvent = internalMutation({
   args: {
-    id: v.EmailId, //import { v.EmailId, v.EmailEvent } from "@convex-dev/resend";
+    id: v.EmailId,
     event: v.EmailEvent,
   },
   handler: async (ctx, args) => {

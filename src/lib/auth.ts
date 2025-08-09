@@ -17,6 +17,13 @@ if (!siteUrl) {
   );
 }
 
+const googleClientId = process.env.GOOGLE_CLIENT_ID;
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
+
+if (!googleClientId || !googleClientSecret) {
+  throw new Error("GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET must be set");
+}
+
 export const createAuth = (ctx: GenericCtx) =>
   // Configure your Better Auth instance here
   betterAuth({
@@ -46,6 +53,13 @@ export const createAuth = (ctx: GenericCtx) =>
         });
       },
     },
+    socialProviders: {
+      google: {
+        clientId: googleClientId as string,
+        clientSecret: googleClientSecret as string,
+      },
+    },
+
     plugins: [
       // The Convex plugin is required
       convex(),

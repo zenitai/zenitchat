@@ -48,6 +48,8 @@ export function ResetPasswordForm({
 
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
+  const tokenValue = (token ?? "").trim();
+  const isTokenValid = tokenValue.length > 0;
 
   const [isLoading, setIsLoading] = useState(false);
   const form = useForm<v.InferOutput<typeof formSchema>>({
@@ -62,6 +64,13 @@ export function ResetPasswordForm({
     try {
       setIsLoading(true);
 
+      if (!isTokenValid) {
+        toast.error(
+          "Invalid or missing reset token. Please use the link from your email.",
+        );
+        return;
+      }
+
       if (values.password !== values.confirmPassword) {
         toast.error("Passwords do not match");
         return;
@@ -69,7 +78,7 @@ export function ResetPasswordForm({
 
       const { error } = await authClient.resetPassword({
         newPassword: values.password,
-        token: token ?? "",
+        token: tokenValue,
       });
 
       if (!error) {

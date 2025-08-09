@@ -1,10 +1,11 @@
+import { ReactNode } from "react";
 import { Authenticated, Unauthenticated, AuthLoading } from "convex/react";
 import { Navigate } from "react-router";
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
+  children: ReactNode;
   redirectTo?: string;
-  fallback?: React.ReactNode;
+  fallback?: ReactNode;
 }
 
 export function ProtectedRoute({

@@ -9,6 +9,7 @@ import {
   ForgotPasswordPage,
   ResetPasswordPage,
   ProtectedRoute,
+  ChatPage,
 } from "@/routes";
 
 export default function App() {
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/chat" element={<ChatPage />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,9 +1,8 @@
 import * as v from "valibot";
+
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
-import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,66 +21,78 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { Link, useNavigate, useSearchParams } from "react-router";
+import { authClient } from "@/lib/auth-client";
 
 const formSchema = v.object({
-  email: v.pipe(
-    v.string(),
-    v.nonEmpty("Please enter your email"),
-    v.email("Please enter a valid email address"),
-  ),
   password: v.pipe(
     v.string(),
     v.nonEmpty("Please enter your password"),
     v.minLength(8, "Password must be at least 8 characters long"),
   ),
+  confirmPassword: v.pipe(
+    v.string(),
+    v.nonEmpty("Please confirm your password"),
+    v.minLength(8, "Password must be at least 8 characters long"),
+  ),
 });
 
-export function LoginForm({
+export function ResetPasswordForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get("token");
+
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<v.InferOutput<typeof formSchema>>({
     resolver: valibotResolver(formSchema),
     defaultValues: {
-      email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
-  // 2. Define a submit handler.
   async function onSubmit(values: v.InferOutput<typeof formSchema>) {
     try {
       setIsLoading(true);
-      const { error } = await authClient.signIn.email({
-        email: values.email,
-        password: values.password,
-      });
 
-      if (error) {
-        toast.error(error.message || "Login failed");
+      if (values.password !== values.confirmPassword) {
+        toast.error("Passwords do not match");
         return;
       }
 
-      toast.success("Login successful!");
-      navigate("/docs");
+      const { error } = await authClient.resetPassword({
+        newPassword: values.password,
+        token: token ?? "",
+      });
+
+      if (!error) {
+        toast.success("Password reset successfully");
+        navigate("/login");
+      } else {
+        toast.error(error.message);
+      }
     } catch (error) {
       console.error(error);
-      toast.error("An error occurred during login");
+      toast.error("An error occurred during password reset");
     } finally {
       setIsLoading(false);
     }
   }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
+          <CardTitle>Reset your password</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Enter your new password below to reset your password
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -91,12 +102,16 @@ export function LoginForm({
                 <div className="grid gap-3">
                   <FormField
                     control={form.control}
-                    name="email"
+                    name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input placeholder="m@example.com" {...field} />
+                          <Input
+                            type="password"
+                            placeholder="********"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -106,18 +121,10 @@ export function LoginForm({
                 <div className="grid gap-3">
                   <FormField
                     control={form.control}
-                    name="password"
+                    name="confirmPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <div className="flex items-center">
-                          <FormLabel>Password</FormLabel>
-                          <Link
-                            to="/forgot-password"
-                            className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                          >
-                            Forgot your password?
-                          </Link>
-                        </div>
+                        <FormLabel>Confirm Password</FormLabel>
                         <FormControl>
                           <Input
                             type="password"
@@ -135,11 +142,8 @@ export function LoginForm({
                     {isLoading ? (
                       <Loader2 className="size-4 animate-spin" />
                     ) : (
-                      "Login"
+                      "Reset Password"
                     )}
-                  </Button>
-                  <Button variant="outline" className="w-full">
-                    Login with Google
                   </Button>
                 </div>
               </div>

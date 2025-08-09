@@ -6,6 +6,8 @@ export const env = createEnv({
     OPENROUTER_API_KEY: v.pipe(v.string(), v.nonEmpty()),
     CONVEX_DEPLOYMENT: v.pipe(v.string(), v.nonEmpty()),
     BETTER_AUTH_SECRET: v.pipe(v.string(), v.nonEmpty()),
+    RESEND_API_KEY: v.pipe(v.string(), v.nonEmpty()),
+    RESEND_WEBHOOK_SECRET: v.pipe(v.string(), v.nonEmpty()),
   },
   client: {
     //NEXT_PUBLIC_PUBLISHABLE_KEY: v.pipe(v.string(), v.nonEmpty()),

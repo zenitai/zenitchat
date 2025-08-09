@@ -6,6 +6,8 @@ import {
   NotFound,
   SignupPage,
   LoginPage,
+  ForgotPasswordPage,
+  ResetPasswordPage,
   ProtectedRoute,
 } from "@/routes";
 
@@ -30,6 +32,8 @@ export default function App() {
         {/* Independent routes without layout */}
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
       </Routes>
     </BrowserRouter>
   );

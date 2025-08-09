@@ -28,12 +28,12 @@ const formSchema = v.object({
   password: v.pipe(
     v.string(),
     v.nonEmpty("Please enter your password"),
-    v.minLength(6, "Password must be at least 6 characters long"),
+    v.minLength(8, "Password must be at least 8 characters long"),
   ),
   confirmPassword: v.pipe(
     v.string(),
     v.nonEmpty("Please confirm your password"),
-    v.minLength(6, "Password must be at least 6 characters long"),
+    v.minLength(8, "Password must be at least 8 characters long"),
   ),
 });
 
@@ -56,6 +56,12 @@ export function SignupForm({
   async function onSubmit(values: v.InferOutput<typeof formSchema>) {
     try {
       setIsLoading(true);
+
+      if (values.password !== values.confirmPassword) {
+        toast.error("Passwords do not match");
+        return;
+      }
+
       const { error } = await authClient.signUp.email({
         name: values.name,
         email: values.email,
@@ -67,7 +73,7 @@ export function SignupForm({
         return;
       }
 
-      toast.success("Signup successful!");
+      toast.success("Please check your email for verification");
     } catch (error) {
       console.error(error);
       toast.error("An error occurred during signup");

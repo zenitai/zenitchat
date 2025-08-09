@@ -1,5 +1,5 @@
 import * as React from "react";
-import { PinOff } from "lucide-react";
+import { Pin } from "lucide-react";
 
 import {
   SidebarGroup,
@@ -31,7 +31,7 @@ export function PinnedThreadGroup({
         <AccordionItem value="pinned" className="border-0">
           <AccordionTrigger className="flex h-8 items-center rounded-md px-1.5 text-xs font-medium no-underline hover:no-underline [&>svg]:translate-y-0">
             <span className="flex items-center gap-1.5">
-              <PinOff className="size-3.5" />
+              <Pin className="size-3.5" />
               {title}
             </span>
           </AccordionTrigger>

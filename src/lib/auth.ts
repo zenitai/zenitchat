@@ -3,6 +3,8 @@ import { convex } from "@convex-dev/better-auth/plugins";
 import { betterAuth } from "better-auth";
 import { betterAuthComponent } from "../../convex/auth";
 import { type GenericCtx } from "../../convex/_generated/server";
+import { requireMutationCtx } from "@convex-dev/better-auth/utils";
+import { sendEmailVerification } from "../../convex/email";
 
 // Your Next.js app URL - auth requests will be proxied through this
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
@@ -19,10 +21,20 @@ export const createAuth = (ctx: GenericCtx) =>
     baseURL: siteUrl,
     database: convexAdapter(ctx, betterAuthComponent),
 
-    // Simple non-verified email/password to get started
+    // Email verification configuration
+    emailVerification: {
+      sendVerificationEmail: async ({ user, url }) => {
+        await sendEmailVerification(requireMutationCtx(ctx), {
+          to: user.email,
+          url,
+          userName: user.name,
+        });
+      },
+      sendOnSignUp: true,
+    },
+
     emailAndPassword: {
       enabled: true,
-      requireEmailVerification: false,
     },
     plugins: [
       // The Convex plugin is required

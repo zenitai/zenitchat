@@ -35,9 +35,9 @@ export function ThreadItem({
 }: ThreadItemProps) {
   return (
     <SidebarMenuItem>
-      <SidebarMenuButton asChild isActive={isActive} className="p-0 h-auto">
-        <ContextMenu>
-          <ContextMenuTrigger asChild>
+      <ContextMenu>
+        <ContextMenuTrigger asChild>
+          <SidebarMenuButton asChild isActive={isActive} className="p-0 h-auto">
             <Link
               className="group/link relative flex h-9 w-full items-center overflow-hidden rounded-lg px-2 py-1 text-sm outline-none hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:text-sidebar-accent-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring hover:focus-visible:bg-sidebar-accent"
               data-discover="true"
@@ -115,31 +115,31 @@ export function ThreadItem({
                 </div>
               </div>
             </Link>
-          </ContextMenuTrigger>
-          <ContextMenuContent>
-            <ContextMenuItem>
-              {isPinned ? <PinOff /> : <Pin />}
-              {isPinned ? "Unpin" : "Pin"}
-            </ContextMenuItem>
-            <ContextMenuItem>
-              <TextCursor />
-              Rename
-            </ContextMenuItem>
-            <ContextMenuItem>
-              <Sparkles />
-              Regenerate Title
-            </ContextMenuItem>
-            <ContextMenuItem>
-              <X />
-              Delete
-            </ContextMenuItem>
-            <ContextMenuItem>
-              <Download />
-              Export
-            </ContextMenuItem>
-          </ContextMenuContent>
-        </ContextMenu>
-      </SidebarMenuButton>
+          </SidebarMenuButton>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem>
+            {isPinned ? <PinOff /> : <Pin />}
+            {isPinned ? "Unpin" : "Pin"}
+          </ContextMenuItem>
+          <ContextMenuItem>
+            <TextCursor />
+            Rename
+          </ContextMenuItem>
+          <ContextMenuItem>
+            <Sparkles />
+            Regenerate Title
+          </ContextMenuItem>
+          <ContextMenuItem>
+            <X />
+            Delete
+          </ContextMenuItem>
+          <ContextMenuItem>
+            <Download />
+            Export
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
     </SidebarMenuItem>
   );
 }

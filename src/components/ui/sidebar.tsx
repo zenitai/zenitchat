@@ -194,6 +194,10 @@ function Sidebar({
             } as React.CSSProperties
           }
           side={side}
+          onOpenAutoFocus={(event) => {
+            // Prevent focusing the first focusable element (e.g., thread search)
+            event.preventDefault();
+          }}
         >
           <SheetHeader className="sr-only">
             <SheetTitle>Sidebar</SheetTitle>

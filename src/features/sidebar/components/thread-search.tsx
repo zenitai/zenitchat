@@ -14,7 +14,7 @@ export function ThreadSearch() {
   }
 
   return (
-    <div className="border-b px-3">
+    <div className="px-3">
       <div className="flex items-center">
         <Search
           aria-hidden="true"

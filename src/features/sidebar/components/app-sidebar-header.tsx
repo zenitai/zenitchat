@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export function AppSidebarHeader() {
   return (
-    <SidebarHeader className="relative m-1 mb-0 space-y-1 p-0">
+    <SidebarHeader className="relative m-1 mb-0 space-y-1 p-0 border-b">
       <Link to="/">
         <div className="flex items-center justify-center w-full px-2">
           <span className="text-2xl tracking-tighter">Zenit</span>

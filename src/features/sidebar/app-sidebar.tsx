@@ -5,6 +5,7 @@ import { Sidebar, SidebarContent, SidebarRail } from "@/components/ui/sidebar";
 import { AppSidebarHeader } from "./components/app-sidebar-header";
 import { ThreadGroup } from "./components/thread-group";
 import { PinnedThreadGroup } from "./components/pinned-thread-group";
+import { AppSidebarFooter } from "./components/app-sidebar-footer";
 
 // Chat threads data structure
 type ThreadListItem = {
@@ -160,6 +161,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           ),
         )}
       </SidebarContent>
+      <AppSidebarFooter />
       <SidebarRail />
     </Sidebar>
   );

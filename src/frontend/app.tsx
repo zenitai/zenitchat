@@ -9,15 +9,21 @@ import {
   ForgotPasswordPage,
   ResetPasswordPage,
   ProtectedRoute,
+  ChatPage,
 } from "@/routes";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Chat as primary interface at root */}
+        <Route path="/" element={<ChatPage />} />
+        {/* Chat thread route renders the same ChatPage */}
+        <Route path="/chat/:threadId" element={<ChatPage />} />
+
         {/* Routes with shared layout */}
         <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
+          <Route path="home" element={<Home />} />
           <Route
             path="docs"
             element={

@@ -18,7 +18,7 @@ export function Layout({ children }: { children?: ReactNode }) {
               </NavLink>
               <div className="hidden md:flex space-x-6">
                 <NavLink
-                  to="/"
+                  to="/home"
                   className={({ isActive }) =>
                     `text-sm transition-colors ${
                       isActive

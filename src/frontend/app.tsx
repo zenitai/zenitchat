@@ -9,6 +9,7 @@ import {
   ForgotPasswordPage,
   ResetPasswordPage,
   ProtectedRoute,
+  ChatLayout,
   ChatPage,
 } from "@/routes";
 
@@ -17,22 +18,22 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* Chat as primary interface at root */}
-        <Route path="/" element={<ChatPage />} />
-        {/* Chat thread route renders the same ChatPage */}
-        <Route path="/chat/:threadId" element={<ChatPage />} />
+        <Route path="/" element={<ChatLayout />}>
+          <Route index element={<ChatPage />} />
+          <Route path="chat/:threadId" element={<ChatPage />} />
+        </Route>
 
-        {/* Routes with shared layout */}
-        <Route path="/" element={<Layout />}>
-          <Route path="home" element={<Home />} />
+        {/* Other routes with shared layout */}
+        <Route element={<Layout />}>
+          <Route path="/home" element={<Home />} />
           <Route
-            path="docs"
+            path="/docs"
             element={
               <ProtectedRoute>
                 <Docs />
               </ProtectedRoute>
             }
           />
-          <Route path="*" element={<NotFound />} />
         </Route>
 
         {/* Independent routes without layout */}
@@ -40,6 +41,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

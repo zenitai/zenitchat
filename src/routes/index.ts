@@ -9,4 +9,5 @@ export { LoginPage } from "./auth/login";
 export { ProtectedRoute } from "./auth/protected-route";
 export { ForgotPasswordPage } from "./auth/forgot-password";
 export { ResetPasswordPage } from "./auth/reset-password";
+export { ChatLayout } from "./chat/chat-layout";
 export { ChatPage } from "./chat/chat-page";

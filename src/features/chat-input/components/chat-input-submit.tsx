@@ -3,6 +3,11 @@ import { Button } from "@/components/ui/button";
 import { ComponentProps } from "react";
 import { Loader2Icon, SquareIcon, XIcon, ArrowUpIcon } from "lucide-react";
 import type { ChatStatus } from "ai";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export type ChatInputSubmitProps = ComponentProps<typeof Button> & {
   status?: ChatStatus;
@@ -26,15 +31,29 @@ export const ChatInputSubmit = ({
     Icon = <XIcon className="size-4" />;
   }
 
+  const getTooltipText = () => {
+    if (status === "submitted") return "Sending...";
+    if (status === "streaming") return "Stop generating";
+    if (status === "error") return "Retry";
+    return "Send message";
+  };
+
   return (
-    <Button
-      className={cn("gap-1.5 rounded-lg", className)}
-      size={size}
-      type="submit"
-      variant={variant}
-      {...props}
-    >
-      {children ?? Icon}
-    </Button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          className={cn("gap-1.5 rounded-lg", className)}
+          size={size}
+          type="submit"
+          variant={variant}
+          {...props}
+        >
+          {children ?? Icon}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>{getTooltipText()}</p>
+      </TooltipContent>
+    </Tooltip>
   );
 };

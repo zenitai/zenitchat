@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ALL_MODELS, ModelIcon } from "@/config/ai-models";
 import type { ModelConfig } from "@/config/ai-models/types";
-import { ModelSearch, ModelRow } from "./components";
+import { ModelSearch, ModelRow, ModelSelectorFooter } from "./components";
 
 interface ModelSelectorProps {
   selectedModel?: ModelConfig;
@@ -37,6 +37,11 @@ export const ModelSelector = ({
         model.features.some((feature) => feature.toLowerCase().includes(query)),
     );
   }, [searchQuery]);
+
+  // Count new models
+  const newModelsCount = useMemo(() => {
+    return ALL_MODELS.filter((model) => model.new).length;
+  }, []);
 
   const handleModelSelect = (model: ModelConfig) => {
     onModelSelect(model);
@@ -91,6 +96,21 @@ export const ModelSelector = ({
               onSelect={handleModelSelect}
             />
           ))}
+        </div>
+
+        {/* Footer */}
+        <div className="px-3">
+          <ModelSelectorFooter
+            onShowAll={() => {
+              // TODO: Implement show all functionality
+              console.log("Show all clicked");
+            }}
+            onFilter={() => {
+              // TODO: Implement filter functionality
+              console.log("Filter clicked");
+            }}
+            showAllCount={newModelsCount}
+          />
         </div>
       </DropdownMenuContent>
     </DropdownMenu>

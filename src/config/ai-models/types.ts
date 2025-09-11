@@ -23,7 +23,7 @@ export type ModelFeature =
 export type AttachmentType = "image" | "document" | "audio" | "video";
 
 // Pricing tiers
-export type PricingTier = "free" | "standard" | "premium";
+export type PricingTier = "free" | "standard" | "premium" | "byok";
 
 // Model specifications
 export interface ModelSpecs {
@@ -31,8 +31,8 @@ export interface ModelSpecs {
   outputLimit: number;
   inputCost: number; // cost per 1M input tokens
   outputCost: number; // cost per 1M output tokens
-  cacheInputCost: number; // cost per 1M cached input tokens
-  reasoningCost: number; // cost per 1M reasoning tokens
+  cacheInputCost?: number; // cost per 1M cached input tokens
+  reasoningCost?: number; // cost per 1M reasoning tokens (optional, undefined if not available)
   knowledgeCutoff: string; // e.g., "2024-01-01"
   releaseDate: string; // e.g., "2024-01-01"
 }

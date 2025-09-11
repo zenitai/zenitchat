@@ -454,18 +454,3 @@ export const OPENAI_MODELS: ModelConfig[] = [
     },
   },
 ] as const;
-
-// Export individual models for convenience
-export const OPENAI_GPT_4O = OPENAI_MODELS[0];
-export const OPENAI_GPT_4O_MINI = OPENAI_MODELS[1];
-export const OPENAI_GPT_4_1 = OPENAI_MODELS[2];
-export const OPENAI_GPT_4_1_MINI = OPENAI_MODELS[3];
-export const OPENAI_GPT_4_1_NANO = OPENAI_MODELS[4];
-export const OPENAI_GPT_5 = OPENAI_MODELS[5];
-export const OPENAI_GPT_5_MINI = OPENAI_MODELS[6];
-export const OPENAI_GPT_5_NANO = OPENAI_MODELS[7];
-export const OPENAI_O3 = OPENAI_MODELS[8];
-export const OPENAI_O3_MINI = OPENAI_MODELS[9];
-export const OPENAI_GPT_OSS_20B = OPENAI_MODELS[10];
-export const OPENAI_GPT_OSS_120B = OPENAI_MODELS[11];
-export const OPENAI_O4_MINI = OPENAI_MODELS[12];

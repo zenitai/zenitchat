@@ -200,10 +200,3 @@ export const GOOGLE_MODELS: ModelConfig[] = [
     },
   },
 ] as const;
-
-// Export individual models for convenience
-export const GOOGLE_GEMINI_2_0_FLASH = GOOGLE_MODELS[0];
-export const GOOGLE_GEMINI_2_0_FLASH_LITE = GOOGLE_MODELS[1];
-export const GOOGLE_GEMINI_2_5_FLASH = GOOGLE_MODELS[2];
-export const GOOGLE_GEMINI_2_5_FLASH_LITE = GOOGLE_MODELS[3];
-export const GOOGLE_GEMINI_2_5_PRO = GOOGLE_MODELS[4];

@@ -31,3 +31,8 @@ export const getModelsByInfrastructureProvider = (
 export const getModelsByPricingTier = (tier: PricingTier) => {
   return ALL_MODELS.filter((model) => model.pricingTier === tier);
 };
+
+// Default model configuration
+export const DEFAULT_MODEL = ALL_MODELS.find(
+  (model) => model.id === "openai/gpt-5-mini",
+)!;

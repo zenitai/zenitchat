@@ -19,5 +19,5 @@ export const ChatInputTools = ({
   className,
   ...props
 }: ChatInputToolsProps) => (
-  <div className={cn("flex items-center gap-1", className)} {...props} />
+  <div className={cn("flex items-center gap-2", className)} {...props} />
 );

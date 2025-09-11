@@ -10,6 +10,9 @@ import { ChatInputSubmit } from "./components/chat-input-submit";
 import { ScrollToBottomButton } from "./components/scroll-to-bottom-button";
 import { useAutoResizeTextarea } from "./hooks/use-auto-resize-textarea";
 import { useChatInputHeight } from "./hooks/use-chat-input-height";
+import { ModelSelector } from "./model-selector/model-selector";
+import type { ModelConfig } from "@/config/ai-models/types";
+import { DEFAULT_MODEL } from "@/config/ai-models";
 
 export type ChatInputProps = Omit<
   ComponentProps<typeof ChatInputForm>,
@@ -20,6 +23,8 @@ export type ChatInputProps = Omit<
   showScrollToBottom?: boolean;
   onScrollToBottom?: () => void;
   disabled?: boolean;
+  selectedModel?: ModelConfig;
+  onModelSelect?: (model: ModelConfig) => void;
 };
 
 export const ChatInput = ({
@@ -28,9 +33,14 @@ export const ChatInput = ({
   showScrollToBottom,
   onScrollToBottom,
   disabled = false,
+  selectedModel,
+  onModelSelect,
   ...props
 }: ChatInputProps) => {
   const [input, setInput] = useState("");
+  const [internalSelectedModel, setInternalSelectedModel] = useState<
+    ModelConfig | undefined
+  >(selectedModel || DEFAULT_MODEL);
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
     minHeight: 64,
     maxHeight: 192,
@@ -81,6 +91,11 @@ export const ChatInput = ({
     }
   };
 
+  const handleModelSelect = (model: ModelConfig) => {
+    setInternalSelectedModel(model);
+    onModelSelect?.(model);
+  };
+
   return (
     <div className="w-full">
       <div className="relative mx-auto flex w-full max-w-3xl flex-col">
@@ -99,6 +114,11 @@ export const ChatInput = ({
             />
             <ChatInputToolbar>
               <ChatInputTools>
+                <ModelSelector
+                  selectedModel={internalSelectedModel}
+                  onModelSelect={handleModelSelect}
+                  disabled={disabled}
+                />
                 <ChatInputButton variant="outline">
                   <PaperclipIcon className="size-4" />
                 </ChatInputButton>

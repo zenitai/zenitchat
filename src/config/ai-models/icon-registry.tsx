@@ -9,6 +9,7 @@ import {
   Xai,
   Zai,
   Qwen,
+  Stealth,
 } from "./provider-icons";
 
 // Type-safe icon registry
@@ -22,6 +23,7 @@ const iconRegistry: IconMap = {
   xai: Xai,
   zai: Zai,
   qwen: Qwen,
+  stealth: Stealth,
 } as const;
 
 // Type-safe icon getter

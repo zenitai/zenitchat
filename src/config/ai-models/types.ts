@@ -8,7 +8,8 @@ export type ModelCreator =
   | "moonshotai"
   | "xai"
   | "zai"
-  | "qwen";
+  | "qwen"
+  | "stealth";
 
 export type InfrastructureProvider = "vercel" | "openrouter" | "direct";
 
@@ -121,6 +122,7 @@ export const CREATOR_NAMES: Record<ModelCreator, string> = {
   xai: "Xai",
   zai: "Zai",
   qwen: "Qwen",
+  stealth: "Stealth",
 } as const;
 
 // Type-safe icon getter function

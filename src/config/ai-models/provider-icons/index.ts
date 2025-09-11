@@ -7,6 +7,7 @@ export { Anthropic } from "./anthropic";
 export { MoonshotAI } from "./moonshotai";
 export { Deepseek } from "./deepseek";
 export { Qwen } from "./qwen";
+export { Stealth } from "./stealth";
 
 // Re-export type-safe icon utilities
 export { getIcon, ModelIcon } from "../icon-registry";

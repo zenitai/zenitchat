@@ -4,6 +4,7 @@ import * as v from "valibot";
 export const env = createEnv({
   server: {
     OPENROUTER_API_KEY: v.pipe(v.string(), v.nonEmpty()),
+    AI_GATEWAY_API_KEY: v.pipe(v.string(), v.nonEmpty()),
     CONVEX_DEPLOYMENT: v.pipe(v.string(), v.nonEmpty()),
     BETTER_AUTH_SECRET: v.pipe(v.string(), v.nonEmpty()),
     RESEND_API_KEY: v.pipe(v.string(), v.nonEmpty()),

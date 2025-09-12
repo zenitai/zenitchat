@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { ChevronDownIcon, Gem } from "lucide-react";
 import {
   DropdownMenu,
@@ -6,15 +6,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ALL_MODELS, ModelIcon } from "@/config/ai-models";
-import type { ModelConfig } from "@/config/ai-models/types";
+import { ModelIcon } from "@/config/ai-models";
+import type { ModelConfig, ModelCreator } from "@/config/ai-models/types";
 import {
   ModelSearch,
   ModelRow,
-  ModelSelectorFooter,
+  ShowAllButton,
   ExpandedModelList,
+  ModelFilter,
 } from "./components";
 import { useUserModels } from "./hooks/use-user-models";
+import { useFilteredModels } from "./hooks/use-filtered-models";
 import { cn } from "@/lib/utils";
 
 interface ModelSelectorProps {
@@ -31,33 +33,26 @@ export const ModelSelector = ({
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showExpanded, setShowExpanded] = useState(false);
+  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [selectedProvider, setSelectedProvider] = useState<
+    ModelCreator | "all"
+  >("all");
 
   // Get user models data once at the top level
   const { favoriteModels, toggleModelFavorite, isFavorite } = useUserModels();
 
-  // Filter models based on search query
-  const filteredModels = useMemo(() => {
-    if (!searchQuery.trim()) return ALL_MODELS;
-
-    const query = searchQuery.toLowerCase();
-    return ALL_MODELS.filter(
-      (model) =>
-        model.displayName.toLowerCase().includes(query) ||
-        model.creator.toLowerCase().includes(query) ||
-        model.description.toLowerCase().includes(query) ||
-        model.features.some((feature) => feature.toLowerCase().includes(query)),
-    );
-  }, [searchQuery]);
-
-  // Count new models
-  const newModelsCount = useMemo(() => {
-    return ALL_MODELS.filter((model) => model.new).length;
-  }, []);
+  // Get filtered models and new models count
+  const { filteredModels, newModelsCount } = useFilteredModels({
+    searchQuery,
+    selectedFilters,
+    selectedProvider,
+  });
 
   const handleModelSelect = (model: ModelConfig) => {
     onModelSelect(model);
     setOpen(false);
     setSearchQuery(""); // Clear search when selecting a model
+    setSelectedProvider("all"); // Clear provider filter when selecting a model
     setShowExpanded(false); // Close expanded view when selecting a model
   };
 
@@ -75,6 +70,11 @@ export const ModelSelector = ({
 
   const handleCloseExpanded = () => {
     setShowExpanded(false);
+  };
+
+  const handleClearAllFilters = () => {
+    setSelectedProvider("all");
+    setSelectedFilters([]);
   };
 
   return (
@@ -146,16 +146,22 @@ export const ModelSelector = ({
           </div>
         )}
 
-        {/* Footer */}
-        <ModelSelectorFooter
-          onShowAll={handleShowAll}
-          onFilter={() => {
-            // TODO: Implement filter functionality
-            console.log("Filter clicked");
-          }}
-          newModelsCount={newModelsCount}
-          isExpanded={showExpanded}
-        />
+        {/* Footer and Filter */}
+        <div className="fixed inset-x-4 bottom-0 z-10 flex items-center justify-between rounded-b-lg bg-popover pb-1 pl-1 pr-2.5 pt-1.5 sm:inset-x-0">
+          <div className="absolute inset-x-3 top-0 border-b"></div>
+          <ShowAllButton
+            onShowAll={handleShowAll}
+            newModelsCount={newModelsCount}
+            isExpanded={showExpanded}
+          />
+          <ModelFilter
+            selectedFilters={selectedFilters}
+            onFiltersChange={setSelectedFilters}
+            selectedProvider={selectedProvider}
+            onProviderChange={setSelectedProvider}
+            onClearAllFilters={handleClearAllFilters}
+          />
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );

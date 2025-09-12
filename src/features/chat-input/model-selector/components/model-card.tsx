@@ -39,7 +39,7 @@ export function ModelCard({
           "group relative flex h-[9.25rem] w-[6.75rem] cursor-pointer flex-col items-start gap-0.5 overflow-hidden rounded-xl border bg-sidebar/20 px-1 py-3 text-color-heading",
           "[--model-muted:hsl(var(--muted-foreground)/0.9)] [--model-primary:hsl(var(--color-heading))]",
           "hover:bg-accent/30 hover:text-color-heading",
-          "dark:bg-[hsl(320,20%,2.9%)] dark:[--model-muted:hsl(var(--color-heading))] dark:[--model-primary:hsl(var(--muted-foreground)/0.9)] dark:hover:bg-accent/30",
+          "dark:[--model-muted:hsl(var(--color-heading))] dark:[--model-primary:hsl(var(--muted-foreground)/0.9)] dark:hover:bg-accent/30",
           // New model glow effect
           model.new && [
             "border-[#ffb525f7] shadow-[0px_3px_8px_#ffae1082,inset_0px_-4px_20px_#ffb52575]",

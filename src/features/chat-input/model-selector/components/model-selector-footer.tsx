@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { ChevronUp, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -6,17 +5,16 @@ interface ModelSelectorFooterProps {
   onShowAll?: () => void;
   onFilter?: () => void;
   showAllCount?: number;
+  isExpanded?: boolean;
 }
 
 export const ModelSelectorFooter = ({
   onShowAll,
   onFilter,
   showAllCount = 0,
+  isExpanded = false,
 }: ModelSelectorFooterProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
   const handleShowAllClick = () => {
-    setIsExpanded(!isExpanded);
     onShowAll?.();
   };
 
@@ -33,7 +31,7 @@ export const ModelSelectorFooter = ({
             isExpanded ? "-rotate-90" : "rotate-0"
           }`}
         />
-        <span>Show all</span>
+        <span>{isExpanded ? "Show less" : "Show all"}</span>
         {showAllCount > 0 && (
           <div
             className="h-2 w-2 rounded-full bg-pink-500"

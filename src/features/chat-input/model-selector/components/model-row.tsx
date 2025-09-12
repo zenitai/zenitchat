@@ -1,4 +1,3 @@
-import { Gem, FlaskConical, Sparkles, Key } from "lucide-react";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { ModelIcon } from "@/config/ai-models";
 import type { ModelConfig } from "@/config/ai-models/types";
@@ -8,6 +7,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { getStatusIndicators } from "../utils/status-indicators";
 
 interface ModelRowProps {
   model: ModelConfig;
@@ -16,23 +16,7 @@ interface ModelRowProps {
 
 export const ModelRow = ({ model, onSelect }: ModelRowProps) => {
   // Build status indicators
-  const statusIndicators = [];
-
-  if (model.experimental) {
-    statusIndicators.push({ icon: FlaskConical, label: "Experimental" });
-  }
-
-  if (model.new) {
-    statusIndicators.push({ icon: Sparkles, label: "New" });
-  }
-
-  if (model.pricingTier === "premium") {
-    statusIndicators.push({ icon: Gem, label: "Premium" });
-  }
-
-  if (model.pricingTier === "byok") {
-    statusIndicators.push({ icon: Key, label: "BYOK" });
-  }
+  const statusIndicators = getStatusIndicators(model);
 
   return (
     <Tooltip>
@@ -52,21 +36,14 @@ export const ModelRow = ({ model, onSelect }: ModelRowProps) => {
               </span>
               <div className="flex items-center gap-1">
                 {(() => {
-                  // Hierarchy: BYOK > Premium > New > Experimental
-                  if (model.pricingTier === "byok") {
-                    return <Key className="h-3.5 w-3.5 text-green-500" />;
-                  }
-                  if (model.pricingTier === "premium") {
-                    return <Gem className="h-3.5 w-3.5 text-blue-500" />;
-                  }
-                  if (model.new) {
+                  // Get the highest priority status indicator
+                  const highestPriority = statusIndicators[0];
+                  if (highestPriority) {
+                    const Icon = highestPriority.icon;
                     return (
-                      <Sparkles className="h-3.5 w-3.5 text-[#ffb525f7] drop-shadow-[0px_3px_8px_#ffae1082] dark:text-amber-200/80 dark:drop-shadow-[0px_3px_8px_rgba(186,130,21,0.62)]" />
-                    );
-                  }
-                  if (model.experimental) {
-                    return (
-                      <FlaskConical className="h-3.5 w-3.5 text-purple-500" />
+                      <Icon
+                        className={`size-3.5 ${highestPriority.color || ""}`}
+                      />
                     );
                   }
                   return null;

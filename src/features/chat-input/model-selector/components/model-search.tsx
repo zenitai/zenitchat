@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -13,20 +12,15 @@ export const ModelSearch = ({
   onChange,
   placeholder = "Search models...",
 }: ModelSearchProps) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-
   return (
-    <div className="px-3">
-      <div className="flex items-center border-b">
-        <Search
-          aria-hidden="true"
-          className="-ml-[3px] mr-3 !size-4 min-w-4 text-muted-foreground"
-        />
+    <div className="fixed inset-x-4 top-0 rounded-t-lg bg-popover px-3.5 pt-0.5 sm:inset-x-0">
+      <div className="flex items-center">
+        <Search className="ml-px mr-1.5 !size-4 text-muted-foreground/75" />
         <Input
-          id="model-search"
-          name="model-search"
-          type="text"
-          aria-label={placeholder}
+          id="model-search-input"
+          name="modelSearch"
+          role="searchbox"
+          aria-label="Search models"
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -40,10 +34,10 @@ export const ModelSearch = ({
           autoComplete="off"
           spellCheck={false}
           enterKeyHint="search"
-          ref={inputRef}
-          className="!bg-transparent !px-0 py-2 text-sm text-foreground border-none shadow-none !ring-0 placeholder:text-muted-foreground/50 placeholder:select-none focus:outline-none"
+          className="w-full !bg-transparent py-2 text-sm text-foreground placeholder-muted-foreground/50 placeholder:select-none focus:outline-none border-none shadow-none ring-0"
         />
       </div>
+      <div className="border-b border-chat-border px-3"></div>
     </div>
   );
 };

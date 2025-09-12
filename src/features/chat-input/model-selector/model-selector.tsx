@@ -8,7 +8,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { ALL_MODELS, ModelIcon } from "@/config/ai-models";
 import type { ModelConfig } from "@/config/ai-models/types";
-import { ModelSearch, ModelRow, ModelSelectorFooter } from "./components";
+import {
+  ModelSearch,
+  ModelRow,
+  ModelSelectorFooter,
+  ExpandedModelList,
+} from "./components";
+import { useUserModels } from "./hooks/use-user-models";
+import { cn } from "@/lib/utils";
 
 interface ModelSelectorProps {
   selectedModel?: ModelConfig;
@@ -23,6 +30,10 @@ export const ModelSelector = ({
 }: ModelSelectorProps) => {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showExpanded, setShowExpanded] = useState(false);
+
+  // Get user models data once at the top level
+  const { favoriteModels, toggleModelFavorite, isFavorite } = useUserModels();
 
   // Filter models based on search query
   const filteredModels = useMemo(() => {
@@ -47,10 +58,23 @@ export const ModelSelector = ({
     onModelSelect(model);
     setOpen(false);
     setSearchQuery(""); // Clear search when selecting a model
+    setShowExpanded(false); // Close expanded view when selecting a model
   };
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
+    // Auto-switch to expanded view when user starts typing
+    if (value.trim() && !showExpanded) {
+      setShowExpanded(true);
+    }
+  };
+
+  const handleShowAll = () => {
+    setShowExpanded(!showExpanded);
+  };
+
+  const handleCloseExpanded = () => {
+    setShowExpanded(false);
   };
 
   return (
@@ -58,7 +82,7 @@ export const ModelSelector = ({
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="flex items-center gap-2 bg-transparent focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="flex bg-transparent focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
           disabled={disabled}
         >
           {selectedModel ? (
@@ -76,42 +100,62 @@ export const ModelSelector = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="w-96 max-w-[calc(100vw-2rem)] max-sm:mx-4 sm:w-[420px] max-h-128 flex flex-col !p-0"
         align="start"
+        className={cn(
+          "!outline-1 !outline-chat-border/20 dark:!outline-white/5",
+          "relative overflow-hidden rounded-lg !border-none",
+          "p-0 pb-11 pt-10 max-w-[calc(100vw-2rem)] transition-[height,width]",
+          "max-sm:mx-4 sm:rounded-lg max-h-[calc(100vh-80px)]",
+          // Adjust width when showing grid
+          showExpanded ? "sm:w-[640px]" : "sm:w-[420px]",
+        )}
+        style={
+          { outline: "none", "--shadow-height": "10px" } as React.CSSProperties
+        }
       >
-        <div className="sticky top-0 z-10">
-          <ModelSearch
-            value={searchQuery}
-            onChange={handleSearchChange}
-            placeholder="Search models..."
-          />
-        </div>
+        {/* Search Header */}
+        <ModelSearch value={searchQuery} onChange={handleSearchChange} />
 
-        {/* Scrollable Content with proper padding */}
-        <div className="flex-1 overflow-y-auto scroll-shadow custom-scrollbar px-1.5 pb-2">
-          {filteredModels.map((model) => (
-            <ModelRow
-              key={model.id}
-              model={model}
-              onSelect={handleModelSelect}
-            />
-          ))}
-        </div>
+        {/* Conditional Content */}
+        {showExpanded ? (
+          /* Grid Layout */
+          <ExpandedModelList
+            selectedModel={selectedModel?.id || ""}
+            filteredModels={filteredModels}
+            onModelSelect={handleModelSelect}
+            onClose={handleCloseExpanded}
+            favoriteModels={favoriteModels}
+            toggleModelFavorite={toggleModelFavorite}
+            isFavorite={isFavorite}
+          />
+        ) : (
+          /* Row-based List */
+          <div
+            className="max-h-[calc(100vh-200px)] overflow-y-auto px-1.5 pb-3 scrollbar-hide scroll-shadow"
+            data-shadow="true"
+          >
+            {filteredModels
+              .filter((model) => isFavorite(model.id))
+              .map((model) => (
+                <ModelRow
+                  key={model.id}
+                  model={model}
+                  onSelect={handleModelSelect}
+                />
+              ))}
+          </div>
+        )}
 
         {/* Footer */}
-        <div className="px-3">
-          <ModelSelectorFooter
-            onShowAll={() => {
-              // TODO: Implement show all functionality
-              console.log("Show all clicked");
-            }}
-            onFilter={() => {
-              // TODO: Implement filter functionality
-              console.log("Filter clicked");
-            }}
-            showAllCount={newModelsCount}
-          />
-        </div>
+        <ModelSelectorFooter
+          onShowAll={handleShowAll}
+          onFilter={() => {
+            // TODO: Implement filter functionality
+            console.log("Filter clicked");
+          }}
+          newModelsCount={newModelsCount}
+          isExpanded={showExpanded}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -148,7 +148,7 @@ export const ModelSelector = ({
 
         {/* Footer and Filter */}
         <div className="fixed inset-x-4 bottom-0 z-10 flex items-center justify-between rounded-b-lg bg-popover pb-1 pl-1 pr-2.5 pt-1.5 sm:inset-x-0">
-          <div className="absolute inset-x-3 top-0 border-b"></div>
+          <div className="absolute inset-x-3.5 top-0 border-b"></div>
           <ShowAllButton
             onShowAll={handleShowAll}
             newModelsCount={newModelsCount}

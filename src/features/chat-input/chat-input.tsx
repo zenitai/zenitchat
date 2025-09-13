@@ -119,10 +119,10 @@ export const ChatInput = ({
                   onModelSelect={handleModelSelect}
                   disabled={disabled}
                 />
-                <ChatInputButton variant="outline">
+                <ChatInputButton variant="outline" aria-label="Attach file">
                   <PaperclipIcon className="size-4" />
                 </ChatInputButton>
-                <ChatInputButton variant="outline">
+                <ChatInputButton variant="outline" aria-label="Search web">
                   <GlobeIcon className="size-4" />
                 </ChatInputButton>
               </ChatInputTools>

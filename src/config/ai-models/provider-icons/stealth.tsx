@@ -1,4 +1,4 @@
-import { SVGProps } from "react";
+import type { SVGProps } from "react";
 
 export const Stealth = (props: SVGProps<SVGSVGElement>) => (
   <svg
@@ -12,6 +12,7 @@ export const Stealth = (props: SVGProps<SVGSVGElement>) => (
     strokeLinecap="round"
     strokeLinejoin="round"
     className="lucide lucide-hat-glasses-icon lucide-hat-glasses"
+    aria-hidden="true"
     {...props}
   >
     <path d="M14 18a2 2 0 0 0-4 0" />

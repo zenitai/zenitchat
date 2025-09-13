@@ -17,7 +17,11 @@ export const env = createEnv({
     NEXT_PUBLIC_CONVEX_URL: v.pipe(v.string(), v.nonEmpty()),
     NEXT_PUBLIC_CONVEX_SITE_URL: v.pipe(v.string(), v.nonEmpty()),
     NEXT_PUBLIC_SITE_URL: v.pipe(v.string(), v.nonEmpty()),
-    NEXT_PUBLIC_LOCALSTORAGE_PREFIX: v.pipe(v.string(), v.nonEmpty()),
+    NEXT_PUBLIC_LOCALSTORAGE_PREFIX: v.pipe(
+      v.string(),
+      v.nonEmpty(),
+      v.regex(/^[A-Za-z0-9_-]+$/),
+    ),
   },
   // If you're using Next.js < 13.4.4, you'll need to specify the runtimeEnv manually
   // For Next.js >= 13.4.4, you only need to destructure client variables:

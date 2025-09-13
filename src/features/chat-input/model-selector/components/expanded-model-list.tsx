@@ -60,7 +60,6 @@ export function ExpandedModelList({
                 className="group relative"
                 data-state="closed"
               >
-                <div className="absolute -left-1.5 -top-1.5 z-10 rounded-full bg-popover p-0.5"></div>
                 <ModelCard
                   model={model}
                   isSelected={selectedModel === model.id}

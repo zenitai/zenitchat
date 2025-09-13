@@ -3,6 +3,7 @@ import { api } from "@/convex/_generated/api";
 import { useEffect } from "react";
 import { env } from "@/env";
 import { DEFAULT_FAVORITE_MODELS } from "@/shared/constants";
+import { toast } from "sonner";
 
 const LOCAL_STORAGE_KEY = `${env.NEXT_PUBLIC_LOCALSTORAGE_PREFIX}-user-configurations`;
 
@@ -116,9 +117,19 @@ export function useUserModels() {
         console.warn("Cannot remove the last favorite model");
         return;
       }
-      await removeFavoriteMutation({ modelId });
+      try {
+        await removeFavoriteMutation({ modelId });
+      } catch (e) {
+        console.error("Failed to remove favorite", e);
+        toast.error("Failed to remove favorite model");
+      }
     } else {
-      await addFavoriteMutation({ modelId });
+      try {
+        await addFavoriteMutation({ modelId });
+      } catch (e) {
+        console.error("Failed to add favorite", e);
+        toast.error("Failed to add favorite model");
+      }
     }
   };
 

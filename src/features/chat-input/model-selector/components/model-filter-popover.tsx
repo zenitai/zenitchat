@@ -51,9 +51,9 @@ export function ModelFilter({
   const isMobile = useIsMobile();
 
   // Get all available providers from the type definition
-  const providers: ModelCreator[] = Object.keys(
+  const providers = Object.keys(
     CREATOR_NAMES,
-  ) as ModelCreator[];
+  ) as (keyof typeof CREATOR_NAMES)[];
 
   // Check if any filters are active
   const hasActiveFilters =

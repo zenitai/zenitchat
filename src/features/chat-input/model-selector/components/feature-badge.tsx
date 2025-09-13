@@ -13,28 +13,28 @@ interface FeatureBadgeProps {
 }
 
 // Feature icon mapping
-const featureIcons: Record<ModelFeature, LucideIcon> = {
+const featureIcons = {
   vision: Eye,
   reasoning: Brain,
   multimodal: FileBox,
   "tool-calling": Wrench,
-};
+} satisfies Record<ModelFeature, LucideIcon>;
 
 // Feature colors (HSL values)
-const featureColors: Record<ModelFeature, { light: string; dark: string }> = {
+const featureColors = {
   vision: { light: "hsl(168 54% 52%)", dark: "hsl(168 54% 74%)" },
   reasoning: { light: "hsl(263 58% 53%)", dark: "hsl(263 58% 75%)" },
   multimodal: { light: "hsl(237 55% 57%)", dark: "hsl(237 75% 77%)" },
   "tool-calling": { light: "hsl(0 72% 51%)", dark: "hsl(0 72% 71%)" },
-};
+} satisfies Record<ModelFeature, { light: string; dark: string }>;
 
 // Feature display names mapping
-const featureDisplayNames: Record<ModelFeature, string> = {
+const featureDisplayNames = {
   vision: "Can see and analyze images",
   reasoning: "Advanced thinking capabilities",
   multimodal: "Supports multiple input types",
   "tool-calling": "Can use external tools and APIs",
-};
+} satisfies Record<ModelFeature, string>;
 
 export const FeatureBadge = ({
   feature,
@@ -65,7 +65,7 @@ export const FeatureBadge = ({
           }
         >
           <div
-            className="absolute inset-0 opacity-20 dark:opacity-15"
+            className="absolute inset-0 opacity-20 dark:opacity-20"
             style={{ backgroundColor: colors.dark }}
           />
           <IconComponent

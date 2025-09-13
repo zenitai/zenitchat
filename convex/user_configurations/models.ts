@@ -31,6 +31,10 @@ export const addFavorite = mutation({
     if (!userId) {
       throw new Error("User not authenticated");
     }
+    const id = modelId.trim();
+    if (!id) {
+      throw new Error("modelId cannot be empty");
+    }
 
     const config = await ctx.db
       .query("userConfigurations")
@@ -41,11 +45,11 @@ export const addFavorite = mutation({
     const currentFavorites = config?.favoriteModels ?? DEFAULT_FAVORITE_MODELS;
 
     // Don't add if already exists
-    if (currentFavorites.includes(modelId)) {
+    if (currentFavorites.includes(id)) {
       return currentFavorites;
     }
 
-    const newFavorites = [...currentFavorites, modelId];
+    const newFavorites = [...currentFavorites, id];
 
     if (config) {
       await ctx.db.patch(config._id, {
@@ -73,6 +77,10 @@ export const removeFavorite = mutation({
     if (!userId) {
       throw new Error("User not authenticated");
     }
+    const id = modelId.trim();
+    if (!id) {
+      throw new Error("modelId cannot be empty");
+    }
 
     const config = await ctx.db
       .query("userConfigurations")
@@ -81,7 +89,9 @@ export const removeFavorite = mutation({
 
     // Use defaults if no config exists
     const currentFavorites = config?.favoriteModels ?? DEFAULT_FAVORITE_MODELS;
-    const newFavorites = currentFavorites.filter((id) => id !== modelId);
+    const newFavorites = currentFavorites.filter(
+      (favoriteId) => favoriteId !== id,
+    );
 
     if (config) {
       await ctx.db.patch(config._id, {

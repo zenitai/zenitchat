@@ -32,7 +32,7 @@ export function useFilteredModels({
 
     // Apply search query filter
     if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
+      const query = searchQuery.trim().toLowerCase();
       models = models.filter(
         (model) =>
           model.displayName.toLowerCase().includes(query) ||

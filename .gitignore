@@ -46,5 +46,5 @@ next-env.d.ts
 **/*.todo.md
 **/*.guide.md
 
-# Scripts
-scripts/
+# scripts
+/scripts/

@@ -17,6 +17,7 @@ interface ModelRowProps {
 export const ModelRow = ({ model, onSelect }: ModelRowProps) => {
   // Build status indicators
   const statusIndicators = getStatusIndicators(model);
+  const highestPriority = statusIndicators[0];
 
   return (
     <Tooltip>
@@ -35,19 +36,11 @@ export const ModelRow = ({ model, onSelect }: ModelRowProps) => {
                 {model.displayName}
               </span>
               <div className="flex items-center gap-1">
-                {(() => {
-                  // Get the highest priority status indicator
-                  const highestPriority = statusIndicators[0];
-                  if (highestPriority) {
-                    const Icon = highestPriority.icon;
-                    return (
-                      <Icon
-                        className={`size-3.5 ${highestPriority.color || ""}`}
-                      />
-                    );
-                  }
-                  return null;
-                })()}
+                {highestPriority ? (
+                  <highestPriority.icon
+                    className={`size-3.5 ${highestPriority.color ?? ""}`}
+                  />
+                ) : null}
               </div>
             </div>
           </div>

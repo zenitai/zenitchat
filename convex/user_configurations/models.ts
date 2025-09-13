@@ -1,6 +1,7 @@
 import { mutation, query } from "../_generated/server";
 import { v } from "convex/values";
 import { betterAuthComponent } from "../auth";
+import { DEFAULT_FAVORITE_MODELS } from "../../src/shared/constants";
 
 // Get user's favorite models
 export const getFavoriteModels = query({
@@ -14,7 +15,7 @@ export const getFavoriteModels = query({
     const config = await ctx.db
       .query("userConfigurations")
       .withIndex("by_user", (q) => q.eq("userId", userId))
-      .first();
+      .unique();
 
     return config?.favoriteModels;
   },
@@ -34,9 +35,10 @@ export const addFavorite = mutation({
     const config = await ctx.db
       .query("userConfigurations")
       .withIndex("by_user", (q) => q.eq("userId", userId))
-      .first();
+      .unique();
 
-    const currentFavorites = config?.favoriteModels ?? [];
+    // Use defaults if no config exists
+    const currentFavorites = config?.favoriteModels ?? DEFAULT_FAVORITE_MODELS;
 
     // Don't add if already exists
     if (currentFavorites.includes(modelId)) {
@@ -50,6 +52,7 @@ export const addFavorite = mutation({
         favoriteModels: newFavorites,
       });
     } else {
+      // Create with defaults + new favorite
       await ctx.db.insert("userConfigurations", {
         userId,
         favoriteModels: newFavorites,
@@ -74,9 +77,10 @@ export const removeFavorite = mutation({
     const config = await ctx.db
       .query("userConfigurations")
       .withIndex("by_user", (q) => q.eq("userId", userId))
-      .first();
+      .unique();
 
-    const currentFavorites = config?.favoriteModels ?? [];
+    // Use defaults if no config exists
+    const currentFavorites = config?.favoriteModels ?? DEFAULT_FAVORITE_MODELS;
     const newFavorites = currentFavorites.filter((id) => id !== modelId);
 
     if (config) {
@@ -84,10 +88,13 @@ export const removeFavorite = mutation({
         favoriteModels: newFavorites,
       });
     } else {
-      await ctx.db.insert("userConfigurations", {
-        userId,
-        favoriteModels: newFavorites,
-      });
+      // Only create config if there are favorites to store
+      if (newFavorites.length > 0) {
+        await ctx.db.insert("userConfigurations", {
+          userId,
+          favoriteModels: newFavorites,
+        });
+      }
     }
 
     return newFavorites;

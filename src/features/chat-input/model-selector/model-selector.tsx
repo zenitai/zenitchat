@@ -7,7 +7,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ModelIcon } from "@/config/ai-models";
-import type { ModelConfig, ModelCreator } from "@/config/ai-models/types";
+import type {
+  ModelConfig,
+  ModelCreator,
+  ModelFeature,
+} from "@/config/ai-models/types";
 import {
   ModelSearch,
   ModelRow,
@@ -33,7 +37,7 @@ export const ModelSelector = ({
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showExpanded, setShowExpanded] = useState(false);
-  const [selectedFilters, setSelectedFilters] = useState<string[]>([]);
+  const [selectedFilters, setSelectedFilters] = useState<ModelFeature[]>([]);
   const [selectedProvider, setSelectedProvider] = useState<
     ModelCreator | "all"
   >("all");
@@ -81,6 +85,7 @@ export const ModelSelector = ({
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button
+          type="button"
           variant="ghost"
           className="flex bg-transparent focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
           disabled={disabled}

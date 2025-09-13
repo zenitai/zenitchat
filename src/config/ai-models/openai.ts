@@ -1,6 +1,6 @@
 import { ModelConfig } from "./types";
 
-export const OPENAI_MODELS: ModelConfig[] = [
+export const OPENAI_MODELS = [
   {
     id: "openai/gpt-4o",
     creator: "openai",
@@ -453,4 +453,4 @@ export const OPENAI_MODELS: ModelConfig[] = [
       provider: "vercel",
     },
   },
-] as const;
+] as const satisfies readonly ModelConfig[];

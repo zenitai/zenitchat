@@ -48,7 +48,7 @@ export const ChatInput = ({
 
   // Chat input container height management
   const { chatInputContainerRef } = useChatInputHeight({
-    onHeightChange: onHeightChange || (() => {}),
+    onHeightChange,
     currentValue: input,
   });
 

@@ -6,7 +6,7 @@ import { ModelCreator, PricingTier, InfrastructureProvider } from "./types";
 export { OPENAI_MODELS } from "./openai";
 export { GOOGLE_MODELS } from "./google";
 
-export const ALL_MODELS = [...OPENAI_MODELS, ...GOOGLE_MODELS] as const;
+export const ALL_MODELS = [...OPENAI_MODELS, ...GOOGLE_MODELS];
 
 // Re-export icon registry
 export { getIcon, ModelIcon } from "./icon-registry";

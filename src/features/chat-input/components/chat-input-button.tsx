@@ -20,7 +20,7 @@ export const ChatInputButton = ({
   ...props
 }: ChatInputButtonProps) => {
   const newSize =
-    (size ?? Children.count(props.children) > 1) ? "default" : "icon";
+    size ?? (Children.count(props.children) > 1 ? "default" : "icon");
 
   const button = (
     <Button

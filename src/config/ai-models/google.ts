@@ -1,6 +1,6 @@
 import { ModelConfig } from "./types";
 
-export const GOOGLE_MODELS: ModelConfig[] = [
+export const GOOGLE_MODELS = [
   {
     id: "google/gemini-2.0-flash",
     creator: "google",
@@ -199,4 +199,4 @@ export const GOOGLE_MODELS: ModelConfig[] = [
       provider: "vercel",
     },
   },
-] as const;
+] as const satisfies readonly ModelConfig[];

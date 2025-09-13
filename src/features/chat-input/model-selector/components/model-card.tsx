@@ -34,6 +34,7 @@ export function ModelCard({
 
       {/* Main card button */}
       <button
+        type="button"
         onClick={() => onSelect(model)}
         className={cn(
           "group relative flex h-[9.25rem] w-[6.75rem] cursor-pointer flex-col items-start gap-0.5 overflow-hidden rounded-xl border bg-sidebar/20 px-1 py-3 text-color-heading",
@@ -113,6 +114,7 @@ export function ModelCard({
       {onPin && (
         <div className="absolute -right-1.5 -top-1.5 left-auto z-50 flex w-auto translate-y-2 scale-95 items-center rounded-[10px] border border-chat-border/40 bg-card p-1 text-xs text-muted-foreground opacity-0 transition-all group-hover:translate-y-0 group-hover:scale-100 group-hover:opacity-100">
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               onPin(model);

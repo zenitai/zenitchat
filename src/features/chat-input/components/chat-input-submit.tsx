@@ -46,6 +46,7 @@ export const ChatInputSubmit = ({
           size={size}
           type="submit"
           variant={variant}
+          aria-label={getTooltipText()}
           {...props}
         >
           {children ?? Icon}

@@ -2,16 +2,29 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useEffect } from "react";
 import { env } from "@/env";
-
-// Default models - these should match your AI models config
-const DEFAULT_FAVORITE_MODELS = [
-  "google/gemini-2.0-flash",
-  "google/gemini-2.5-flash",
-  "openai/gpt-5-mini",
-  "openai/o4-mini",
-];
+import { DEFAULT_FAVORITE_MODELS } from "@/shared/constants";
 
 const LOCAL_STORAGE_KEY = `${env.NEXT_PUBLIC_LOCALSTORAGE_PREFIX}-user-configurations`;
+
+// Safe localStorage helpers (SSR-safe, parse-safe)
+const safeReadLocalConfig = (): { favoriteModels?: string[] } => {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(LOCAL_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+};
+
+const safeWriteLocalConfig = (cfg: unknown) => {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(cfg));
+  } catch {
+    // ignore quota/availability errors
+  }
+};
 
 export function useUserModels() {
   // Query user's favorite models from Convex
@@ -20,23 +33,19 @@ export function useUserModels() {
   );
 
   // Get cached user configurations from localStorage for optimistic UI
-  const userConfigFromLocalStorage = JSON.parse(
-    localStorage.getItem(LOCAL_STORAGE_KEY) || "{}",
-  );
+  const userConfigFromLocalStorage = safeReadLocalConfig();
   const favoriteModelsFromLocalStorage: string[] =
     userConfigFromLocalStorage.favoriteModels || [];
 
   // Sync Convex data to localStorage
   useEffect(() => {
     if (favoriteModelsFromConvex) {
-      const currentConfig = JSON.parse(
-        localStorage.getItem(LOCAL_STORAGE_KEY) || "{}",
-      );
+      const currentConfig = safeReadLocalConfig();
       const updatedConfig = {
         ...currentConfig,
         favoriteModels: favoriteModelsFromConvex,
       };
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedConfig));
+      safeWriteLocalConfig(updatedConfig);
     }
   }, [favoriteModelsFromConvex]);
 

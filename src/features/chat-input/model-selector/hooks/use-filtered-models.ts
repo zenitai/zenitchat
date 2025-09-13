@@ -4,7 +4,7 @@ import type { ModelFeature, ModelCreator } from "@/config/ai-models/types";
 
 interface UseFilteredModelsProps {
   searchQuery: string;
-  selectedFilters: string[];
+  selectedFilters: ModelFeature[];
   selectedProvider: ModelCreator | "all";
 }
 
@@ -25,7 +25,7 @@ export function useFilteredModels({
     if (selectedFilters.length > 0) {
       models = models.filter((model) =>
         selectedFilters.every((filter) =>
-          model.features.includes(filter as ModelFeature),
+          (model.features as ModelFeature[]).includes(filter),
         ),
       );
     }

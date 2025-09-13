@@ -32,8 +32,8 @@ const filterOptions: ModelFeature[] = [
 ];
 
 interface ModelFilterProps {
-  selectedFilters: string[];
-  onFiltersChange: (filters: string[]) => void;
+  selectedFilters: ModelFeature[];
+  onFiltersChange: (filters: ModelFeature[]) => void;
   selectedProvider: ModelCreator | "all";
   onProviderChange: (provider: ModelCreator | "all") => void;
   onClearAllFilters: () => void;
@@ -59,7 +59,7 @@ export function ModelFilter({
   const hasActiveFilters =
     selectedProvider !== "all" || selectedFilters.length > 0;
 
-  const toggleFilter = (filterId: string) => {
+  const toggleFilter = (filterId: ModelFeature) => {
     const newFilters = selectedFilters.includes(filterId)
       ? selectedFilters.filter((id) => id !== filterId)
       : [...selectedFilters, filterId];

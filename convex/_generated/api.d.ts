@@ -13,6 +13,7 @@ import type * as email from "../email.js";
 import type * as emails_reset_password_email from "../emails/reset_password_email.js";
 import type * as emails_verification_email from "../emails/verification_email.js";
 import type * as http from "../http.js";
+import type * as user_configurations_models from "../user_configurations/models.js";
 
 import type {
   ApiFromModules,
@@ -34,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   "emails/reset_password_email": typeof emails_reset_password_email;
   "emails/verification_email": typeof emails_verification_email;
   http: typeof http;
+  "user_configurations/models": typeof user_configurations_models;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

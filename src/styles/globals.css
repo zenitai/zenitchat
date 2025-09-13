@@ -220,4 +220,12 @@
     transition-timing-function: cubic-bezier(0.2, 0.4, 0.1, 0.95);
     animation-timing-function: cubic-bezier(0.2, 0.4, 0.1, 0.95);
   }
+
+  /* Safe area offset for mobile devices */
+  .pb-safe-offset-3 {
+    /* Fallback for browsers without env() support */
+    padding-bottom: 0.75rem;
+    /* Use explicit fallback value when the env var is undefined */
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);
+  }
 }

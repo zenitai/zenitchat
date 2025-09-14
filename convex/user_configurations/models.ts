@@ -1,13 +1,14 @@
 import { mutation, query } from "../_generated/server";
 import { v } from "convex/values";
-import { betterAuthComponent } from "../auth";
+import { authComponent } from "../auth";
 import { DEFAULT_FAVORITE_MODELS } from "../../src/shared/constants";
 
 // Get user's favorite models
 export const getFavoriteModels = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await betterAuthComponent.getAuthUserId(ctx);
+    const authUser = await authComponent.safeGetAuthUser(ctx);
+    const userId = authUser?.userId;
     if (!userId) {
       return null;
     }
@@ -27,7 +28,8 @@ export const addFavorite = mutation({
     modelId: v.string(),
   },
   handler: async (ctx, { modelId }) => {
-    const userId = await betterAuthComponent.getAuthUserId(ctx);
+    const authUser = await authComponent.safeGetAuthUser(ctx);
+    const userId = authUser?.userId;
     if (!userId) {
       throw new Error("User not authenticated");
     }
@@ -73,7 +75,8 @@ export const removeFavorite = mutation({
     modelId: v.string(),
   },
   handler: async (ctx, { modelId }) => {
-    const userId = await betterAuthComponent.getAuthUserId(ctx);
+    const authUser = await authComponent.safeGetAuthUser(ctx);
+    const userId = authUser?.userId;
     if (!userId) {
       throw new Error("User not authenticated");
     }

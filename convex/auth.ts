@@ -34,7 +34,9 @@ export const authComponent = createClient<DataModel>(components.betterAuth, {
         // Any `onUpdateUser` logic should be moved here
       },
       onDelete: async (ctx, authUser) => {
-        await ctx.db.delete(authUser.userId as Id<"users">);
+        if (authUser.userId) {
+          await ctx.db.delete(authUser.userId as Id<"users">);
+        }
       },
     },
   },
@@ -43,8 +45,21 @@ export const authComponent = createClient<DataModel>(components.betterAuth, {
 export const { onCreate, onUpdate, onDelete } = authComponent.triggersApi();
 
 export const createAuth = (ctx: GenericCtx<DataModel>) => {
+  const baseURL = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!baseURL) {
+    throw new Error(
+      "NEXT_PUBLIC_SITE_URL is required for BetterAuth links in Convex for BetterAuth",
+    );
+  }
+  const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } = process.env;
+  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+    throw new Error(
+      "GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET are required in Convex for BetterAuth",
+    );
+  }
+
   return betterAuth({
-    baseURL: process.env.NEXT_PUBLIC_SITE_URL,
+    baseURL,
     database: authComponent.adapter(ctx),
     emailVerification: {
       sendVerificationEmail: async ({ user, url }) => {
@@ -68,8 +83,8 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
     },
     socialProviders: {
       google: {
-        clientId: process.env.GOOGLE_CLIENT_ID as string,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+        clientId: GOOGLE_CLIENT_ID,
+        clientSecret: GOOGLE_CLIENT_SECRET,
       },
     },
     plugins: [convex()],
@@ -90,7 +105,7 @@ export const getCurrentUser = query({
     // (skip this if you have no fields in your users table schema)
     const user = await ctx.db.get(userMetadata.userId as Id<"users">);
     return {
-      ...user,
+      ...(user ?? {}),
       ...userMetadata,
     };
   },

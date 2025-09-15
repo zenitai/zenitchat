@@ -25,7 +25,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Link } from "react-router";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/features/auth/auth-client";
 
 const formSchema = v.object({
   email: v.pipe(

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/features/auth/auth-client";
 import { LogOut, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 

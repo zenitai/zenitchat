@@ -2,7 +2,7 @@
 
 import { ReactNode } from "react";
 import { ConvexReactClient } from "convex/react";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/features/auth/auth-client";
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { env } from "@/env";
 

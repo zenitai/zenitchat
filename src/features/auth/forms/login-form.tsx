@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/form";
 import { authClient } from "@/features/auth/auth-client";
 import { useState } from "react";
+import { useAuth } from "../hooks/use-auth";
 
 const formSchema = v.object({
   email: v.pipe(
@@ -53,9 +54,12 @@ export function LoginForm({
     },
   });
 
+  const { markAsVisited } = useAuth();
+
   const signInWithGoogle = async () => {
     try {
       setIsGoogleLoading(true);
+      markAsVisited();
       await authClient.signIn.social({
         provider: "google",
         //callbackURL: "/dashboard" //where to redirect after login
@@ -72,6 +76,7 @@ export function LoginForm({
   async function onSubmit(values: v.InferOutput<typeof formSchema>) {
     try {
       setIsLoading(true);
+      markAsVisited();
       const { error } = await authClient.signIn.email({
         email: values.email,
         password: values.password,
@@ -83,7 +88,7 @@ export function LoginForm({
       }
 
       toast.success("Login successful!");
-      navigate("/docs");
+      navigate("/");
     } catch (error) {
       console.error(error);
       toast.error("An error occurred during login");

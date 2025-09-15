@@ -7,6 +7,7 @@ export { ResetPasswordForm } from "./forms/reset-password-form";
 // Components
 export { LogoutButton } from "./components/logout-button";
 export { AuthSplashGate } from "./components/auth-splash-gate";
+export { AuthModal } from "./components/auth-modal";
 
 // Hooks
 export { useAuth } from "./hooks/use-auth";

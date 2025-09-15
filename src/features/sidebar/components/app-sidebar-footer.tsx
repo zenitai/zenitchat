@@ -6,13 +6,17 @@ import { useAuth } from "@/features/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AuthCard } from "./auth-card-sidebar-footer";
 
-export function AppSidebarFooter() {
+interface AppSidebarFooterProps {
+  auth: ReturnType<typeof useAuth>;
+}
+
+export function AppSidebarFooter({ auth }: AppSidebarFooterProps) {
   const {
     isAuthenticated,
     unAuthedNewUser,
     unAuthedReturningUser,
     markAsVisited,
-  } = useAuth();
+  } = auth;
 
   // const user = useQuery(api.auth.getCurrentUser);
   // const isLoading = user === undefined;

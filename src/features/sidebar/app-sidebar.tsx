@@ -138,13 +138,13 @@ const data: { threadGroups: ThreadGroup[] } = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
+  const auth = useAuth();
 
   return (
     <Sidebar className="p-2 bg-sidebar" {...props}>
       <AppSidebarHeader />
       <SidebarContent className="scroll-shadow hidden-scrollbar">
-        {isAuthenticated &&
+        {auth.isAuthenticated &&
           /* Thread groups */
           data.threadGroups.map((group) =>
             group.title === "Pinned" ? (
@@ -164,7 +164,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             ),
           )}
       </SidebarContent>
-      <AppSidebarFooter />
+      <AppSidebarFooter auth={auth} />
       <SidebarRail />
     </Sidebar>
   );

@@ -1,5 +1,5 @@
-import * as React from "react";
 import { useLocation } from "react-router";
+import { useAuth } from "@/features/auth";
 
 import { Sidebar, SidebarContent, SidebarRail } from "@/components/ui/sidebar";
 import { AppSidebarHeader } from "./components/app-sidebar-header";
@@ -138,28 +138,31 @@ const data: { threadGroups: ThreadGroup[] } = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
+
   return (
     <Sidebar className="p-2 bg-sidebar" {...props}>
       <AppSidebarHeader />
       <SidebarContent className="scroll-shadow hidden-scrollbar">
-        {/* Thread groups */}
-        {data.threadGroups.map((group) =>
-          group.title === "Pinned" ? (
-            <PinnedThreadGroup
-              key={group.title}
-              title={group.title}
-              items={group.items}
-              currentPathname={location.pathname}
-            />
-          ) : (
-            <ThreadGroup
-              key={group.title}
-              title={group.title}
-              items={group.items}
-              currentPathname={location.pathname}
-            />
-          ),
-        )}
+        {isAuthenticated &&
+          /* Thread groups */
+          data.threadGroups.map((group) =>
+            group.title === "Pinned" ? (
+              <PinnedThreadGroup
+                key={group.title}
+                title={group.title}
+                items={group.items}
+                currentPathname={location.pathname}
+              />
+            ) : (
+              <ThreadGroup
+                key={group.title}
+                title={group.title}
+                items={group.items}
+                currentPathname={location.pathname}
+              />
+            ),
+          )}
       </SidebarContent>
       <AppSidebarFooter />
       <SidebarRail />

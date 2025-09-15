@@ -1,5 +1,5 @@
 import { useConvexAuth } from "convex/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { env } from "@/env";
 
 type UserStatus = "new" | "returning" | "authenticated";
@@ -21,25 +21,30 @@ export function useAuth() {
       setUserStatus("returning");
     } else {
       setUserStatus("new");
-      // Mark as visited for future visits
-      localStorage.setItem(STORAGE_KEY, "true");
+      // Don't set localStorage here - let the user action set it
     }
 
     setIsInitialized(true);
   }, [isAuthenticated]);
 
-  const isNewUser = userStatus === "new";
-  const isReturningUser = userStatus === "returning";
-
-  return {
-    // Auth state from Convex
-    isAuthenticated,
-    isLoading: isLoading || !isInitialized,
-
-    // User status
-    userStatus,
-    // UI helpers
-    unAuthedNewUser: isNewUser && !isAuthenticated,
-    unAuthedReturningUser: isReturningUser && !isAuthenticated,
+  const markAsVisited = () => {
+    localStorage.setItem(STORAGE_KEY, "true");
   };
+
+  return useMemo(
+    () => ({
+      // Auth state from Convex
+      isAuthenticated,
+      isLoading: isLoading || !isInitialized,
+
+      // User status
+      userStatus,
+      // UI helpers
+      unAuthedNewUser: userStatus === "new" && !isAuthenticated,
+      unAuthedReturningUser: userStatus === "returning" && !isAuthenticated,
+      // Actions
+      markAsVisited,
+    }),
+    [isAuthenticated, isLoading, isInitialized, userStatus],
+  );
 }

@@ -22,6 +22,17 @@ export const authComponent = createClient<DataModel>(components.betterAuth, {
         // Any `onCreateUser` logic should be moved here
         const userId = await ctx.db.insert("users", {
           email: authUser.email,
+          name: authUser.name,
+          image: authUser.image || undefined,
+          username: authUser.username || undefined,
+          displayUsername: authUser.displayUsername || undefined,
+          emailVerified: authUser.emailVerified,
+          twoFactorEnabled: authUser.twoFactorEnabled || undefined,
+          isAnonymous: authUser.isAnonymous || undefined,
+          phoneNumber: authUser.phoneNumber || undefined,
+          phoneNumberVerified: authUser.phoneNumberVerified || undefined,
+          createdAt: authUser.createdAt,
+          updatedAt: authUser.updatedAt,
         });
         // Instead of returning the user id, we set it to the component
         // user table manually. This is no longer required behavior, but
@@ -32,6 +43,22 @@ export const authComponent = createClient<DataModel>(components.betterAuth, {
       },
       onUpdate: async (ctx, oldUser, newUser) => {
         // Any `onUpdateUser` logic should be moved here
+        if (newUser.userId) {
+          await ctx.db.patch(newUser.userId as Id<"users">, {
+            email: newUser.email,
+            name: newUser.name,
+            image: newUser.image || undefined,
+            username: newUser.username || undefined,
+            displayUsername: newUser.displayUsername || undefined,
+            emailVerified: newUser.emailVerified,
+            twoFactorEnabled: newUser.twoFactorEnabled || undefined,
+            isAnonymous: newUser.isAnonymous || undefined,
+            phoneNumber: newUser.phoneNumber || undefined,
+            phoneNumberVerified: newUser.phoneNumberVerified || undefined,
+            createdAt: newUser.createdAt,
+            updatedAt: newUser.updatedAt,
+          });
+        }
       },
       onDelete: async (ctx, authUser) => {
         if (authUser.userId) {

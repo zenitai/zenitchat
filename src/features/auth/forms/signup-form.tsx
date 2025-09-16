@@ -18,6 +18,8 @@ import {
 import { authClient } from "@/features/auth/auth-client";
 import { useState } from "react";
 import { useAuth } from "../hooks/use-auth";
+import PasswordCreateInput from "../components/password-create-input";
+import PasswordInput from "../components/password-input";
 
 const formSchema = v.object({
   name: v.pipe(v.string(), v.nonEmpty("Please enter your name")),
@@ -152,10 +154,12 @@ export function SignupForm({
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
+                      <PasswordCreateInput
+                        value={field.value}
+                        onChange={field.onChange}
                         placeholder="********"
-                        {...field}
+                        id={field.name}
+                        aria-describedby={`${field.name}-error`}
                       />
                     </FormControl>
                     <FormMessage />
@@ -171,10 +175,12 @@ export function SignupForm({
                   <FormItem>
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
+                      <PasswordInput
+                        value={field.value}
+                        onChange={field.onChange}
                         placeholder="********"
-                        {...field}
+                        id={field.name}
+                        aria-describedby={`${field.name}-error`}
                       />
                     </FormControl>
                     <FormMessage />

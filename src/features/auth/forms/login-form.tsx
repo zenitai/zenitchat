@@ -25,6 +25,7 @@ import {
 import { authClient } from "@/features/auth/auth-client";
 import { useState } from "react";
 import { useAuth } from "../hooks/use-auth";
+import PasswordInput from "../components/password-input";
 
 const formSchema = v.object({
   email: v.pipe(
@@ -140,10 +141,12 @@ export function LoginForm({
                           </Link>
                         </div>
                         <FormControl>
-                          <Input
-                            type="password"
+                          <PasswordInput
+                            value={field.value}
+                            onChange={field.onChange}
                             placeholder="********"
-                            {...field}
+                            id={field.name}
+                            aria-describedby={`${field.name}-error`}
                           />
                         </FormControl>
                         <FormMessage />

@@ -11,3 +11,6 @@ export { AuthModal } from "./components/auth-modal";
 
 // Hooks
 export { useAuth } from "./hooks/use-auth";
+
+// Context
+export { UserProvider, useUser } from "./user-context";

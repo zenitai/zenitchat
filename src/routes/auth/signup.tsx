@@ -4,7 +4,6 @@ import { Link } from "react-router";
 import { SignupForm } from "@/features/auth";
 import { siteConfig } from "@/config/site.config";
 import { InteractiveGridPattern } from "@/components/ui/interactive-grid-pattern";
-import { cn } from "@/lib/utils";
 
 export function SignupPage() {
   return (

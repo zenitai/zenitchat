@@ -137,3 +137,28 @@ export const getCurrentUser = query({
     };
   },
 });
+
+// Optimized query that only returns the fields we actually need
+export const getCurrentUserMinimal = query({
+  args: {},
+  handler: async (ctx) => {
+    const userMetadata = await authComponent.safeGetAuthUser(ctx);
+    if (!userMetadata) {
+      return null;
+    }
+
+    const user = await ctx.db.get(userMetadata.userId as Id<"users">);
+    if (!user) {
+      return null;
+    }
+
+    return {
+      userId: userMetadata.userId,
+      username: user.username,
+      name: user.name,
+      displayUsername: user.displayUsername,
+      email: user.email,
+      image: user.image,
+    };
+  },
+});

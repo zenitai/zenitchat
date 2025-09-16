@@ -15,8 +15,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/features/auth/auth-client";
 import { useState } from "react";
+import { useAuth } from "../hooks/use-auth";
 
 const formSchema = v.object({
   name: v.pipe(v.string(), v.nonEmpty("Please enter your name")),
@@ -53,9 +54,12 @@ export function SignupForm({
     },
   });
 
+  const { markAsVisited } = useAuth();
+
   const signUpWithGoogle = async () => {
     try {
       setIsGoogleLoading(true);
+      markAsVisited();
       await authClient.signIn.social({
         provider: "google",
         //callbackURL: "/dashboard" //where to redirect after signup
@@ -72,6 +76,7 @@ export function SignupForm({
   async function onSubmit(values: v.InferOutput<typeof formSchema>) {
     try {
       setIsLoading(true);
+      markAsVisited();
 
       if (values.password !== values.confirmPassword) {
         toast.error("Passwords do not match");

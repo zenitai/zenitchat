@@ -9,7 +9,8 @@ interface ModelCardProps {
   model: ModelConfig;
   isSelected?: boolean;
   isPinned?: boolean;
-  canUnpin?: boolean;
+  canToggle?: boolean;
+  disabled?: boolean;
   onSelect: (model: ModelConfig) => void;
   onPin?: (model: ModelConfig) => void;
 }
@@ -17,7 +18,8 @@ interface ModelCardProps {
 export function ModelCard({
   model,
   isPinned = false,
-  canUnpin = true,
+  canToggle = true,
+  disabled = false,
   onSelect,
   onPin,
 }: ModelCardProps) {
@@ -35,12 +37,16 @@ export function ModelCard({
       {/* Main card button */}
       <button
         type="button"
-        onClick={() => onSelect(model)}
+        onClick={() => !disabled && onSelect(model)}
+        disabled={disabled}
         className={cn(
-          "group relative flex h-[9.25rem] w-[6.75rem] cursor-pointer flex-col items-start gap-0.5 overflow-hidden rounded-xl border bg-sidebar/20 px-1 py-3 text-color-heading",
+          "group relative flex h-[9.25rem] w-[6.75rem] flex-col items-start gap-0.5 overflow-hidden rounded-xl border px-1 py-3 text-color-heading",
           "[--model-muted:hsl(var(--muted-foreground)/0.9)] [--model-primary:hsl(var(--color-heading))]",
-          "hover:bg-accent/30 hover:text-color-heading",
-          "dark:[--model-muted:hsl(var(--color-heading))] dark:[--model-primary:hsl(var(--muted-foreground)/0.9)] dark:hover:bg-accent/30",
+          disabled
+            ? "cursor-not-allowed opacity-50 hover:bg-transparent [&>*:not(.preserve-hover)]:opacity-50 bg-sidebar/20 border-chat-border/50 dark:border-chat-border dark:bg-sidebar/20"
+            : "cursor-pointer hover:bg-accent/30 hover:text-color-heading bg-sidebar/20",
+          "dark:[--model-muted:hsl(var(--color-heading))] dark:[--model-primary:hsl(var(--muted-foreground)/0.9)]",
+          !disabled && "dark:hover:bg-accent/30",
           // New model glow effect
           model.new && [
             "border-[#ffb525f7] shadow-[0px_3px_8px_#ffae1082,inset_0px_-4px_20px_#ffb52575]",
@@ -49,7 +55,12 @@ export function ModelCard({
         )}
       >
         {/* Main content */}
-        <div className="flex w-full flex-col items-center justify-center gap-1 font-medium transition-colors">
+        <div
+          className={cn(
+            "flex w-full flex-col items-center justify-center gap-1 font-medium transition-colors",
+            disabled && "opacity-50",
+          )}
+        >
           {/* Model icon */}
           <ModelIcon creator={model.creator} className="size-7" />
 
@@ -119,7 +130,7 @@ export function ModelCard({
               e.stopPropagation();
               onPin(model);
             }}
-            disabled={isPinned && !canUnpin}
+            disabled={!canToggle}
             className="cursor-pointer rounded-md bg-accent/30 p-1.5 hover:bg-muted/50 disabled:cursor-not-allowed disabled:opacity-50"
             tabIndex={-1}
             aria-label={isPinned ? "Unpin model" : "Pin model"}

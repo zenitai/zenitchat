@@ -1,8 +1,25 @@
+import { useState } from "react";
 import { ChatInput } from "@/features/chat-input/chat-input";
+import { AuthModal } from "@/features/auth";
+import { useAuth } from "@/features/auth";
 import { toast } from "sonner";
 
 export function ChatPage() {
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const {
+    isAuthenticated,
+    unAuthedNewUser,
+    unAuthedReturningUser,
+    markAsVisited,
+  } = useAuth();
+
   const handleSubmit = (text: string) => {
+    // Check if user is authenticated before allowing message submission
+    if (!isAuthenticated) {
+      setShowAuthModal(true);
+      return;
+    }
+
     toast.success("Message sent!", {
       description: text,
     });
@@ -38,6 +55,15 @@ export function ChatPage() {
       <div className="sticky bottom-0">
         <ChatInput onSubmit={handleSubmit} />
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal
+        open={showAuthModal}
+        onOpenChange={setShowAuthModal}
+        unAuthedNewUser={unAuthedNewUser}
+        unAuthedReturningUser={unAuthedReturningUser}
+        markAsVisited={markAsVisited}
+      />
     </div>
   );
 }

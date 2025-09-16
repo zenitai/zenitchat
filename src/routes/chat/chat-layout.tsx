@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/features/sidebar/app-sidebar";
 import ThemeToggler from "@/components/theme/toggler";
+import { LogoutButton } from "@/features/auth";
 import { Outlet } from "react-router";
 
 export function ChatLayout() {
@@ -40,7 +41,10 @@ export function ChatLayout() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <ThemeToggler />
+          <div className="ml-auto flex items-center gap-2">
+            <ThemeToggler />
+            <LogoutButton />
+          </div>
         </header>
         <Outlet />
       </SidebarInset>

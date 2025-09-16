@@ -33,7 +33,7 @@ export function LogoutButton() {
       ) : (
         <LogOut className="size-4" aria-hidden="true" />
       )}
-      <span className="hidden md:inline" aria-hidden="true">
+      <span className="hidden md:inline" aria-live="polite">
         {isLoading ? "Signing out..." : "Logout"}
       </span>
     </Button>

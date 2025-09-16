@@ -1,13 +1,17 @@
 import { SidebarFooter } from "@/components/ui/sidebar";
 import { Link } from "react-router";
-import { useAuth } from "@/features/auth";
 // import { useQuery } from "convex/react";
 // import { api } from "@/convex/_generated/api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AuthCard } from "./auth-card-sidebar-footer";
 
 interface AppSidebarFooterProps {
-  auth: ReturnType<typeof useAuth>;
+  auth: {
+    isAuthenticated: boolean;
+    unAuthedNewUser: boolean;
+    unAuthedReturningUser: boolean;
+    markAsVisited: () => void;
+  };
 }
 
 export function AppSidebarFooter({ auth }: AppSidebarFooterProps) {

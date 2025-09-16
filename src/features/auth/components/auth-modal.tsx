@@ -12,6 +12,7 @@ interface AuthModalProps {
   onOpenChange: (open: boolean) => void;
   unAuthedNewUser: boolean;
   unAuthedReturningUser: boolean;
+  markAsVisited?: () => void;
 }
 
 export function AuthModal({
@@ -19,6 +20,7 @@ export function AuthModal({
   onOpenChange,
   unAuthedNewUser,
   unAuthedReturningUser,
+  markAsVisited,
 }: AuthModalProps) {
   const isSignup = unAuthedNewUser;
   const isLogin = unAuthedReturningUser;
@@ -58,7 +60,10 @@ export function AuthModal({
                 Cancel
               </Button>
               <Button className="flex-1" asChild>
-                <Link to={isSignup ? "/signup" : "/login"}>
+                <Link
+                  to={isSignup ? "/signup" : "/login"}
+                  onClick={markAsVisited}
+                >
                   {isSignup ? "Sign up" : "Sign in"}
                 </Link>
               </Button>

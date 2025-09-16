@@ -13,7 +13,12 @@ export function useAuth() {
 
   useEffect(() => {
     // Check if user has visited before
-    const hasVisitedBefore = localStorage.getItem(STORAGE_KEY);
+    let hasVisitedBefore: string | null = null;
+    try {
+      hasVisitedBefore = localStorage.getItem(STORAGE_KEY);
+    } catch {
+      hasVisitedBefore = null;
+    }
 
     if (isAuthenticated) {
       setUserStatus("authenticated");
@@ -28,7 +33,12 @@ export function useAuth() {
   }, [isAuthenticated]);
 
   const markAsVisited = () => {
-    localStorage.setItem(STORAGE_KEY, "true");
+    try {
+      localStorage.setItem(STORAGE_KEY, "true");
+    } catch {
+      // ignore storage failures (e.g., private mode)
+    }
+    setUserStatus((prev) => (prev === "authenticated" ? prev : "returning"));
   };
 
   return useMemo(

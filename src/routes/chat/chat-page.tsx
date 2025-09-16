@@ -6,7 +6,12 @@ import { toast } from "sonner";
 
 export function ChatPage() {
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const { isAuthenticated, unAuthedNewUser, unAuthedReturningUser } = useAuth();
+  const {
+    isAuthenticated,
+    unAuthedNewUser,
+    unAuthedReturningUser,
+    markAsVisited,
+  } = useAuth();
 
   const handleSubmit = (text: string) => {
     // Check if user is authenticated before allowing message submission
@@ -57,6 +62,7 @@ export function ChatPage() {
         onOpenChange={setShowAuthModal}
         unAuthedNewUser={unAuthedNewUser}
         unAuthedReturningUser={unAuthedReturningUser}
+        markAsVisited={markAsVisited}
       />
     </div>
   );

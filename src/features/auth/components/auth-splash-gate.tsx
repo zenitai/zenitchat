@@ -1,5 +1,5 @@
 import { Loader2 } from "lucide-react";
-import { useLocation } from "react-router";
+import { useLocation, matchPath } from "react-router";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { useAuth } from "../hooks/use-auth";
 
@@ -18,7 +18,9 @@ export function AuthSplashGate({ children }: AuthSplashGateProps) {
   const { isLoading, isAuthenticated } = useAuth();
   const location = useLocation();
 
-  const isAuthRoute = AUTH_ROUTES.includes(location.pathname);
+  const isAuthRoute = AUTH_ROUTES.some((route) =>
+    matchPath({ path: route, end: false }, location.pathname),
+  );
   const shouldShowSplash = isLoading && !(isAuthRoute && !isAuthenticated);
 
   // Show splash screen while loading (but not on auth routes for unauthenticated users)
@@ -28,18 +30,23 @@ export function AuthSplashGate({ children }: AuthSplashGateProps) {
         {/* Row 1 */}
         <div className="border-r border-b"></div>
         <div className="border-r border-b"></div>
-        <div className="border-b border-border"></div>
+        <div className="border-b"></div>
 
         {/* Row 2 */}
         <div className="border-r border-b"></div>
         {/* Center cell - Content */}
         <div className="border-r border-b flex items-center justify-center relative">
-          <div className="flex flex-col items-center gap-3">
+          <div
+            className="flex flex-col items-center gap-3"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             <Loader2
               className="h-8 w-8 animate-spin text-primary"
               style={{ animationDuration: "0.5s" }}
+              aria-hidden="true"
             />
-            <p className="text-foreground">Checking auth...</p>
           </div>
           <BorderBeam
             size={70}

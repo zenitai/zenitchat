@@ -16,12 +16,21 @@ export function AuthCard({
     return null; // Don't show card for authenticated users
   }
 
-  const title = unAuthedNewUser ? "Welcome to ZenitChat" : "Welcome back";
-  const description = unAuthedNewUser
+  // Defensive guard: if both flags are true, prioritize new user
+  // This shouldn't happen in normal flow, but handle it explicitly
+  if (unAuthedNewUser && unAuthedReturningUser) {
+    console.warn(
+      "Both unAuthedNewUser and unAuthedReturningUser are true. Prioritizing new user flow.",
+    );
+  }
+
+  const isNewUser = unAuthedNewUser; // Explicitly prioritize new user if both are true
+  const title = isNewUser ? "Welcome to Zenit" : "Welcome back";
+  const description = isNewUser
     ? "Create your account to start chatting with AI and manage your conversation history."
     : "Sign in to continue your conversations and access your saved threads.";
-  const buttonText = unAuthedNewUser ? "Sign up" : "Log in";
-  const buttonUrl = unAuthedNewUser ? "/signup" : "/login";
+  const buttonText = isNewUser ? "Sign up" : "Log in";
+  const buttonUrl = isNewUser ? "/signup" : "/login";
 
   return (
     <div className="p-4 border rounded-lg bg-card">

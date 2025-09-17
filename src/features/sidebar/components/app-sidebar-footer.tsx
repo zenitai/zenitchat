@@ -1,9 +1,9 @@
 import { SidebarFooter } from "@/components/ui/sidebar";
 import { Link } from "react-router";
-// import { useQuery } from "convex/react";
-// import { api } from "@/convex/_generated/api";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { AuthCard } from "./auth-card-sidebar-footer";
+import { useUser } from "@/features/auth";
+import Avvvatars from "avvvatars-react";
 
 interface AppSidebarFooterProps {
   auth: {
@@ -22,16 +22,10 @@ export function AppSidebarFooter({ auth }: AppSidebarFooterProps) {
     markAsVisited,
   } = auth;
 
-  // const user = useQuery(api.auth.getCurrentUser);
-  // const isLoading = user === undefined;
-  // const displayName = user?.name || "";
-  // const imageUrl = (user as { image?: string } | null)?.image ?? undefined;
-  // const initial = isLoading ? "" : displayName.charAt(0)?.toUpperCase() || "U";
-
-  // Hardcoded for now
-  const displayName = "User";
-  const imageUrl = undefined;
-  const initial = "U";
+  const user = useUser();
+  const displayName =
+    user?.name || user?.displayUsername || user?.username || "";
+  const imageUrl = user?.image ?? undefined;
 
   return (
     <SidebarFooter className="relative m-1 mt-0 space-y-1 p-0">
@@ -44,10 +38,25 @@ export function AppSidebarFooter({ auth }: AppSidebarFooterProps) {
           data-discover="true"
         >
           <div className="flex w-full min-w-0 flex-row items-center gap-3">
-            <Avatar className="h-8 w-8 rounded-full ring-1 ring-muted-foreground/20">
-              <AvatarImage src={imageUrl || ""} alt={displayName || "User"} />
-              <AvatarFallback className="text-sm">{initial}</AvatarFallback>
-            </Avatar>
+            {imageUrl ? (
+              <Avatar className="size-8 rounded-full ring-1 ring-muted-foreground/20">
+                <AvatarImage src={imageUrl} alt={displayName || "User"} />
+              </Avatar>
+            ) : (
+              <div
+                className="size-8 rounded-full ring-1 ring-muted-foreground/20 overflow-hidden"
+                role="img"
+                aria-label={`${displayName || "User"} avatar`}
+              >
+                <Avvvatars
+                  value={user?.email || displayName || "user"}
+                  size={32}
+                  style="shape"
+                  shadow={false}
+                  border={false}
+                />
+              </div>
+            )}
             <div className="flex min-w-0 flex-col text-foreground">
               <span className="truncate text-sm font-medium">
                 {displayName}

@@ -21,22 +21,19 @@ export default function ThemeToggler({ className }: ThemeTogglerProps) {
         setTheme("light");
         break;
       case "system":
-        setTheme(resolvedTheme === "light" ? "dark" : "light");
+        setTheme((resolvedTheme ?? "light") === "light" ? "dark" : "light");
         break;
       default:
         break;
     }
   };
 
-  const toggleTheme = () => {
-    switchTheme();
-  };
-
   return (
     <Button
-      onClick={toggleTheme}
+      onClick={switchTheme}
       variant="ghost"
       size="icon"
+      type="button"
       className={cn("rounded-full cursor-pointer", className)}
     >
       <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />

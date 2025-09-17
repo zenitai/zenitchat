@@ -10,7 +10,7 @@ export default function RootProviders({
     <ConvexClientProvider>
       <ThemeProvider
         attribute="class"
-        defaultTheme="light"
+        defaultTheme="dark"
         enableSystem
         disableTransitionOnChange
       >

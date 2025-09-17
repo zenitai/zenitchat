@@ -43,7 +43,11 @@ export function AppSidebarFooter({ auth }: AppSidebarFooterProps) {
                 <AvatarImage src={imageUrl} alt={displayName || "User"} />
               </Avatar>
             ) : (
-              <div className="size-8 rounded-full ring-1 ring-muted-foreground/20 overflow-hidden">
+              <div
+                className="size-8 rounded-full ring-1 ring-muted-foreground/20 overflow-hidden"
+                role="img"
+                aria-label={`${displayName || "User"} avatar`}
+              >
                 <Avvvatars
                   value={user?.email || displayName || "user"}
                   size={32}

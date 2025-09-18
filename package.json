@@ -12,6 +12,8 @@
     "check": "bun format && bun typecheck && bun lint"
   },
   "dependencies": {
+    "@ai-sdk-tools/store": "^0.1.2",
+    "@ai-sdk/react": "^2.0.45",
     "@convex-dev/better-auth": "0.8.1",
     "@convex-dev/resend": "^0.1.9",
     "@hookform/resolvers": "^5.2.1",

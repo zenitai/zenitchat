@@ -61,14 +61,15 @@ export const searchThreads = query({
       return { page: [], isDone: true, continueCursor: null };
     }
 
-    if (!args.searchQuery.trim()) {
+    const trimmedQuery = args.searchQuery.trim();
+    if (!trimmedQuery) {
       return { page: [], isDone: true, continueCursor: null };
     }
 
     return await ctx.db
       .query("threads")
       .withSearchIndex("search_title", (q) =>
-        q.search("title", args.searchQuery).eq("userId", userId),
+        q.search("title", trimmedQuery).eq("userId", userId),
       )
       .paginate(args.paginationOpts);
   },

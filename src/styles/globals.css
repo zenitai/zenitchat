@@ -230,12 +230,3 @@
     padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.75rem);
   }
 }
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}

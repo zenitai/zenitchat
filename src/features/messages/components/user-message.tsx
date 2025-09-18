@@ -1,10 +1,15 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { Markdown } from "@/components/ui/markdown";
 import { cn } from "@/lib/utils";
 import type { MessageProps } from "../types";
 
 export const UserMessage = memo(
   ({ message, className, ...props }: MessageProps) => {
+    const textParts = useMemo(
+      () => message.parts.filter((part) => part.type === "text"),
+      [message.parts],
+    );
+
     return (
       <div
         data-message-id={message.messageId}
@@ -18,16 +23,14 @@ export const UserMessage = memo(
         >
           <span className="sr-only">Your message: </span>
           <div className="prose prose-pink user-message max-w-none dark:prose-invert prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0">
-            {message.parts
-              .filter((part) => part.type === "text")
-              .map((part, index) => (
-                <Markdown
-                  key={`${message.messageId}-text-${index}`}
-                  id={`${message.messageId}-text-${index}`}
-                >
-                  {part.text}
-                </Markdown>
-              ))}
+            {textParts.map((part, index) => (
+              <Markdown
+                key={`${message.messageId}-text-${index}`}
+                id={`${message.messageId}-text-${index}`}
+              >
+                {part.text}
+              </Markdown>
+            ))}
           </div>
           {/* User message toolbar - positioned absolutely to the right */}
           <div className="absolute right-0 mt-5 flex items-center gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100">

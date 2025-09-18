@@ -49,7 +49,7 @@ export const getThreadMessages = query({
 
     return await ctx.db
       .query("messages")
-      .withIndex("by_thread", (q) => q.eq("threadId", args.threadId))
+      .withIndex("by_thread_created", (q) => q.eq("threadId", args.threadId))
       .order("asc")
       .paginate(args.paginationOpts);
   },
@@ -165,8 +165,7 @@ export const setMessageError = mutation({
     // Find the message
     const message = await ctx.db
       .query("messages")
-      .withIndex("by_thread", (q) => q.eq("threadId", args.messageId))
-      .filter((q) => q.eq(q.field("messageId"), args.messageId))
+      .withIndex("by_message_id", (q) => q.eq("messageId", args.messageId))
       .first();
 
     if (!message) {
@@ -228,8 +227,7 @@ export const updateMessage = mutation({
     // Find the message
     const message = await ctx.db
       .query("messages")
-      .withIndex("by_thread", (q) => q.eq("threadId", args.messageId))
-      .filter((q) => q.eq(q.field("messageId"), args.messageId))
+      .withIndex("by_message_id", (q) => q.eq("messageId", args.messageId))
       .first();
 
     if (!message) {

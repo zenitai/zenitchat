@@ -48,7 +48,7 @@ export const messageParts = v.array(
     // Image part
     v.object({
       type: v.literal("image"),
-      image: v.string(), // base64 or URL
+      image: v.string(), // URL
       mediaType: v.optional(v.string()),
     }),
     // Data part for custom content
@@ -159,6 +159,7 @@ export default defineSchema({
   })
     .index("by_thread", ["threadId"])
     .index("by_thread_created", ["threadId", "createdAt"])
+    .index("by_message_id", ["messageId"])
     .index("by_user", ["userId"]),
   attachments: defineTable({
     attachmentId: v.string(),

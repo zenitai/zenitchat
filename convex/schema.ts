@@ -1,6 +1,65 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
+// Message parts validator - reusable validator for message parts
+export const messageParts = v.array(
+  v.union(
+    // Text part
+    v.object({
+      type: v.literal("text"),
+      text: v.string(),
+    }),
+    // Reasoning part
+    v.object({
+      type: v.literal("reasoning"),
+      reasoningText: v.string(),
+    }),
+    // File part
+    v.object({
+      type: v.literal("file"),
+      mediaType: v.string(),
+      filename: v.optional(v.string()),
+      url: v.string(),
+    }),
+    // Tool call part
+    v.object({
+      type: v.literal("tool-call"),
+      toolCallId: v.string(),
+      toolName: v.string(),
+      input: v.any(),
+    }),
+    // Tool result part with AI SDK standard states
+    v.object({
+      type: v.literal("tool-result"),
+      toolCallId: v.string(),
+      toolName: v.string(),
+      state: v.union(
+        v.literal("input-streaming"),
+        v.literal("input-available"),
+        v.literal("output-streaming"),
+        v.literal("output-available"),
+        v.literal("output-error"),
+      ),
+      input: v.any(),
+      output: v.optional(v.any()),
+      errorText: v.optional(v.string()),
+      providerExecuted: v.optional(v.boolean()),
+    }),
+    // Image part
+    v.object({
+      type: v.literal("image"),
+      image: v.string(), // base64 or URL
+      mediaType: v.optional(v.string()),
+    }),
+    // Data part for custom content
+    v.object({
+      type: v.literal("data"),
+      data: v.any(),
+      id: v.optional(v.string()),
+    }),
+  ),
+);
+
 export default defineSchema({
   users: defineTable({
     email: v.string(),
@@ -55,63 +114,7 @@ export default defineSchema({
       v.literal("assistant"),
       v.literal("system"),
     ),
-    parts: v.array(
-      v.union(
-        // Text part
-        v.object({
-          type: v.literal("text"),
-          text: v.string(),
-        }),
-        // Reasoning part
-        v.object({
-          type: v.literal("reasoning"),
-          reasoningText: v.string(),
-        }),
-        // File part
-        v.object({
-          type: v.literal("file"),
-          mediaType: v.string(),
-          filename: v.optional(v.string()),
-          url: v.string(),
-        }),
-        // Tool call part
-        v.object({
-          type: v.literal("tool-call"),
-          toolCallId: v.string(),
-          toolName: v.string(),
-          input: v.any(),
-        }),
-        // Tool result part with AI SDK standard states
-        v.object({
-          type: v.literal("tool-result"),
-          toolCallId: v.string(),
-          toolName: v.string(),
-          state: v.union(
-            v.literal("input-streaming"),
-            v.literal("input-available"),
-            v.literal("output-streaming"),
-            v.literal("output-available"),
-            v.literal("output-error"),
-          ),
-          input: v.any(),
-          output: v.optional(v.any()),
-          errorText: v.optional(v.string()),
-          providerExecuted: v.optional(v.boolean()),
-        }),
-        // Image part
-        v.object({
-          type: v.literal("image"),
-          image: v.string(), // base64 or URL
-          mediaType: v.optional(v.string()),
-        }),
-        // Data part for custom content
-        v.object({
-          type: v.literal("data"),
-          data: v.any(),
-          id: v.optional(v.string()),
-        }),
-      ),
-    ),
+    parts: messageParts,
     createdAt: v.number(),
     updatedAt: v.number(),
     generationStatus: v.union(

@@ -95,7 +95,7 @@ export default defineSchema({
     userId: v.id("users"),
     model: v.string(),
     pinned: v.boolean(),
-    branchParentThreadId: v.optional(v.id("threads")),
+    branchParentThreadId: v.optional(v.string()),
     branchParentPublicMessageId: v.optional(v.string()),
   })
     .index("by_user", ["userId"])

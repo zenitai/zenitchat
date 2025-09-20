@@ -6,7 +6,8 @@ import {
   SidebarGroupLabel,
   SidebarMenu,
 } from "@/components/ui/sidebar";
-import { ThreadItem, ThreadItemData } from "./thread-item";
+import { ThreadItem } from "./thread-item";
+import type { ThreadItemData } from "../types";
 
 type ThreadGroupProps = {
   title: string;

@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useParams, useNavigate } from "react-router";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { AuthModal } from "@/features/auth";
@@ -9,6 +10,8 @@ import type { MyUIMessage } from "@/features/messages/types";
 import { ChatInput } from "@/features/chat-input/chat-input";
 
 export function ChatPage() {
+  const { threadId } = useParams<{ threadId?: string }>();
+  const navigate = useNavigate();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [chatInputHeight, setChatInputHeight] = useState(141);
   const {
@@ -54,6 +57,12 @@ export function ChatPage() {
     if (!isAuthenticated) {
       setShowAuthModal(true);
       return;
+    }
+
+    // If no threadId, create a new thread by navigating to a new URL
+    if (!threadId) {
+      const newThreadId = crypto.randomUUID();
+      navigate(`/chat/${newThreadId}`, { replace: true });
     }
 
     // Send message using useChat hook

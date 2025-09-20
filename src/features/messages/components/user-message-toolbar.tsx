@@ -19,6 +19,7 @@ export function UserMessageToolbar({
         content={formattedContent}
         showToast
         ariaLabel="Copy message"
+        variant="ghost"
       />
     </div>
   );

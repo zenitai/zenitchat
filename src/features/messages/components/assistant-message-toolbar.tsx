@@ -29,6 +29,7 @@ export function AssistantMessageToolbar({
         content={formattedContent}
         showToast
         ariaLabel="Copy message"
+        variant="ghost"
       />
     </div>
   );

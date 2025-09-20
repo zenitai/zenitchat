@@ -5,7 +5,8 @@ import { Check, Copy } from "lucide-react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import type { VariantProps } from "class-variance-authority";
 
 interface CopyButtonProps {
   content: string;
@@ -13,6 +14,7 @@ interface CopyButtonProps {
   showToast?: boolean;
   ariaLabel?: string;
   data?: unknown; // For copying structured data like JSON
+  variant?: VariantProps<typeof buttonVariants>["variant"];
 }
 
 export default function CopyButton({
@@ -21,6 +23,7 @@ export default function CopyButton({
   showToast = false,
   ariaLabel = "Copy button",
   data,
+  variant = "outline",
 }: CopyButtonProps) {
   const [isCopied, setIsCopied] = useState<boolean>(false);
 
@@ -51,7 +54,7 @@ export default function CopyButton({
 
   return (
     <Button
-      variant="outline"
+      variant={variant}
       size="icon"
       onClick={handleCopy}
       aria-label={isCopied ? "Copied" : ariaLabel}

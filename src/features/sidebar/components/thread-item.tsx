@@ -33,11 +33,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 
-export type ThreadItemData = {
-  id: string;
-  title: string;
-  url: string;
-};
+import type { ThreadItemData } from "../types";
 
 type ThreadItemProps = {
   item: ThreadItemData;

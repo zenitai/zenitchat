@@ -12,7 +12,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ThreadItem, ThreadItemData } from "./thread-item";
+import { ThreadItem } from "./thread-item";
+import type { ThreadItemData } from "../types";
 
 type PinnedThreadGroupProps = {
   title: string;

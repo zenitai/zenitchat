@@ -10,7 +10,7 @@ export const getUserThreads = query({
     const authUser = await authComponent.safeGetAuthUser(ctx);
     const userId = authUser?.userId as Id<"users"> | null;
     if (!userId) {
-      return { page: [], isDone: true, continueCursor: null };
+      return { page: [], isDone: true, continueCursor: "" };
     }
 
     return await ctx.db
@@ -58,12 +58,12 @@ export const searchThreads = query({
     const authUser = await authComponent.safeGetAuthUser(ctx);
     const userId = authUser?.userId as Id<"users"> | null;
     if (!userId) {
-      return { page: [], isDone: true, continueCursor: null };
+      return { page: [], isDone: true, continueCursor: "" };
     }
 
     const trimmedQuery = args.searchQuery.trim();
     if (!trimmedQuery) {
-      return { page: [], isDone: true, continueCursor: null };
+      return { page: [], isDone: true, continueCursor: "" };
     }
 
     return await ctx.db

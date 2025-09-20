@@ -2,6 +2,7 @@ import { memo } from "react";
 import { cn } from "@/lib/utils";
 import { Markdown } from "@/components/ui/markdown";
 import { Reasoning, ReasoningTrigger, ReasoningContent } from "./reasoning";
+import { AssistantMessageToolbar } from "./assistant-message-toolbar";
 import { Brain } from "lucide-react";
 import type { MessageProps } from "../types";
 
@@ -59,8 +60,7 @@ export const AssistantMessage = memo(
 
           {/* Assistant message toolbar - positioned absolutely to the left */}
           <div className="absolute left-0 -ml-0.5 mt-2 flex w-full flex-row justify-start gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100">
-            {/* Placeholder for MessageToolbar component */}
-            <div className="text-xs text-muted-foreground">Toolbar</div>
+            <AssistantMessageToolbar parts={message.parts} />
           </div>
         </div>
       </div>

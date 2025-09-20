@@ -1,5 +1,6 @@
 import { memo, useMemo } from "react";
 import { Markdown } from "@/components/ui/markdown";
+import { UserMessageToolbar } from "./user-message-toolbar";
 import { cn } from "@/lib/utils";
 import type { MessageProps } from "../types";
 
@@ -34,8 +35,7 @@ export const UserMessage = memo(
           </div>
           {/* User message toolbar - positioned absolutely to the right */}
           <div className="absolute right-0 mt-5 flex items-center gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100">
-            {/* Placeholder for MessageToolbar component */}
-            <div className="text-xs text-muted-foreground">Toolbar</div>
+            <UserMessageToolbar parts={message.parts} />
           </div>
         </div>
       </div>

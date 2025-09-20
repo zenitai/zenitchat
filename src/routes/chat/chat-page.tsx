@@ -76,7 +76,7 @@ export function ChatPage() {
           aria-live="polite"
           className="mx-auto flex w-full max-w-3xl flex-col space-y-12 px-4 py-6"
           style={{
-            paddingBottom: `${chatInputHeight}px`,
+            paddingBottom: `${chatInputHeight + 48}px`,
           }}
         >
           {messages.length > 0 ? (

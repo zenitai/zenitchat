@@ -57,7 +57,7 @@ const INITIAL_COMPONENTS: Partial<Components> = {
   },
   a: function LinkComponent({ href, children, ...props }) {
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+      <a href={href} {...props} target="_blank" rel="noopener noreferrer">
         {children}
       </a>
     );

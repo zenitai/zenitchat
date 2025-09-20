@@ -12,7 +12,7 @@ interface CopyButtonProps {
   className?: string;
   showToast?: boolean;
   ariaLabel?: string;
-  data?: any; // For copying structured data like JSON
+  data?: unknown; // For copying structured data like JSON
 }
 
 export default function CopyButton({

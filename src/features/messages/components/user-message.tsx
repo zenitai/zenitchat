@@ -12,7 +12,7 @@ export const UserMessage = memo(
 
     return (
       <div
-        data-message-id={message.messageId}
+        data-message-id={message.id}
         className={cn("flex justify-end", className)}
         {...props}
       >
@@ -25,8 +25,8 @@ export const UserMessage = memo(
           <div className="prose prose-pink user-message max-w-none dark:prose-invert prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0">
             {textParts.map((part, index) => (
               <Markdown
-                key={`${message.messageId}-text-${index}`}
-                id={`${message.messageId}-text-${index}`}
+                key={`${message.id}-text-${index}`}
+                id={`${message.id}-text-${index}`}
               >
                 {part.text}
               </Markdown>

@@ -8,7 +8,7 @@ export const AssistantMessage = memo(
   ({ message, className, ...props }: MessageProps) => {
     return (
       <div
-        data-message-id={message.messageId}
+        data-message-id={message.id}
         className={cn("flex justify-start", className)}
         {...props}
       >
@@ -22,14 +22,11 @@ export const AssistantMessage = memo(
             <div className="flex flex-col gap-4">
               {/* Render parts array */}
               {message.parts.map((part, index) => {
-                const key = `${message.messageId}-part-${index}`;
+                const key = `${message.id}-part-${index}`;
 
                 if (part.type === "text") {
                   return (
-                    <Markdown
-                      key={key}
-                      id={`${message.messageId}-content-${index}`}
-                    >
+                    <Markdown key={key} id={`${message.id}-content-${index}`}>
                       {part.text}
                     </Markdown>
                   );
@@ -37,10 +34,14 @@ export const AssistantMessage = memo(
 
                 if (part.type === "reasoning") {
                   return (
-                    <Reasoning key={key} className="mt-2">
+                    <Reasoning
+                      key={key}
+                      className="mt-2"
+                      isStreaming={part.state === "streaming"}
+                    >
                       <ReasoningTrigger>Reasoning</ReasoningTrigger>
                       <ReasoningContent markdown={true} className="mt-2">
-                        {part.reasoningText}
+                        {part.text}
                       </ReasoningContent>
                     </Reasoning>
                   );

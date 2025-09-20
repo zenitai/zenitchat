@@ -10,7 +10,7 @@ import type { MyUIMessage } from "@/features/messages/types";
 import { ChatInput } from "@/features/chat-input/chat-input";
 
 export function ChatPage() {
-  const { threadId } = useParams();
+  const { threadId } = useParams<{ threadId?: string }>();
   const navigate = useNavigate();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [chatInputHeight, setChatInputHeight] = useState(141);

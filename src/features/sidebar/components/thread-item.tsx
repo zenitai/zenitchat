@@ -45,6 +45,7 @@ export function ThreadItem({
     editTitle,
     setEditTitle,
     showDeleteDialog,
+    isDeleting,
     inputRef,
     isSwitchingToEditRef,
     startEditing,
@@ -54,7 +55,7 @@ export function ThreadItem({
     handlePinToggle,
     handleDeleteClick,
     handleDeleteConfirm,
-    handleDeleteCancel,
+    handleDeleteOpenChange,
     handleRegenerateTitle,
     handleExport,
   } = useThreadActions(item.id);
@@ -71,17 +72,19 @@ export function ThreadItem({
 
   const handleInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
+      e.preventDefault();
+      e.stopPropagation();
       handleSave(item.title);
     } else if (e.key === "Escape") {
+      e.preventDefault();
+      e.stopPropagation();
       cancelEditing(item.title);
     }
   };
 
   const handleInputBlur = () => {
-    // Don't save if we're switching to edit mode
-    if (isSwitchingToEditRef.current) {
-      return;
-    }
+    // Only save if actually editing and not switching into edit
+    if (!isEditing || isSwitchingToEditRef.current) return;
     handleSave(item.title);
   };
 
@@ -106,7 +109,8 @@ export function ThreadItem({
         isSwitchingToEditRef.current = false;
       }, 0);
     }
-  }, [isEditing, inputRef, isSwitchingToEditRef]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditing]);
 
   return (
     <SidebarMenuItem>
@@ -244,9 +248,10 @@ export function ThreadItem({
 
       <DeleteThreadDialog
         open={showDeleteDialog}
-        onOpenChange={handleDeleteCancel}
+        onOpenChange={handleDeleteOpenChange}
         onConfirm={handleDeleteConfirm}
         threadTitle={item.title}
+        isPending={isDeleting}
       />
     </SidebarMenuItem>
   );

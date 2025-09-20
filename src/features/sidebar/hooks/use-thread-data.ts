@@ -5,6 +5,16 @@ import { env } from "@/env";
 
 const LOCAL_STORAGE_KEY = `${env.NEXT_PUBLIC_LOCALSTORAGE_PREFIX}-threads`;
 
+const getCachedThreads = () => {
+  if (typeof window === "undefined") return undefined;
+  try {
+    const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
 export function useThreadData() {
   const {
     results: threadsFromConvex,
@@ -16,16 +26,18 @@ export function useThreadData() {
     { initialNumItems: 100 },
   );
 
-  const threadsFromLocalStorage: typeof threadsFromConvex = JSON.parse(
-    localStorage.getItem(LOCAL_STORAGE_KEY) || "null",
-  );
+  const threadsFromLocalStorage = getCachedThreads();
 
   useEffect(() => {
-    if (threadsFromConvex) {
-      localStorage.setItem(
-        LOCAL_STORAGE_KEY,
-        JSON.stringify(threadsFromConvex),
-      );
+    if (threadsFromConvex && typeof window !== "undefined") {
+      try {
+        localStorage.setItem(
+          LOCAL_STORAGE_KEY,
+          JSON.stringify(threadsFromConvex),
+        );
+      } catch (error) {
+        console.warn("Failed to cache threads to localStorage:", error);
+      }
     }
   }, [threadsFromConvex]);
 

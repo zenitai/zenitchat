@@ -8,12 +8,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Loader2 } from "lucide-react";
 
 type DeleteThreadDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
   threadTitle: string;
+  isPending?: boolean;
 };
 
 export function DeleteThreadDialog({
@@ -21,6 +23,7 @@ export function DeleteThreadDialog({
   onOpenChange,
   onConfirm,
   threadTitle,
+  isPending,
 }: DeleteThreadDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -36,8 +39,10 @@ export function DeleteThreadDialog({
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            disabled={!!isPending}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50"
           >
+            {isPending && <Loader2 className="mr-2 size-4 animate-spin" />}
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>

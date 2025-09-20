@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useMutation } from "convex/react";
+import { useNavigate, useLocation } from "react-router";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
 
@@ -7,8 +8,11 @@ export function useThreadActions(threadId: string) {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const isSwitchingToEditRef = useRef(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const updateThreadTitle = useMutation(
     api.threads.updateThreadTitle,
@@ -175,18 +179,24 @@ export function useThreadActions(threadId: string) {
 
   const handleDeleteConfirm = async () => {
     try {
+      setIsDeleting(true);
       await deleteThread({ threadId });
       toast.success("Thread deleted");
       setShowDeleteDialog(false);
+
+      // If user is currently viewing the deleted thread, navigate to home
+      if (location.pathname === `/chat/${threadId}`) {
+        navigate("/", { replace: true });
+      }
     } catch (error) {
       toast.error("Failed to delete thread");
       console.error("Error deleting thread:", error);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
-  const handleDeleteCancel = () => {
-    setShowDeleteDialog(false);
-  };
+  const handleDeleteOpenChange = (open: boolean) => setShowDeleteDialog(open);
 
   const handleRegenerateTitle = () => {
     toast.success("Regenerate title not implemented yet");
@@ -202,6 +212,7 @@ export function useThreadActions(threadId: string) {
     editTitle,
     setEditTitle,
     showDeleteDialog,
+    isDeleting,
     inputRef,
     isSwitchingToEditRef,
 
@@ -213,7 +224,7 @@ export function useThreadActions(threadId: string) {
     handlePinToggle,
     handleDeleteClick,
     handleDeleteConfirm,
-    handleDeleteCancel,
+    handleDeleteOpenChange,
     handleRegenerateTitle,
     handleExport,
   };

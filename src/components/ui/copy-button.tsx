@@ -5,8 +5,8 @@ import { Check, Copy } from "lucide-react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
-import { Button, buttonVariants } from "@/components/ui/button";
-import type { VariantProps } from "class-variance-authority";
+import { Button } from "@/components/ui/button";
+import type { ComponentProps } from "react";
 
 interface CopyButtonProps {
   content: string;
@@ -14,7 +14,7 @@ interface CopyButtonProps {
   showToast?: boolean;
   ariaLabel?: string;
   data?: unknown; // For copying structured data like JSON
-  variant?: VariantProps<typeof buttonVariants>["variant"];
+  variant?: ComponentProps<typeof Button>["variant"];
 }
 
 export default function CopyButton({

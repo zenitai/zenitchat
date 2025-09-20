@@ -1,6 +1,7 @@
 import CopyButton from "@/components/ui/copy-button";
 import { formatMessageContent } from "../utils";
 import type { MyUIMessage } from "../types";
+import { cn } from "@/lib/utils";
 
 interface UserMessageToolbarProps {
   parts: MyUIMessage["parts"];
@@ -14,7 +15,7 @@ export function UserMessageToolbar({
   const formattedContent = formatMessageContent(parts);
 
   return (
-    <div className={`flex items-center gap-1 ${className}`}>
+    <div className={cn("flex items-center gap-1", className)}>
       <CopyButton
         content={formattedContent}
         showToast

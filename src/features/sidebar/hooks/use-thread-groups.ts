@@ -43,6 +43,16 @@ export function useThreadGroups(threads: Thread[] | undefined) {
       }
     }
 
+    // Sort groups by lastMessageAt desc for stable UX
+    const byDateDesc = (a: Thread, b: Thread) =>
+      b.lastMessageAt - a.lastMessageAt;
+    groups.pinned.sort(byDateDesc);
+    groups.today.sort(byDateDesc);
+    groups.yesterday.sort(byDateDesc);
+    groups.lastWeek.sort(byDateDesc);
+    groups.lastMonth.sort(byDateDesc);
+    groups.older.sort(byDateDesc);
+
     // Build thread groups only for non-empty buckets
     const threadGroups: ThreadGroup[] = [];
 

@@ -1,17 +1,53 @@
-import { useState } from "react";
-import { ChatInput } from "@/features/chat-input/chat-input";
+import { useState, useCallback } from "react";
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
 import { AuthModal } from "@/features/auth";
 import { useAuth } from "@/features/auth";
-import { toast } from "sonner";
+import { useScrollToBottom } from "@/features/chat-input/hooks/use-scroll-to-bottom";
+import { Message } from "@/features/messages/message";
+import type { MyUIMessage } from "@/features/messages/types";
+import { ChatInput } from "@/features/chat-input/chat-input";
 
 export function ChatPage() {
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [chatInputHeight, setChatInputHeight] = useState(141);
   const {
     isAuthenticated,
     unAuthedNewUser,
     unAuthedReturningUser,
     markAsVisited,
   } = useAuth();
+
+  // Use the useChat hook for message management
+  const { messages, sendMessage, status, error } = useChat<MyUIMessage>({
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+    }),
+  });
+
+  // Use scroll to bottom hook
+  const {
+    showScrollToBottom,
+    scrollToBottom,
+    scrollContainerRef,
+    messagesEndRef,
+    updateScrollPosition,
+  } = useScrollToBottom();
+
+  // Create a ref callback for the messages container that updates scroll position
+  const messagesContainerRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (node) {
+        // Use requestAnimationFrame to ensure DOM has updated after messages render
+        requestAnimationFrame(updateScrollPosition);
+      }
+    },
+    [updateScrollPosition],
+  );
+
+  const handleChatInputHeightChange = useCallback((height: number) => {
+    setChatInputHeight(height);
+  }, []);
 
   const handleSubmit = (text: string) => {
     // Check if user is authenticated before allowing message submission
@@ -20,40 +56,58 @@ export function ChatPage() {
       return;
     }
 
-    toast.success("Message sent!", {
-      description: text,
-    });
-    // TODO: Handle message submission
+    // Send message using useChat hook
+    sendMessage({ text });
   };
 
   return (
-    <div className="flex flex-1 flex-col gap-4 px-4 pt-4">
-      {/* Multiple rows of cards to create scrollable content */}
-      <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-        <div className="bg-muted/50 aspect-video rounded-xl" />
-        <div className="bg-muted/50 aspect-video rounded-xl" />
-        <div className="bg-muted/50 aspect-video rounded-xl" />
-      </div>
-      <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-        <div className="bg-muted/50 aspect-video rounded-xl" />
-        <div className="bg-muted/50 aspect-video rounded-xl" />
-        <div className="bg-muted/50 aspect-video rounded-xl" />
-      </div>
-      <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-        <div className="bg-muted/50 aspect-video rounded-xl" />
-        <div className="bg-muted/50 aspect-video rounded-xl" />
-        <div className="bg-muted/50 aspect-video rounded-xl" />
-      </div>
-      <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-        <div className="bg-muted/50 aspect-video rounded-xl" />
-        <div className="bg-muted/50 aspect-video rounded-xl" />
-        <div className="bg-muted/50 aspect-video rounded-xl" />
-      </div>
-      <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
+    <div className="relative h-full">
+      <div
+        ref={scrollContainerRef}
+        className="absolute inset-0 overflow-y-auto custom-scrollbar"
+        style={{
+          scrollbarGutter: "stable both-edges",
+        }}
+      >
+        <div
+          ref={messagesContainerRef}
+          role="log"
+          aria-label="Chat messages"
+          aria-live="polite"
+          className="mx-auto flex w-full max-w-3xl flex-col space-y-12 px-4 py-6"
+          style={{
+            paddingBottom: `${chatInputHeight + 48}px`,
+          }}
+        >
+          {messages.length > 0 ? (
+            messages.map((message) => (
+              <Message key={message.id} message={message} />
+            ))
+          ) : (
+            // Empty state - no text during loading, just empty space
+            <div />
+          )}
 
-      {/* Chat Input */}
-      <div className="sticky bottom-0">
-        <ChatInput onSubmit={handleSubmit} />
+          {/* Show error message if there's an error */}
+          {error && (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">
+              <p className="font-medium">Something went wrong</p>
+              <p className="text-sm">Please try again or refresh the page.</p>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+      </div>
+
+      {/* Prompt input area - sticky to bottom */}
+      <div className="absolute bottom-0 left-0 right-0 z-10 px-2">
+        <ChatInput
+          onSubmit={handleSubmit}
+          onHeightChange={handleChatInputHeightChange}
+          showScrollToBottom={showScrollToBottom}
+          onScrollToBottom={scrollToBottom}
+          disabled={status !== "ready"}
+        />
       </div>
 
       {/* Auth Modal */}

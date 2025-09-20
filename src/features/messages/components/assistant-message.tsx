@@ -2,13 +2,15 @@ import { memo } from "react";
 import { cn } from "@/lib/utils";
 import { Markdown } from "@/components/ui/markdown";
 import { Reasoning, ReasoningTrigger, ReasoningContent } from "./reasoning";
+import { AssistantMessageToolbar } from "./assistant-message-toolbar";
+import { Brain } from "lucide-react";
 import type { MessageProps } from "../types";
 
 export const AssistantMessage = memo(
   ({ message, className, ...props }: MessageProps) => {
     return (
       <div
-        data-message-id={message.messageId}
+        data-message-id={message.id}
         className={cn("flex justify-start", className)}
         {...props}
       >
@@ -16,20 +18,17 @@ export const AssistantMessage = memo(
           <div
             role="article"
             aria-label="Assistant message"
-            className="prose max-w-none dark:prose-invert prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0"
+            className="prose prose-custom assistant-message max-w-none prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0"
           >
             <span className="sr-only">Assistant Reply: </span>
             <div className="flex flex-col gap-4">
               {/* Render parts array */}
               {message.parts.map((part, index) => {
-                const key = `${message.messageId}-part-${index}`;
+                const key = `${message.id}-part-${index}`;
 
                 if (part.type === "text") {
                   return (
-                    <Markdown
-                      key={key}
-                      id={`${message.messageId}-content-${index}`}
-                    >
+                    <Markdown key={key} id={`${message.id}-content-${index}`}>
                       {part.text}
                     </Markdown>
                   );
@@ -37,10 +36,18 @@ export const AssistantMessage = memo(
 
                 if (part.type === "reasoning") {
                   return (
-                    <Reasoning key={key} className="mt-2">
-                      <ReasoningTrigger>Reasoning</ReasoningTrigger>
-                      <ReasoningContent markdown={true} className="mt-2">
-                        {part.reasoningText}
+                    <Reasoning
+                      key={key}
+                      isStreaming={part.state === "streaming"}
+                    >
+                      <ReasoningTrigger className="py-4">
+                        <div className="flex items-center gap-2">
+                          <Brain className="size-4" />
+                          <span>Reasoning</span>
+                        </div>
+                      </ReasoningTrigger>
+                      <ReasoningContent markdown={true}>
+                        {part.text}
                       </ReasoningContent>
                     </Reasoning>
                   );
@@ -53,8 +60,7 @@ export const AssistantMessage = memo(
 
           {/* Assistant message toolbar - positioned absolutely to the left */}
           <div className="absolute left-0 -ml-0.5 mt-2 flex w-full flex-row justify-start gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100">
-            {/* Placeholder for MessageToolbar component */}
-            <div className="text-xs text-muted-foreground">Toolbar</div>
+            <AssistantMessageToolbar parts={message.parts} />
           </div>
         </div>
       </div>

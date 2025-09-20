@@ -33,25 +33,31 @@ export function Docs() {
                 <pre className="text-sm">
                   <code>git clone {siteConfig.socials.github}</code>
                 </pre>
-                <CopyButton text={`git clone ${siteConfig.socials.github}`} />
+                <CopyButton
+                  content={`git clone ${siteConfig.socials.github}`}
+                  showToast
+                />
               </div>
               <div className="flex items-center justify-between bg-muted/50 rounded-lg p-4">
                 <pre className="text-sm">
                   <code>cd {siteConfig.name.toLowerCase()}</code>
                 </pre>
-                <CopyButton text={`cd ${siteConfig.name.toLowerCase()}`} />
+                <CopyButton
+                  content={`cd ${siteConfig.name.toLowerCase()}`}
+                  showToast
+                />
               </div>
               <div className="flex items-center justify-between bg-muted/50 rounded-lg p-4">
                 <pre className="text-sm">
                   <code>bun install</code>
                 </pre>
-                <CopyButton text="bun install" />
+                <CopyButton content="bun install" showToast />
               </div>
               <div className="flex items-center justify-between bg-muted/50 rounded-lg p-4">
                 <pre className="text-sm">
                   <code>bun dev</code>
                 </pre>
-                <CopyButton text="bun dev" />
+                <CopyButton content="bun dev" showToast />
               </div>
             </div>
           </TimelineContent>

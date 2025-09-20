@@ -36,11 +36,10 @@ export const AssistantMessage = memo(
                   return (
                     <Reasoning
                       key={key}
-                      className="mt-2"
                       isStreaming={part.state === "streaming"}
                     >
                       <ReasoningTrigger>Reasoning</ReasoningTrigger>
-                      <ReasoningContent markdown={true} className="mt-2">
+                      <ReasoningContent markdown={true}>
                         {part.text}
                       </ReasoningContent>
                     </Reasoning>

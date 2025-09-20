@@ -1,11 +1,4 @@
-import {
-  useState,
-  useRef,
-  useEffect,
-  MouseEvent,
-  ChangeEvent,
-  KeyboardEvent,
-} from "react";
+import { useEffect, MouseEvent, ChangeEvent, KeyboardEvent } from "react";
 import { Link } from "react-router";
 import {
   Pin,
@@ -16,7 +9,6 @@ import {
   Download,
   CornerDownLeft,
 } from "lucide-react";
-import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -32,6 +24,8 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
+import { useThreadActions } from "../hooks/use-thread-actions";
+import { DeleteThreadDialog } from "./delete-thread-dialog";
 
 import type { ThreadItemData } from "../types";
 
@@ -46,17 +40,29 @@ export function ThreadItem({
   isActive,
   isPinned = false,
 }: ThreadItemProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editTitle, setEditTitle] = useState(item.title);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const isSwitchingToEditRef = useRef(false);
+  const {
+    isEditing,
+    editTitle,
+    setEditTitle,
+    showDeleteDialog,
+    inputRef,
+    isSwitchingToEditRef,
+    startEditing,
+    cancelEditing,
+    handleSave,
+    handleRename,
+    handlePinToggle,
+    handleDeleteClick,
+    handleDeleteConfirm,
+    handleDeleteCancel,
+    handleRegenerateTitle,
+    handleExport,
+  } = useThreadActions(item.id);
 
   const handleDoubleClick = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    isSwitchingToEditRef.current = true;
-    setIsEditing(true);
-    setEditTitle(item.title);
+    startEditing(item.title);
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -65,9 +71,9 @@ export function ThreadItem({
 
   const handleInputKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      handleSave();
+      handleSave(item.title);
     } else if (e.key === "Escape") {
-      handleCancel();
+      cancelEditing(item.title);
     }
   };
 
@@ -76,83 +82,19 @@ export function ThreadItem({
     if (isSwitchingToEditRef.current) {
       return;
     }
-    handleSave();
-  };
-
-  const handleSave = () => {
-    if (!editTitle.trim()) {
-      // Revert to original name when empty
-      setEditTitle(item.title);
-      setIsEditing(false);
-      return;
-    }
-
-    if (editTitle.trim() === item.title) {
-      setIsEditing(false);
-      return;
-    }
-
-    if (editTitle.trim().length > 100) {
-      toast.error("Thread name cannot exceed 100 characters");
-      return;
-    }
-
-    // save thread name with useMutation
-    toast.success("Thread renamed successfully");
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setEditTitle(item.title);
-    setIsEditing(false);
+    handleSave(item.title);
   };
 
   const handleContextMenuRename = () => {
-    isSwitchingToEditRef.current = true;
-    setIsEditing(true);
-    setEditTitle(item.title);
-  };
-
-  const handlePinToggle = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Placeholder: Toggle pin status
-    toast.success(isPinned ? "Thread unpinned" : "Thread pinned");
-    console.log(`${isPinned ? "Unpinning" : "Pinning"} thread:`, item.id);
-  };
-
-  const handleDelete = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Placeholder: Delete thread
-    toast.success("Thread deleted");
-    console.log("Deleting thread:", item.id);
+    handleRename(item.title);
   };
 
   const handleContextMenuPinToggle = () => {
-    // Placeholder: Toggle pin status
-    toast.success(isPinned ? "Thread unpinned" : "Thread pinned");
-    console.log(`${isPinned ? "Unpinning" : "Pinning"} thread:`, item.id);
+    handlePinToggle();
   };
 
   const handleContextMenuDelete = () => {
-    // Placeholder: Delete thread
-    toast.success("Thread deleted");
-    console.log("Deleting thread:", item.id);
-  };
-
-  const handleRegenerateTitle = () => {
-    // Placeholder: Regenerate thread title
-    toast.success("Title regenerated");
-    console.log("Regenerating title for thread:", item.id);
-  };
-
-  const handleExport = () => {
-    // Placeholder: Export thread
-    toast.success("Thread exported");
-    console.log("Exporting thread:", item.id);
+    handleDeleteClick();
   };
 
   useEffect(() => {
@@ -164,7 +106,7 @@ export function ThreadItem({
         isSwitchingToEditRef.current = false;
       }, 0);
     }
-  }, [isEditing]);
+  }, [isEditing, inputRef, isSwitchingToEditRef]);
 
   return (
     <SidebarMenuItem>
@@ -264,7 +206,7 @@ export function ThreadItem({
                         aria-label="Delete thread"
                         data-state="closed"
                         type="button"
-                        onClick={handleDelete}
+                        onClick={handleDeleteClick}
                       >
                         <X className="size-4" aria-hidden="true" />
                       </button>
@@ -299,6 +241,13 @@ export function ThreadItem({
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
+
+      <DeleteThreadDialog
+        open={showDeleteDialog}
+        onOpenChange={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        threadTitle={item.title}
+      />
     </SidebarMenuItem>
   );
 }

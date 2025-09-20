@@ -1,0 +1,86 @@
+/* Light theme colors */
+.prose.prose-custom {
+  --tw-prose-body: #1f2937;
+  --tw-prose-headings: #111827;
+  --tw-prose-lead: #4b5563;
+  --tw-prose-links: #2563eb;
+  --tw-prose-bold: #111827;
+  --tw-prose-counters: #6b7280;
+  --tw-prose-bullets: #9ca3af;
+  --tw-prose-hr: #e5e7eb;
+  --tw-prose-quotes: #374151;
+  --tw-prose-quote-borders: #d1d5db;
+  --tw-prose-captions: #6b7280;
+  --tw-prose-kbd: #111827;
+  --tw-prose-kbd-shadows: #d1d5db;
+  --tw-prose-code: #dc2626;
+  --tw-prose-pre-code: #f8fafc;
+  --tw-prose-pre-bg: #1e293b;
+  --tw-prose-th-borders: #d1d5db;
+  --tw-prose-td-borders: #e5e7eb;
+}
+
+/* Dark theme override */
+.dark .prose.prose-custom {
+  --tw-prose-body: #f3f3f3;
+  --tw-prose-headings: #fafafa;
+  --tw-prose-lead: #d9d9d9;
+  --tw-prose-links: #60a5fa;
+  --tw-prose-bold: #f3f3f3;
+  --tw-prose-counters: #a8a8a8;
+  --tw-prose-bullets: #a8a8a8;
+  --tw-prose-hr: #a8a8a8;
+  --tw-prose-quotes: #f3f3f3;
+  --tw-prose-quote-borders: #a8a8a8;
+  --tw-prose-captions: silver;
+  --tw-prose-kbd: #fff;
+  --tw-prose-kbd-shadows: #f9f9f9;
+  --tw-prose-code: #fff;
+  --tw-prose-pre-code: #d9d9d9;
+  --tw-prose-pre-bg: rgba(0, 0, 0, 0.5);
+  --tw-prose-th-borders: #6e6e6e;
+  --tw-prose-td-borders: #464646;
+}
+
+/* Links hover state */
+.prose
+  :where(a):not(:where([class~="not-prose"], [class~="not-prose"] *)):hover {
+  opacity: 0.8;
+}
+
+/* User message bubbles: Remove ALL margins for clean spacing */
+.prose.user-message
+  :where(*):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Reasoning content: Remove top margins for clean spacing */
+.prose.reasoning-content
+  :where(*):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  margin-top: 0;
+}
+
+/* Reasoning content: Remove bottom margin from last element only */
+.prose.reasoning-content
+  :where(*):not(
+    :where([class~="not-prose"], [class~="not-prose"] *)
+  ):last-child {
+  margin-bottom: 0;
+}
+
+/* Assistant message: Remove top margin from first element only */
+.prose.assistant-message
+  :where(*):not(
+    :where([class~="not-prose"], [class~="not-prose"] *)
+  ):first-child {
+  margin-top: 0;
+}
+
+/* Assistant message: Remove bottom margin from last element only */
+.prose.assistant-message
+  :where(*):not(
+    :where([class~="not-prose"], [class~="not-prose"] *)
+  ):last-child {
+  margin-bottom: 0;
+}

@@ -2,6 +2,7 @@ import { memo } from "react";
 import { cn } from "@/lib/utils";
 import { Markdown } from "@/components/ui/markdown";
 import { Reasoning, ReasoningTrigger, ReasoningContent } from "./reasoning";
+import { Brain } from "lucide-react";
 import type { MessageProps } from "../types";
 
 export const AssistantMessage = memo(
@@ -16,7 +17,7 @@ export const AssistantMessage = memo(
           <div
             role="article"
             aria-label="Assistant message"
-            className="prose max-w-none dark:prose-invert prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0"
+            className="prose prose-custom assistant-message max-w-none prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0"
           >
             <span className="sr-only">Assistant Reply: </span>
             <div className="flex flex-col gap-4">
@@ -38,7 +39,12 @@ export const AssistantMessage = memo(
                       key={key}
                       isStreaming={part.state === "streaming"}
                     >
-                      <ReasoningTrigger>Reasoning</ReasoningTrigger>
+                      <ReasoningTrigger className="py-4">
+                        <div className="flex items-center gap-2">
+                          <Brain className="size-4" />
+                          <span>Reasoning</span>
+                        </div>
+                      </ReasoningTrigger>
                       <ReasoningContent markdown={true}>
                         {part.text}
                       </ReasoningContent>

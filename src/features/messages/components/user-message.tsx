@@ -22,7 +22,7 @@ export const UserMessage = memo(
           className="group relative inline-block max-w-[80%] break-words rounded-xl border border-secondary/50 bg-secondary/50 px-4 py-3 text-left"
         >
           <span className="sr-only">Your message: </span>
-          <div className="prose prose-pink user-message max-w-none dark:prose-invert prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0">
+          <div className="prose prose-custom user-message max-w-none prose-pre:m-0 prose-pre:bg-transparent prose-pre:p-0">
             {textParts.map((part, index) => (
               <Markdown
                 key={`${message.id}-text-${index}`}

@@ -10,9 +10,109 @@ export function useThreadActions(threadId: string) {
   const inputRef = useRef<HTMLInputElement>(null);
   const isSwitchingToEditRef = useRef(false);
 
-  const updateThreadTitle = useMutation(api.threads.updateThreadTitle);
-  const toggleThreadPinned = useMutation(api.threads.toggleThreadPinned);
-  const deleteThread = useMutation(api.threads.deleteThread);
+  const updateThreadTitle = useMutation(
+    api.threads.updateThreadTitle,
+  ).withOptimisticUpdate((localStore, args) => {
+    const { threadId, title } = args;
+    const existingThreads = localStore.getQuery(api.threads.getUserThreads, {
+      paginationOpts: { numItems: 100, cursor: null },
+    });
+
+    if (existingThreads) {
+      // Check if the thread exists in the current page
+      const threadExists = existingThreads.page.some(
+        (thread) => thread.threadId === threadId,
+      );
+
+      if (threadExists) {
+        // Only update if thread is in current page
+        const updatedThreads = existingThreads.page.map((thread) =>
+          thread.threadId === threadId ? { ...thread, title } : thread,
+        );
+        localStore.setQuery(
+          api.threads.getUserThreads,
+          {
+            paginationOpts: { numItems: 200, cursor: null },
+          },
+          {
+            ...existingThreads,
+            page: updatedThreads,
+          },
+        );
+      }
+      // If thread not in current page, do nothing (no optimistic update)
+    }
+  });
+
+  const toggleThreadPinned = useMutation(
+    api.threads.toggleThreadPinned,
+  ).withOptimisticUpdate((localStore, args) => {
+    const { threadId } = args;
+    const existingThreads = localStore.getQuery(api.threads.getUserThreads, {
+      paginationOpts: { numItems: 100, cursor: null },
+    });
+
+    if (existingThreads) {
+      // Check if the thread exists in the current page
+      const threadExists = existingThreads.page.some(
+        (thread) => thread.threadId === threadId,
+      );
+
+      if (threadExists) {
+        // Only update if thread is in current page
+        const updatedThreads = existingThreads.page.map((thread) =>
+          thread.threadId === threadId
+            ? { ...thread, pinned: !thread.pinned }
+            : thread,
+        );
+        localStore.setQuery(
+          api.threads.getUserThreads,
+          {
+            paginationOpts: { numItems: 200, cursor: null },
+          },
+          {
+            ...existingThreads,
+            page: updatedThreads,
+          },
+        );
+      }
+      // If thread not in current page, do nothing (no optimistic update)
+    }
+  });
+
+  const deleteThread = useMutation(
+    api.threads.deleteThread,
+  ).withOptimisticUpdate((localStore, args) => {
+    const { threadId } = args;
+    const existingThreads = localStore.getQuery(api.threads.getUserThreads, {
+      paginationOpts: { numItems: 100, cursor: null },
+    });
+
+    if (existingThreads) {
+      // Check if the thread exists in the current page
+      const threadExists = existingThreads.page.some(
+        (thread) => thread.threadId === threadId,
+      );
+
+      if (threadExists) {
+        // Only update if thread is in current page
+        const updatedThreads = existingThreads.page.filter(
+          (thread) => thread.threadId !== threadId,
+        );
+        localStore.setQuery(
+          api.threads.getUserThreads,
+          {
+            paginationOpts: { numItems: 200, cursor: null },
+          },
+          {
+            ...existingThreads,
+            page: updatedThreads,
+          },
+        );
+      }
+      // If thread not in current page, do nothing (no optimistic update)
+    }
+  });
 
   const startEditing = (currentTitle: string) => {
     isSwitchingToEditRef.current = true;

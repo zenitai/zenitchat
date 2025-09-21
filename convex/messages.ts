@@ -1,6 +1,5 @@
 import { query, mutation } from "./_generated/server";
 import { v, Infer } from "convex/values";
-import { paginationOptsValidator } from "convex/server";
 import { authComponent } from "./auth";
 import { Id } from "./_generated/dataModel";
 import { messageParts } from "./schema";
@@ -24,13 +23,12 @@ type MessageMetadata = {
 export const getThreadMessages = query({
   args: {
     threadId: v.string(),
-    paginationOpts: paginationOptsValidator,
   },
   handler: async (ctx, args) => {
     const authUser = await authComponent.safeGetAuthUser(ctx);
     const userId = authUser?.userId as Id<"users"> | null;
     if (!userId) {
-      return { page: [], isDone: true, continueCursor: null };
+      return [];
     }
 
     // First verify the thread belongs to the user
@@ -40,18 +38,18 @@ export const getThreadMessages = query({
       .first();
 
     if (!thread) {
-      return { page: [], isDone: true, continueCursor: null };
+      return [];
     }
 
     if (thread.userId !== userId) {
-      return { page: [], isDone: true, continueCursor: null };
+      return [];
     }
 
     return await ctx.db
       .query("messages")
       .withIndex("by_thread_created", (q) => q.eq("threadId", args.threadId))
       .order("asc")
-      .paginate(args.paginationOpts);
+      .collect();
   },
 });
 

@@ -8,35 +8,22 @@ export const messageParts = v.array(
     v.object({
       type: v.literal("text"),
       text: v.string(),
+      state: v.optional(v.union(v.literal("streaming"), v.literal("done"))),
     }),
     // Reasoning part
     v.object({
       type: v.literal("reasoning"),
-      reasoningText: v.string(),
+      text: v.string(),
+      state: v.optional(v.union(v.literal("streaming"), v.literal("done"))),
+      providerMetadata: v.optional(v.any()),
     }),
-    // File part
+    // Tool part
     v.object({
-      type: v.literal("file"),
-      mediaType: v.string(),
-      filename: v.optional(v.string()),
-      url: v.string(),
-    }),
-    // Tool call part
-    v.object({
-      type: v.literal("tool-call"),
+      type: v.string(), // Will be "tool-{name}" format
       toolCallId: v.string(),
-      toolName: v.string(),
-      input: v.any(),
-    }),
-    // Tool result part with AI SDK standard states
-    v.object({
-      type: v.literal("tool-result"),
-      toolCallId: v.string(),
-      toolName: v.string(),
       state: v.union(
         v.literal("input-streaming"),
         v.literal("input-available"),
-        v.literal("output-streaming"),
         v.literal("output-available"),
         v.literal("output-error"),
       ),
@@ -45,17 +32,39 @@ export const messageParts = v.array(
       errorText: v.optional(v.string()),
       providerExecuted: v.optional(v.boolean()),
     }),
-    // Image part
+    // SourceUrl part
     v.object({
-      type: v.literal("image"),
-      image: v.string(), // URL
-      mediaType: v.optional(v.string()),
+      type: v.literal("source-url"),
+      sourceId: v.string(),
+      url: v.string(),
+      title: v.optional(v.string()),
+      providerMetadata: v.optional(v.any()),
     }),
-    // Data part for custom content
+    // SourceDocument part
     v.object({
-      type: v.literal("data"),
-      data: v.any(),
+      type: v.literal("source-document"),
+      sourceId: v.string(),
+      mediaType: v.string(),
+      title: v.string(),
+      filename: v.optional(v.string()),
+      providerMetadata: v.optional(v.any()),
+    }),
+    // File part
+    v.object({
+      type: v.literal("file"),
+      mediaType: v.string(),
+      filename: v.optional(v.string()),
+      url: v.string(),
+    }),
+    // Data part
+    v.object({
+      type: v.string(), // Will be "data-{name}" format
       id: v.optional(v.string()),
+      data: v.any(),
+    }),
+    // StepStart part
+    v.object({
+      type: v.literal("step-start"),
     }),
   ),
 );

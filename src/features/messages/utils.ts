@@ -1,4 +1,22 @@
 import type { MyUIMessage } from "./types";
+import type { Doc } from "@/convex/_generated/dataModel";
+
+// Type for Convex message document
+type ConvexMessage = Doc<"messages">;
+
+/**
+ * Convert Convex message documents to MyUIMessage format
+ */
+export function convexMessagesToUIMessages(
+  convexMessages: ConvexMessage[],
+): MyUIMessage[] {
+  return convexMessages.map((convexMessage) => ({
+    id: convexMessage.messageId,
+    role: convexMessage.role,
+    metadata: convexMessage.metadata,
+    parts: convexMessage.parts as MyUIMessage["parts"],
+  }));
+}
 
 /**
  * Format message parts into nicely formatted text for copying

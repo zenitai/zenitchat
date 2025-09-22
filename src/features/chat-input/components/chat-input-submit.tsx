@@ -9,33 +9,39 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-export type ChatInputSubmitProps = ComponentProps<typeof Button>;
+export type ChatInputSubmitProps = ComponentProps<typeof Button> & {
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+};
 
 export const ChatInputSubmit = ({
   className,
   variant = "default",
   size = "icon",
   children,
+  onClick,
   ...props
 }: ChatInputSubmitProps) => {
   const status = useChatStatus();
   const { stop } = useChatActions();
+  const isStreaming = status === "submitted" || status === "streaming";
+
   let Icon = <ArrowUpIcon className="size-4" />;
 
-  if (status === "submitted" || status === "streaming") {
+  if (isStreaming) {
     Icon = <SquareIcon className="size-4" />;
   }
 
   const getTooltipText = () => {
-    if (status === "submitted" || status === "streaming")
-      return "Stop generating";
+    if (isStreaming) return "Stop generating";
     return "Send message";
   };
 
-  const handleClick = () => {
-    if (status === "submitted" || status === "streaming") {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (isStreaming) {
+      e.preventDefault();
       stop();
     }
+    onClick?.(e);
   };
 
   return (
@@ -44,7 +50,7 @@ export const ChatInputSubmit = ({
         <Button
           className={cn("gap-1.5 rounded-lg", className)}
           size={size}
-          type="submit"
+          type={isStreaming ? "button" : "submit"}
           variant={variant}
           aria-label={getTooltipText()}
           onClick={handleClick}

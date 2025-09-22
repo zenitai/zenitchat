@@ -11,6 +11,7 @@ import { useAutoResizeTextarea } from "./hooks/use-auto-resize-textarea";
 import { useChatInputHeight } from "./hooks/use-chat-input-height";
 import { ModelSelector } from "./model-selector/model-selector";
 import { useInputText, useChatInputActions } from "./store";
+import { useChatStatus, useChatActions } from "@ai-sdk-tools/store";
 
 export type ChatInputProps = Omit<
   ComponentProps<typeof ChatInputForm>,
@@ -29,6 +30,8 @@ export const ChatInput = ({
 }: ChatInputProps) => {
   const inputText = useInputText();
   const { setInputText, clearInputText } = useChatInputActions();
+  const status = useChatStatus();
+  const { stop } = useChatActions();
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
     minHeight: 64,
     maxHeight: 192,
@@ -41,6 +44,12 @@ export const ChatInput = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Safety guard: don't submit when not ready
+    if (status !== "ready") {
+      return;
+    }
+
     if (inputText.trim()) {
       onSubmit(inputText.trim());
       clearInputText();
@@ -61,6 +70,13 @@ export const ChatInput = ({
     if (e.key === "Enter") {
       // Don't submit if IME composition is in progress
       if (e.nativeEvent.isComposing) {
+        return;
+      }
+
+      // Stop instead of submitting when not ready
+      if (status === "submitted" || status === "streaming") {
+        e.preventDefault();
+        stop();
         return;
       }
 

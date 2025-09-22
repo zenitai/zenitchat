@@ -4,6 +4,8 @@ import type { ModelConfig } from "@/config/ai-models/types";
 import { DEFAULT_MODEL } from "@/config/ai-models";
 import { env } from "@/env";
 
+const INITIAL_INPUT_HEIGHT = 141;
+
 interface ChatInputStore {
   // Selected model state
   selectedModel: ModelConfig | null;
@@ -34,7 +36,7 @@ const useChatInputStore = create<ChatInputStore>()(
       // Initial state
       selectedModel: DEFAULT_MODEL,
       inputText: "",
-      inputHeight: 141,
+      inputHeight: INITIAL_INPUT_HEIGHT,
 
       // Actions
       actions: {

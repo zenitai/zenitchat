@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router";
-import { useChat } from "@ai-sdk/react";
+import { useChat } from "@ai-sdk-tools/store";
 import { DefaultChatTransport } from "ai";
 import { AuthModal } from "@/features/auth";
 import { useAuth } from "@/features/auth";
@@ -23,7 +23,7 @@ export function ChatPage() {
   } = useAuth();
 
   // Use the useChat hook for message management
-  const { messages, sendMessage, status, error } = useChat<MyUIMessage>({
+  const { messages, sendMessage, error } = useChat<MyUIMessage>({
     transport: new DefaultChatTransport({
       api: "/api/chat",
     }),
@@ -111,7 +111,6 @@ export function ChatPage() {
           onSubmit={handleSubmit}
           showScrollToBottom={showScrollToBottom}
           onScrollToBottom={scrollToBottom}
-          disabled={status !== "ready"}
         />
       </div>
 

@@ -19,14 +19,12 @@ export type ChatInputProps = Omit<
   onSubmit: (text: string) => void;
   showScrollToBottom?: boolean;
   onScrollToBottom?: () => void;
-  disabled?: boolean;
 };
 
 export const ChatInput = ({
   onSubmit,
   showScrollToBottom,
   onScrollToBottom,
-  disabled = false,
   ...props
 }: ChatInputProps) => {
   const inputText = useInputText();
@@ -43,7 +41,7 @@ export const ChatInput = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (inputText.trim() && !disabled) {
+    if (inputText.trim()) {
       onSubmit(inputText.trim());
       clearInputText();
       // Reset height after clearing
@@ -98,7 +96,7 @@ export const ChatInput = ({
             />
             <ChatInputToolbar>
               <ChatInputTools>
-                <ModelSelector disabled={disabled} />
+                <ModelSelector />
                 <ChatInputButton variant="outline" aria-label="Attach file">
                   <PaperclipIcon className="size-4" />
                 </ChatInputButton>
@@ -107,7 +105,7 @@ export const ChatInput = ({
                 </ChatInputButton>
               </ChatInputTools>
               <ChatInputTools>
-                <ChatInputSubmit disabled={disabled} />
+                <ChatInputSubmit />
               </ChatInputTools>
             </ChatInputToolbar>
           </ChatInputForm>

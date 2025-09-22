@@ -1,41 +1,41 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ComponentProps } from "react";
-import { Loader2Icon, SquareIcon, XIcon, ArrowUpIcon } from "lucide-react";
-import type { ChatStatus } from "ai";
+import { SquareIcon, ArrowUpIcon } from "lucide-react";
+import { useChatStatus, useChatActions } from "@ai-sdk-tools/store";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-export type ChatInputSubmitProps = ComponentProps<typeof Button> & {
-  status?: ChatStatus;
-};
+export type ChatInputSubmitProps = ComponentProps<typeof Button>;
 
 export const ChatInputSubmit = ({
   className,
   variant = "default",
   size = "icon",
-  status,
   children,
   ...props
 }: ChatInputSubmitProps) => {
+  const status = useChatStatus();
+  const { stop } = useChatActions();
   let Icon = <ArrowUpIcon className="size-4" />;
 
-  if (status === "submitted") {
-    Icon = <Loader2Icon className="size-4 animate-spin" />;
-  } else if (status === "streaming") {
+  if (status === "submitted" || status === "streaming") {
     Icon = <SquareIcon className="size-4" />;
-  } else if (status === "error") {
-    Icon = <XIcon className="size-4" />;
   }
 
   const getTooltipText = () => {
-    if (status === "submitted") return "Sending...";
-    if (status === "streaming") return "Stop generating";
-    if (status === "error") return "Retry";
+    if (status === "submitted" || status === "streaming")
+      return "Stop generating";
     return "Send message";
+  };
+
+  const handleClick = () => {
+    if (status === "submitted" || status === "streaming") {
+      stop();
+    }
   };
 
   return (
@@ -47,6 +47,7 @@ export const ChatInputSubmit = ({
           type="submit"
           variant={variant}
           aria-label={getTooltipText()}
+          onClick={handleClick}
           {...props}
         >
           {children ?? Icon}

@@ -19,7 +19,6 @@ export type ChatInputProps = Omit<
   "onSubmit"
 > & {
   onSubmit: (text: string) => void;
-  onHeightChange?: (height: number) => void;
   showScrollToBottom?: boolean;
   onScrollToBottom?: () => void;
   disabled?: boolean;
@@ -29,7 +28,6 @@ export type ChatInputProps = Omit<
 
 export const ChatInput = ({
   onSubmit,
-  onHeightChange,
   showScrollToBottom,
   onScrollToBottom,
   disabled = false,
@@ -48,7 +46,6 @@ export const ChatInput = ({
 
   // Chat input container height management
   const { chatInputContainerRef } = useChatInputHeight({
-    onHeightChange,
     currentValue: input,
   });
 

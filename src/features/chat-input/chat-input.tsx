@@ -73,10 +73,9 @@ export const ChatInput = ({
         return;
       }
 
-      // Stop instead of submitting when not ready
+      // Don't submit when not ready - just do nothing
       if (status === "submitted" || status === "streaming") {
         e.preventDefault();
-        stop();
         return;
       }
 

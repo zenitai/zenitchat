@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ComponentProps } from "react";
+import type { ComponentProps, MouseEvent } from "react";
 import { SquareIcon, ArrowUpIcon } from "lucide-react";
 import { useChatStatus, useChatActions } from "@ai-sdk-tools/store";
 import {
@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/tooltip";
 
 export type ChatInputSubmitProps = ComponentProps<typeof Button> & {
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
 };
 
 export const ChatInputSubmit = ({
@@ -23,22 +23,23 @@ export const ChatInputSubmit = ({
 }: ChatInputSubmitProps) => {
   const status = useChatStatus();
   const { stop } = useChatActions();
-  const isStreaming = status === "submitted" || status === "streaming";
+  const isBusy = status === "submitted" || status === "streaming";
 
   let Icon = <ArrowUpIcon className="size-4" />;
 
-  if (isStreaming) {
+  if (isBusy) {
     Icon = <SquareIcon className="size-4" />;
   }
 
   const getTooltipText = () => {
-    if (isStreaming) return "Stop generating";
+    if (isBusy) return "Stop generating";
     return "Send message";
   };
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (isStreaming) {
+  const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
+    if (isBusy) {
       e.preventDefault();
+      e.stopPropagation();
       stop();
     }
     onClick?.(e);
@@ -50,7 +51,7 @@ export const ChatInputSubmit = ({
         <Button
           className={cn("gap-1.5 rounded-lg", className)}
           size={size}
-          type={isStreaming ? "button" : "submit"}
+          type={isBusy ? "button" : "submit"}
           variant={variant}
           aria-label={getTooltipText()}
           onClick={handleClick}

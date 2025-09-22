@@ -21,19 +21,16 @@ import {
 } from "./components";
 import { useUserModels } from "./hooks/use-user-models";
 import { useFilteredModels } from "./hooks/use-filtered-models";
+import { useSelectedModel, useChatInputActions } from "../store";
 import { cn } from "@/lib/utils";
 
 interface ModelSelectorProps {
-  selectedModel?: ModelConfig;
-  onModelSelect: (model: ModelConfig) => void;
   disabled?: boolean;
 }
 
-export const ModelSelector = ({
-  selectedModel,
-  onModelSelect,
-  disabled = false,
-}: ModelSelectorProps) => {
+export const ModelSelector = ({ disabled = false }: ModelSelectorProps) => {
+  const selectedModel = useSelectedModel();
+  const { setSelectedModel } = useChatInputActions();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showExpanded, setShowExpanded] = useState(false);
@@ -53,7 +50,7 @@ export const ModelSelector = ({
   });
 
   const handleModelSelect = (model: ModelConfig) => {
-    onModelSelect(model);
+    setSelectedModel(model);
     setOpen(false);
     setSearchQuery(""); // Clear search when selecting a model
     setSelectedProvider("all"); // Clear provider filter when selecting a model

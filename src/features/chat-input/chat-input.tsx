@@ -1,4 +1,3 @@
-import { useState } from "react";
 import type { ComponentProps, ChangeEvent, KeyboardEvent } from "react";
 import { PaperclipIcon, GlobeIcon } from "lucide-react";
 import { ChatInputForm } from "./components/chat-input-form";
@@ -11,6 +10,7 @@ import { ScrollToBottomButton } from "./components/scroll-to-bottom-button";
 import { useAutoResizeTextarea } from "./hooks/use-auto-resize-textarea";
 import { useChatInputHeight } from "./hooks/use-chat-input-height";
 import { ModelSelector } from "./model-selector/model-selector";
+import { useInputText, useChatInputActions } from "./store";
 
 export type ChatInputProps = Omit<
   ComponentProps<typeof ChatInputForm>,
@@ -29,7 +29,8 @@ export const ChatInput = ({
   disabled = false,
   ...props
 }: ChatInputProps) => {
-  const [input, setInput] = useState("");
+  const inputText = useInputText();
+  const { setInputText, clearInputText } = useChatInputActions();
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
     minHeight: 64,
     maxHeight: 192,
@@ -37,14 +38,14 @@ export const ChatInput = ({
 
   // Chat input container height management
   const { chatInputContainerRef } = useChatInputHeight({
-    currentValue: input,
+    currentValue: inputText,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (input.trim() && !disabled) {
-      onSubmit(input.trim());
-      setInput("");
+    if (inputText.trim() && !disabled) {
+      onSubmit(inputText.trim());
+      clearInputText();
       // Reset height after clearing
       adjustHeight(true);
     }
@@ -55,7 +56,7 @@ export const ChatInput = ({
   };
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
+    setInputText(e.target.value);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -90,7 +91,7 @@ export const ChatInput = ({
           <ChatInputForm onSubmit={handleSubmit} {...props}>
             <ChatInputTextarea
               ref={textareaRef}
-              value={input}
+              value={inputText}
               onChange={handleChange}
               onKeyDown={handleKeyDown}
               onInput={handleInput}

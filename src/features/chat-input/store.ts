@@ -34,7 +34,7 @@ const useChatInputStore = create<ChatInputStore>()(
       // Initial state
       selectedModel: DEFAULT_MODEL,
       inputText: "",
-      inputHeight: 141, // Default height
+      inputHeight: 141,
 
       // Actions
       actions: {

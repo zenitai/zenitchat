@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router";
-import { useChat } from "@ai-sdk/react";
+import { useChat } from "@ai-sdk-tools/store";
 import { DefaultChatTransport } from "ai";
 import { AuthModal } from "@/features/auth";
 import { useAuth } from "@/features/auth";
@@ -8,12 +8,13 @@ import { useScrollToBottom } from "@/features/chat-input/hooks/use-scroll-to-bot
 import { Message } from "@/features/messages/message";
 import type { MyUIMessage } from "@/features/messages/types";
 import { ChatInput } from "@/features/chat-input/chat-input";
+import { useInputHeight } from "@/features/chat-input/store";
 
 export function ChatPage() {
   const { threadId } = useParams<{ threadId?: string }>();
   const navigate = useNavigate();
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [chatInputHeight, setChatInputHeight] = useState(141);
+  const chatInputHeight = useInputHeight();
   const {
     isAuthenticated,
     unAuthedNewUser,
@@ -22,7 +23,7 @@ export function ChatPage() {
   } = useAuth();
 
   // Use the useChat hook for message management
-  const { messages, sendMessage, status, error } = useChat<MyUIMessage>({
+  const { messages, sendMessage, error } = useChat<MyUIMessage>({
     transport: new DefaultChatTransport({
       api: "/api/chat",
     }),
@@ -47,10 +48,6 @@ export function ChatPage() {
     },
     [updateScrollPosition],
   );
-
-  const handleChatInputHeightChange = useCallback((height: number) => {
-    setChatInputHeight(height);
-  }, []);
 
   const handleSubmit = (text: string) => {
     // Check if user is authenticated before allowing message submission
@@ -112,10 +109,8 @@ export function ChatPage() {
       <div className="absolute bottom-0 left-0 right-0 z-10 px-2">
         <ChatInput
           onSubmit={handleSubmit}
-          onHeightChange={handleChatInputHeightChange}
           showScrollToBottom={showScrollToBottom}
           onScrollToBottom={scrollToBottom}
-          disabled={status !== "ready"}
         />
       </div>
 

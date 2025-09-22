@@ -1,25 +1,23 @@
 import { useRef, useCallback, useLayoutEffect } from "react";
+import { useChatInputActions } from "../store";
 
 // Hook for chat input container height calculation and reporting
 interface UseChatInputHeightProps {
-  onHeightChange?: (height: number) => void;
   currentValue: string;
 }
 
-export function useChatInputHeight({
-  onHeightChange,
-  currentValue,
-}: UseChatInputHeightProps) {
+export function useChatInputHeight({ currentValue }: UseChatInputHeightProps) {
   // Simple ref for the container
   const chatInputContainerRef = useRef<HTMLDivElement>(null);
+  const { setInputHeight } = useChatInputActions();
 
   // Calculate and report total height when content changes
   const calculateAndReportHeight = useCallback(() => {
-    if (chatInputContainerRef.current && onHeightChange) {
+    if (chatInputContainerRef.current) {
       const totalHeight = chatInputContainerRef.current.offsetHeight;
-      onHeightChange(totalHeight);
+      setInputHeight(totalHeight);
     }
-  }, [onHeightChange]);
+  }, [setInputHeight]);
 
   // Measure height after DOM updates
   useLayoutEffect(() => {

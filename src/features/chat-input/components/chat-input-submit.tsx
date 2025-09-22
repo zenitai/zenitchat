@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ComponentProps } from "react";
-import { Loader2Icon, SquareIcon, XIcon, ArrowUpIcon } from "lucide-react";
-import type { ChatStatus } from "ai";
+import type { ComponentProps, MouseEvent } from "react";
+import { SquareIcon, ArrowUpIcon } from "lucide-react";
+import { useChatStatus, useChatActions } from "@ai-sdk-tools/store";
 import {
   Tooltip,
   TooltipContent,
@@ -10,32 +10,39 @@ import {
 } from "@/components/ui/tooltip";
 
 export type ChatInputSubmitProps = ComponentProps<typeof Button> & {
-  status?: ChatStatus;
+  onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
 };
 
 export const ChatInputSubmit = ({
   className,
   variant = "default",
   size = "icon",
-  status,
   children,
+  onClick,
   ...props
 }: ChatInputSubmitProps) => {
+  const status = useChatStatus();
+  const { stop } = useChatActions();
+  const isBusy = status === "submitted" || status === "streaming";
+
   let Icon = <ArrowUpIcon className="size-4" />;
 
-  if (status === "submitted") {
-    Icon = <Loader2Icon className="size-4 animate-spin" />;
-  } else if (status === "streaming") {
+  if (isBusy) {
     Icon = <SquareIcon className="size-4" />;
-  } else if (status === "error") {
-    Icon = <XIcon className="size-4" />;
   }
 
   const getTooltipText = () => {
-    if (status === "submitted") return "Sending...";
-    if (status === "streaming") return "Stop generating";
-    if (status === "error") return "Retry";
+    if (isBusy) return "Stop generating";
     return "Send message";
+  };
+
+  const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
+    if (isBusy) {
+      e.preventDefault();
+      e.stopPropagation();
+      stop();
+    }
+    onClick?.(e);
   };
 
   return (
@@ -44,9 +51,10 @@ export const ChatInputSubmit = ({
         <Button
           className={cn("gap-1.5 rounded-lg", className)}
           size={size}
-          type="submit"
+          type={isBusy ? "button" : "submit"}
           variant={variant}
           aria-label={getTooltipText()}
+          onClick={handleClick}
           {...props}
         >
           {children ?? Icon}

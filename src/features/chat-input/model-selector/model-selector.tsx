@@ -21,19 +21,12 @@ import {
 } from "./components";
 import { useUserModels } from "./hooks/use-user-models";
 import { useFilteredModels } from "./hooks/use-filtered-models";
+import { useSelectedModel, useChatInputActions } from "../store";
 import { cn } from "@/lib/utils";
 
-interface ModelSelectorProps {
-  selectedModel?: ModelConfig;
-  onModelSelect: (model: ModelConfig) => void;
-  disabled?: boolean;
-}
-
-export const ModelSelector = ({
-  selectedModel,
-  onModelSelect,
-  disabled = false,
-}: ModelSelectorProps) => {
+export const ModelSelector = () => {
+  const selectedModel = useSelectedModel();
+  const { setSelectedModel } = useChatInputActions();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showExpanded, setShowExpanded] = useState(false);
@@ -53,7 +46,7 @@ export const ModelSelector = ({
   });
 
   const handleModelSelect = (model: ModelConfig) => {
-    onModelSelect(model);
+    setSelectedModel(model);
     setOpen(false);
     setSearchQuery(""); // Clear search when selecting a model
     setSelectedProvider("all"); // Clear provider filter when selecting a model
@@ -88,7 +81,6 @@ export const ModelSelector = ({
           type="button"
           variant="ghost"
           className="flex bg-transparent focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-          disabled={disabled}
         >
           {selectedModel ? (
             <div className="min-w-0 flex-1 text-left text-sm font-medium flex items-center gap-2">

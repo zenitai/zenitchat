@@ -70,6 +70,7 @@ export default function PasswordCreateInput({
             type={isVisible ? "text" : "password"}
             value={value}
             onChange={(e) => onChange?.(e.target.value)}
+            autoComplete="new-password"
             aria-describedby={ariaDescribedBy || `${id}-description`}
           />
           <button

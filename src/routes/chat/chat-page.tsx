@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import { useChat } from "@ai-sdk-tools/store";
 import { DefaultChatTransport } from "ai";
 import { AuthModal } from "@/features/auth";
-import { useAuth } from "@/features/auth";
+import { useIsAuthenticated } from "@/features/auth/store";
 import { useScrollToBottom } from "@/features/chat-input/hooks/use-scroll-to-bottom";
 import { Message } from "@/features/messages/message";
 import type { MyUIMessage } from "@/features/messages/types";
@@ -15,12 +15,7 @@ export function ChatPage() {
   const navigate = useNavigate();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const chatInputHeight = useInputHeight();
-  const {
-    isAuthenticated,
-    unAuthedNewUser,
-    unAuthedReturningUser,
-    markAsVisited,
-  } = useAuth();
+  const isAuthenticated = useIsAuthenticated();
 
   // Use the useChat hook for message management
   const { messages, sendMessage, error } = useChat<MyUIMessage>({
@@ -115,13 +110,7 @@ export function ChatPage() {
       </div>
 
       {/* Auth Modal */}
-      <AuthModal
-        open={showAuthModal}
-        onOpenChange={setShowAuthModal}
-        unAuthedNewUser={unAuthedNewUser}
-        unAuthedReturningUser={unAuthedReturningUser}
-        markAsVisited={markAsVisited}
-      />
+      <AuthModal open={showAuthModal} onOpenChange={setShowAuthModal} />
     </div>
   );
 }

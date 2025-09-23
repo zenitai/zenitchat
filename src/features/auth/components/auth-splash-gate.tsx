@@ -1,7 +1,7 @@
 import { Loader2 } from "lucide-react";
 import { useLocation, matchPath } from "react-router";
 import { BorderBeam } from "@/components/ui/border-beam";
-import { useAuth } from "../hooks/use-auth";
+import { useIsLoading, useIsAuthenticated, useIsInitialized } from "../store";
 
 interface AuthSplashGateProps {
   children: React.ReactNode;
@@ -12,16 +12,19 @@ const AUTH_ROUTES = [
   "/signup",
   "/forgot-password",
   "/reset-password",
-];
+] as const;
 
 export function AuthSplashGate({ children }: AuthSplashGateProps) {
-  const { isLoading, isAuthenticated } = useAuth();
+  const isLoading = useIsLoading();
+  const isAuthenticated = useIsAuthenticated();
+  const isInitialized = useIsInitialized();
   const location = useLocation();
 
   const isAuthRoute = AUTH_ROUTES.some((route) =>
     matchPath({ path: route, end: false }, location.pathname),
   );
-  const shouldShowSplash = isLoading && !(isAuthRoute && !isAuthenticated);
+  const shouldShowSplash =
+    (isLoading || !isInitialized) && !(isAuthRoute && !isAuthenticated);
 
   // Show splash screen while loading (but not on auth routes for unauthenticated users)
   if (shouldShowSplash) {

@@ -1,7 +1,7 @@
 import { Pin } from "lucide-react";
 import { ModelCard } from "./model-card";
 import { ModelConfig } from "@/config/ai-models/types";
-import { useAuth } from "@/features/auth/hooks/use-auth";
+import { useIsAuthenticated } from "@/features/auth/store";
 
 interface ExpandedModelListProps {
   selectedModel: string;
@@ -22,7 +22,7 @@ export function ExpandedModelList({
   toggleModelFavorite,
   isFavorite,
 }: ExpandedModelListProps) {
-  const { isAuthenticated } = useAuth();
+  const isAuthenticated = useIsAuthenticated();
   // Separate pinned and unpinned models
   const pinnedModelsList = filteredModels.filter((model: ModelConfig) =>
     isFavorite(model.id),

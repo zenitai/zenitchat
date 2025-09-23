@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/form";
 import { authClient } from "@/features/auth/auth-client";
 import { useState } from "react";
-import { useAuth } from "../hooks/use-auth";
+import { useAuthActions } from "../store";
 import PasswordInput from "../components/password-input";
 
 const formSchema = v.object({
@@ -55,7 +55,7 @@ export function LoginForm({
     },
   });
 
-  const { markAsVisited } = useAuth();
+  const { markAsVisited } = useAuthActions();
 
   const signInWithGoogle = async () => {
     try {
@@ -118,7 +118,11 @@ export function LoginForm({
                       <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input placeholder="m@example.com" {...field} />
+                          <Input
+                            placeholder="m@example.com"
+                            autoComplete="email"
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

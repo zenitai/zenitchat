@@ -9,8 +9,4 @@ export { LogoutButton } from "./components/logout-button";
 export { AuthSplashGate } from "./components/auth-splash-gate";
 export { AuthModal } from "./components/auth-modal";
 
-// Hooks
-export { useAuth } from "./hooks/use-auth";
-
-// Context
-export { UserProvider, useUser } from "./user-context";
+// Store hooks are exported from store.ts directly

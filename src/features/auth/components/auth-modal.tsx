@@ -6,22 +6,17 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
+import { useUnAuthedNewUser, useUnAuthedReturningUser } from "../store";
 
 interface AuthModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  unAuthedNewUser: boolean;
-  unAuthedReturningUser: boolean;
-  markAsVisited?: () => void;
 }
 
-export function AuthModal({
-  open,
-  onOpenChange,
-  unAuthedNewUser,
-  unAuthedReturningUser,
-  markAsVisited,
-}: AuthModalProps) {
+export function AuthModal({ open, onOpenChange }: AuthModalProps) {
+  const unAuthedNewUser = useUnAuthedNewUser();
+  const unAuthedReturningUser = useUnAuthedReturningUser();
+
   const isSignup = unAuthedNewUser;
   const isLogin = unAuthedReturningUser;
 
@@ -60,10 +55,7 @@ export function AuthModal({
                 Cancel
               </Button>
               <Button className="flex-1" asChild>
-                <Link
-                  to={isSignup ? "/signup" : "/login"}
-                  onClick={markAsVisited}
-                >
+                <Link to={isSignup ? "/signup" : "/login"}>
                   {isSignup ? "Sign up" : "Sign in"}
                 </Link>
               </Button>

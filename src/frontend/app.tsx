@@ -12,12 +12,13 @@ import {
   ChatLayout,
   ChatPage,
 } from "@/routes";
-import { AuthSplashGate, UserProvider } from "@/features/auth";
+import { AuthSplashGate } from "@/features/auth";
+import { AuthProvider } from "@/features/auth/auth-provider";
 
 export default function App() {
   return (
     <BrowserRouter>
-      <UserProvider>
+      <AuthProvider>
         <AuthSplashGate>
           <Routes>
             {/* Chat as primary interface at root */}
@@ -47,7 +48,7 @@ export default function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthSplashGate>
-      </UserProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

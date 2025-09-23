@@ -12,7 +12,7 @@ const AUTH_ROUTES = [
   "/signup",
   "/forgot-password",
   "/reset-password",
-];
+] as const;
 
 export function AuthSplashGate({ children }: AuthSplashGateProps) {
   const isLoading = useIsLoading();

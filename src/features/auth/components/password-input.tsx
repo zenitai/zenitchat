@@ -8,6 +8,7 @@ interface PasswordInputProps {
   onChange?: (value: string) => void;
   placeholder?: string;
   id?: string;
+  autoComplete?: string;
   "aria-describedby"?: string;
 }
 
@@ -16,6 +17,7 @@ export default function PasswordInput({
   onChange,
   placeholder = "Password",
   id: providedId,
+  autoComplete = "current-password",
   "aria-describedby": ariaDescribedBy,
 }: PasswordInputProps) {
   const generatedId = useId();
@@ -34,6 +36,7 @@ export default function PasswordInput({
           type={isVisible ? "text" : "password"}
           value={value}
           onChange={(e) => onChange?.(e.target.value)}
+          autoComplete={autoComplete}
           aria-describedby={ariaDescribedBy}
         />
         <button

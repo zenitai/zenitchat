@@ -180,6 +180,7 @@ export function SignupForm({
                         onChange={field.onChange}
                         placeholder="********"
                         id={field.name}
+                        autoComplete="new-password"
                         aria-describedby={`${field.name}-error`}
                       />
                     </FormControl>

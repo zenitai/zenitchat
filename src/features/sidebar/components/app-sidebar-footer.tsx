@@ -18,14 +18,13 @@ export function AppSidebarFooter() {
         <Link
           to="/settings"
           aria-label="Go to settings"
-          role="button"
           className="flex select-none flex-row items-center justify-between gap-3 rounded-lg px-3 py-3 hover:bg-sidebar-accent focus:bg-sidebar-accent focus:outline-none"
           data-discover="true"
         >
           <div className="flex w-full min-w-0 flex-row items-center gap-3">
             {imageUrl ? (
               <Avatar className="size-8 rounded-full ring-1 ring-muted-foreground/20">
-                <AvatarImage src={imageUrl} alt={displayName || "User"} />
+                <AvatarImage src={imageUrl} alt="" />
               </Avatar>
             ) : (
               <div

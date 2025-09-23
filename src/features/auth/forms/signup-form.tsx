@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form";
 import { authClient } from "@/features/auth/auth-client";
 import { useState } from "react";
-import { useAuth } from "../hooks/use-auth";
+import { useAuthActions } from "../store";
 import PasswordCreateInput from "../components/password-create-input";
 import PasswordInput from "../components/password-input";
 
@@ -56,7 +56,7 @@ export function SignupForm({
     },
   });
 
-  const { markAsVisited } = useAuth();
+  const { markAsVisited } = useAuthActions();
 
   const signUpWithGoogle = async () => {
     try {

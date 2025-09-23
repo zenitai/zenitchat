@@ -1,17 +1,13 @@
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
+import {
+  useUnAuthedNewUser,
+  useUnAuthedReturningUser,
+} from "@/features/auth/store";
 
-interface AuthCardProps {
-  unAuthedNewUser: boolean;
-  unAuthedReturningUser: boolean;
-  markAsVisited: () => void;
-}
-
-export function AuthCard({
-  unAuthedNewUser,
-  unAuthedReturningUser,
-  markAsVisited,
-}: AuthCardProps) {
+export function AuthCard() {
+  const unAuthedNewUser = useUnAuthedNewUser();
+  const unAuthedReturningUser = useUnAuthedReturningUser();
   if (!unAuthedNewUser && !unAuthedReturningUser) {
     return null; // Don't show card for authenticated users
   }
@@ -24,7 +20,7 @@ export function AuthCard({
     );
   }
 
-  const isNewUser = unAuthedNewUser; // Explicitly prioritize new user if both are true
+  const isNewUser = unAuthedNewUser;
   const title = isNewUser ? "Welcome to Zenit" : "Welcome back";
   const description = isNewUser
     ? "Create your account to start chatting with AI and manage your conversation history."
@@ -39,9 +35,7 @@ export function AuthCard({
         {description}
       </p>
       <Button variant="outline" size="sm" asChild className="w-full">
-        <Link to={buttonUrl} onClick={markAsVisited}>
-          {buttonText}
-        </Link>
+        <Link to={buttonUrl}>{buttonText}</Link>
       </Button>
     </div>
   );

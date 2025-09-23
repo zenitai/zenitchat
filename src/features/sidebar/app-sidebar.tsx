@@ -1,5 +1,5 @@
 import { useLocation } from "react-router";
-import { useAuth } from "@/features/auth";
+import { useIsAuthenticated } from "@/features/auth/store";
 import { useThreadData } from "./hooks/use-thread-data";
 import { useThreadGroups } from "./hooks/use-thread-groups";
 import { siteConfig } from "@/config/site.config";
@@ -11,7 +11,7 @@ import { AppSidebarFooter } from "./components/app-sidebar-footer";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const location = useLocation();
-  const auth = useAuth();
+  const isAuthenticated = useIsAuthenticated();
   const { threads } = useThreadData();
   const data = useThreadGroups(threads);
 
@@ -19,7 +19,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar className="p-2 bg-sidebar" {...props}>
       <AppSidebarHeader />
       <SidebarContent className="scroll-shadow hidden-scrollbar">
-        {auth.isAuthenticated && (
+        {isAuthenticated && (
           <>
             {data.threadGroups.length > 0 ? (
               /* Thread groups */
@@ -51,7 +51,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </>
         )}
       </SidebarContent>
-      <AppSidebarFooter auth={auth} />
+      <AppSidebarFooter />
       <SidebarRail />
     </Sidebar>
   );

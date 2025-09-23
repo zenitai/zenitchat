@@ -2,26 +2,11 @@ import { SidebarFooter } from "@/components/ui/sidebar";
 import { Link } from "react-router";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { AuthCard } from "./auth-card-sidebar-footer";
-import { useUser } from "@/features/auth";
+import { useUser, useIsAuthenticated } from "@/features/auth/store";
 import Avvvatars from "avvvatars-react";
 
-interface AppSidebarFooterProps {
-  auth: {
-    isAuthenticated: boolean;
-    unAuthedNewUser: boolean;
-    unAuthedReturningUser: boolean;
-    markAsVisited: () => void;
-  };
-}
-
-export function AppSidebarFooter({ auth }: AppSidebarFooterProps) {
-  const {
-    isAuthenticated,
-    unAuthedNewUser,
-    unAuthedReturningUser,
-    markAsVisited,
-  } = auth;
-
+export function AppSidebarFooter() {
+  const isAuthenticated = useIsAuthenticated();
   const user = useUser();
   const displayName =
     user?.name || user?.displayUsername || user?.username || "";
@@ -66,11 +51,7 @@ export function AppSidebarFooter({ auth }: AppSidebarFooterProps) {
           </div>
         </Link>
       ) : (
-        <AuthCard
-          unAuthedNewUser={unAuthedNewUser}
-          unAuthedReturningUser={unAuthedReturningUser}
-          markAsVisited={markAsVisited}
-        />
+        <AuthCard />
       )}
     </SidebarFooter>
   );

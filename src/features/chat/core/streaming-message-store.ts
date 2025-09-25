@@ -1,0 +1,57 @@
+import type { MyUIMessage } from "@/features/messages/types";
+import { throttle } from "../utils/throttle";
+
+/**
+ * Ephemeral store for streaming assistant messages.
+ *
+ * This implements the external store pattern to prevent React render loops
+ * during high-frequency streaming updates. It's similar to ReactChatState from useChat
+ * but simplified for just the streaming assistant message.
+ */
+export class StreamingMessageStore {
+  #message: MyUIMessage | null = null;
+  #messageCallbacks = new Set<() => void>();
+
+  get message(): MyUIMessage | null {
+    return this.#message;
+  }
+
+  set message(newMessage: MyUIMessage | null) {
+    this.#message = newMessage ? this.snapshot(newMessage) : null;
+    this.#callMessageCallbacks();
+  }
+
+  /**
+   * Deep clone values to ensure React Compiler detects nested changes
+   */
+  snapshot = <T>(value: T): T => structuredClone(value);
+
+  /**
+   * Register a callback to be notified when the message changes.
+   * Returns an unsubscribe function.
+   */
+  "~registerMessageCallback" = (
+    onChange: () => void,
+    throttleWaitMs?: number,
+  ): (() => void) => {
+    const callback = throttleWaitMs
+      ? throttle(onChange, throttleWaitMs)
+      : onChange;
+    this.#messageCallbacks.add(callback);
+    return () => this.#messageCallbacks.delete(callback);
+  };
+
+  /**
+   * Notify all registered callbacks of a message change
+   */
+  #callMessageCallbacks = () => {
+    this.#messageCallbacks.forEach((callback) => callback());
+  };
+}
+
+/**
+ * Factory function to create a new streaming message store
+ */
+export function createStreamingMessageStore(): StreamingMessageStore {
+  return new StreamingMessageStore();
+}

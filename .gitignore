@@ -40,11 +40,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# todos, guides
+# todos, guides, docs
 **/todo.md
 **/guide.md
 **/*.todo.md
 **/*.guide.md
+/docs/
 
 # scripts
 /scripts/

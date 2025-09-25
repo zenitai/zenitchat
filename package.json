@@ -58,6 +58,7 @@
     "shiki": "^3.12.2",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
+    "throttleit": "^2.1.0",
     "valibot": "^1.1.0",
     "zod": "^4.0.15",
     "zustand": "^5.0.8"

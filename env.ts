@@ -7,6 +7,7 @@ export const env = createEnv({
     AI_GATEWAY_API_KEY: v.pipe(v.string(), v.nonEmpty()),
     CONVEX_DEPLOYMENT: v.pipe(v.string(), v.nonEmpty()),
     BETTER_AUTH_SECRET: v.pipe(v.string(), v.nonEmpty()),
+    CONVEX_BRIDGE_API_KEY: v.pipe(v.string(), v.nonEmpty()),
     RESEND_API_KEY: v.pipe(v.string(), v.nonEmpty()),
     RESEND_WEBHOOK_SECRET: v.pipe(v.string(), v.nonEmpty()),
     GOOGLE_CLIENT_ID: v.pipe(v.string(), v.nonEmpty()),

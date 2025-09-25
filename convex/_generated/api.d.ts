@@ -12,8 +12,11 @@ import type * as auth from "../auth.js";
 import type * as email from "../email.js";
 import type * as emails_reset_password_email from "../emails/reset_password_email.js";
 import type * as emails_verification_email from "../emails/verification_email.js";
+import type * as helpers from "../helpers.js";
 import type * as http from "../http.js";
 import type * as messages from "../messages.js";
+import type * as server_messages from "../server/messages.js";
+import type * as server_threads from "../server/threads.js";
 import type * as threads from "../threads.js";
 import type * as user_configurations_models from "../user_configurations/models.js";
 
@@ -36,8 +39,11 @@ declare const fullApi: ApiFromModules<{
   email: typeof email;
   "emails/reset_password_email": typeof emails_reset_password_email;
   "emails/verification_email": typeof emails_verification_email;
+  helpers: typeof helpers;
   http: typeof http;
   messages: typeof messages;
+  "server/messages": typeof server_messages;
+  "server/threads": typeof server_threads;
   threads: typeof threads;
   "user_configurations/models": typeof user_configurations_models;
 }>;

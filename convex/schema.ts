@@ -9,6 +9,7 @@ export const messageParts = v.array(
       type: v.literal("text"),
       text: v.string(),
       state: v.optional(v.union(v.literal("streaming"), v.literal("done"))),
+      providerMetadata: v.optional(v.any()),
     }),
     // Reasoning part
     v.object({

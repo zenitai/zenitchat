@@ -13,6 +13,13 @@ export const messageMetadataSchema = v.object({
       total: v.optional(v.number()),
     }),
   ),
+  errors: v.optional(
+    v.array(
+      v.object({
+        message: v.string(),
+      }),
+    ),
+  ),
   // Additional metadata can be added here
 });
 

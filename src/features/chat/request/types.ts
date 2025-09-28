@@ -38,7 +38,7 @@ export type ActiveResponse<UI_MESSAGE extends UIMessage> = {
  * Options for the makeRequest function
  */
 export interface MakeRequestOptions {
-  store: StreamingMessageStore;
+  store: StreamingMessageStore<MyUIMessage>;
   messages: MyUIMessage[];
   fetchStream: (input: {
     signal: AbortSignal;

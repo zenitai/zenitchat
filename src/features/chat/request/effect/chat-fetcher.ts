@@ -1,4 +1,4 @@
-import { Effect } from "effect";
+import { Effect, Stream } from "effect";
 import { HttpClient, HttpBody } from "@effect/platform";
 import type { ChatFetcher } from "./types";
 import { env } from "@/env";
@@ -21,5 +21,9 @@ export const chatFetcher: ChatFetcher = ({ messages, model }) =>
         }),
       });
 
-    return processChatStream(response.stream);
+    return processChatStream(
+      response.stream.pipe(
+        Stream.catchTag("ResponseError", () => Stream.empty),
+      ),
+    );
   });

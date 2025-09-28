@@ -1,4 +1,4 @@
-import type { MyUIMessage } from "@/features/messages/types";
+import type { UIMessage } from "ai";
 import { throttle } from "../utils/throttle";
 
 /**
@@ -8,15 +8,15 @@ import { throttle } from "../utils/throttle";
  * during high-frequency streaming updates. It's similar to ReactChatState from useChat
  * but simplified for just the streaming assistant message.
  */
-export class StreamingMessageStore {
-  #message: MyUIMessage | null = null;
+export class StreamingMessageStore<UI_MESSAGE extends UIMessage = UIMessage> {
+  #message: UI_MESSAGE | null = null;
   #messageCallbacks = new Set<() => void>();
 
-  get message(): MyUIMessage | null {
+  get message(): UI_MESSAGE | null {
     return this.#message;
   }
 
-  set message(newMessage: MyUIMessage | null) {
+  set message(newMessage: UI_MESSAGE | null) {
     this.#message = newMessage ? this.snapshot(newMessage) : null;
     this.#callMessageCallbacks();
   }
@@ -52,6 +52,8 @@ export class StreamingMessageStore {
 /**
  * Factory function to create a new streaming message store
  */
-export function createStreamingMessageStore(): StreamingMessageStore {
-  return new StreamingMessageStore();
+export function createStreamingMessageStore<
+  UI_MESSAGE extends UIMessage = UIMessage,
+>(): StreamingMessageStore<UI_MESSAGE> {
+  return new StreamingMessageStore<UI_MESSAGE>();
 }

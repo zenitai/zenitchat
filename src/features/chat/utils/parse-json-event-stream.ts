@@ -3,7 +3,6 @@ import { createParser, type EventSourceMessage } from "eventsource-parser";
 import type { UIMessageChunk } from "ai";
 import { uiMessageChunkSchema } from "../request/schemas";
 import { safeParseJSON, type ParseResult } from "@ai-sdk/provider-utils";
-import type { ResponseError } from "@effect/platform/HttpClientError";
 export class StreamParseError extends Data.TaggedError("StreamParseError")<{
   readonly message: string;
   readonly cause?: Error;
@@ -117,11 +116,7 @@ export const safeParseEventData = (
  * - Filtering out failed parses
  */
 export const processChatStream = (
-  responseStream: Stream.Stream<
-    Uint8Array<ArrayBufferLike>,
-    ResponseError,
-    never
-  >,
+  responseStream: Stream.Stream<Uint8Array<ArrayBufferLike>, never, never>,
 ) => {
   const parserState = createParserState();
 
@@ -131,7 +126,7 @@ export const processChatStream = (
   // Parse event stream chunks
   const parsedStream = Stream.mapEffect(decodedStream, (chunk) =>
     parseEventStreamChunk(parserState, chunk),
-  );
+  ).pipe(Stream.catchTag("StreamParseError", () => Stream.empty));
 
   // Flatten parsed events
   const flattenedStream = Stream.flatMap(parsedStream, (events) =>
@@ -145,7 +140,9 @@ export const processChatStream = (
   );
 
   // Parse event data safely
-  const dataStream = Stream.mapEffect(filteredStream, safeParseEventData);
+  const dataStream = Stream.mapEffect(filteredStream, safeParseEventData).pipe(
+    Stream.catchTag("StreamParseError", () => Stream.empty),
+  );
 
   // Filter out failed parses, keeping only successful ones
   const messageStream = Stream.filterMap(dataStream, (parseResult) => {

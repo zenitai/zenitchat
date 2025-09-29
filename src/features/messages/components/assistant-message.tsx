@@ -63,7 +63,10 @@ export const AssistantMessage = memo(
           {message.metadata?.errors && message.metadata.errors.length > 0 && (
             <div className="mt-4">
               {message.metadata.errors.map((error, index) => (
-                <ErrorMessage key={index} message={error.message} />
+                <ErrorMessage
+                  key={`error-${index}-${error.message.slice(0, 20)}`}
+                  message={error.message}
+                />
               ))}
             </div>
           )}

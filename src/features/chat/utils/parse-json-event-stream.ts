@@ -68,7 +68,7 @@ export const parseEventStreamChunk = (state: ParserState, chunk: string) =>
         return error;
       }
       return new StreamParseError({
-        message: "Unexpected error in collectEvents",
+        message: "Unexpected error in parseEventStreamChunk",
         cause: error instanceof Error ? error : new Error(String(error)),
         type: "parser_error",
       });
@@ -119,6 +119,7 @@ export const processChatStream = (
   responseStream: Stream.Stream<Uint8Array<ArrayBufferLike>, never, never>,
 ) => {
   const parserState = createParserState();
+  let parseErrorCount = 0;
 
   // Decode text from response stream
   const decodedStream = Stream.decodeText(responseStream);
@@ -149,8 +150,18 @@ export const processChatStream = (
     if (parseResult.success) {
       return Option.some(parseResult.value);
     } else {
-      // Log the error but don't include this chunk
-      console.warn("Failed to parse chunk:", parseResult.error.message);
+      // Log parse errors with rate limiting to avoid flooding logs
+      parseErrorCount++;
+      if (parseErrorCount <= 3) {
+        console.warn(
+          `Failed to parse chunk (${parseErrorCount}/3):`,
+          parseResult.error.message,
+        );
+      } else if (parseErrorCount === 4) {
+        console.warn(
+          `Parse errors continue (${parseErrorCount}+ total). Suppressing further warnings.`,
+        );
+      }
       return Option.none();
     }
   });

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useSyncExternalStore } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import { getOrCreateStreamingStore } from "../core/streaming-registry";
 import type { MyUIMessage } from "@/features/messages/types";
 
@@ -19,18 +19,23 @@ export function useStreamingAssistant(
   streamingMessage: MyUIMessage | null;
 } {
   const { throttleMs } = options || {};
-  const storeRef = useRef(getOrCreateStreamingStore(threadId));
 
   const subscribeToStreamingMessage = useCallback(
-    (update: () => void) =>
-      storeRef.current?.["~registerMessageCallback"](update, throttleMs) ??
-      (() => {}),
-    [throttleMs],
+    (update: () => void) => {
+      const store = getOrCreateStreamingStore(threadId);
+      return (
+        store?.["~registerMessageCallback"](update, throttleMs) ?? (() => {})
+      );
+    },
+    [threadId, throttleMs],
   );
 
   const streamingMessage = useSyncExternalStore(
     subscribeToStreamingMessage,
-    () => storeRef.current?.message ?? null,
+    () => {
+      const store = getOrCreateStreamingStore(threadId);
+      return store?.message ?? null;
+    },
   );
 
   return {

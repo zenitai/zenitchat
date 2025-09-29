@@ -1,14 +1,14 @@
 import { useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router";
-import { useChat } from "@ai-sdk-tools/store";
-import { DefaultChatTransport } from "ai";
 import { AuthModal } from "@/features/auth";
 import { useIsAuthenticated } from "@/features/auth/store";
 import { useScrollToBottom } from "@/features/chat-input/hooks/use-scroll-to-bottom";
 import { Message } from "@/features/messages/message";
-import type { MyUIMessage } from "@/features/messages/types";
 import { ChatInput } from "@/features/chat-input/chat-input";
 import { useInputHeight } from "@/features/chat-input/store";
+import { useDisplayMessages } from "@/features/chat/hooks/use-display-messages";
+import { sendMessage } from "@/features/chat/request/effect/send-messsage";
+import { useConvexFunctions } from "@/features/chat/request/effect/use-convex-functions";
 
 export function ChatPage() {
   const { threadId } = useParams<{ threadId?: string }>();
@@ -16,13 +16,10 @@ export function ChatPage() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const chatInputHeight = useInputHeight();
   const isAuthenticated = useIsAuthenticated();
+  const convexFunctions = useConvexFunctions();
 
-  // Use the useChat hook for message management
-  const { messages, sendMessage, error } = useChat<MyUIMessage>({
-    transport: new DefaultChatTransport({
-      api: "/api/chat",
-    }),
-  });
+  // Get display messages using our custom hook
+  const messages = useDisplayMessages(threadId);
 
   // Use scroll to bottom hook
   const {
@@ -44,21 +41,35 @@ export function ChatPage() {
     [updateScrollPosition],
   );
 
-  const handleSubmit = (text: string) => {
+  const handleSubmit = async (text: string) => {
     // Check if user is authenticated before allowing message submission
     if (!isAuthenticated) {
       setShowAuthModal(true);
       return;
     }
 
-    // If no threadId, create a new thread by navigating to a new URL
-    if (!threadId) {
-      const newThreadId = crypto.randomUUID();
-      navigate(`/chat/${newThreadId}`, { replace: true });
+    // Determine if this is a new thread
+    const isNewThread = !threadId;
+    const currentThreadId = threadId || crypto.randomUUID();
+
+    // If no threadId, navigate to the new thread URL
+    if (isNewThread) {
+      navigate(`/chat/${currentThreadId}`, { replace: true });
     }
 
-    // Send message using useChat hook
-    sendMessage({ text });
+    try {
+      // Send message using our Effect-based sendMessage function
+      await sendMessage({
+        threadId: currentThreadId,
+        content: text,
+        model: "gpt-4o-mini", // Default model
+        isNewThread,
+        convexFunctions,
+      });
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      // You could add error handling UI here
+    }
   };
 
   return (
@@ -87,14 +98,6 @@ export function ChatPage() {
           ) : (
             // Empty state - no text during loading, just empty space
             <div />
-          )}
-
-          {/* Show error message if there's an error */}
-          {error && (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">
-              <p className="font-medium">Something went wrong</p>
-              <p className="text-sm">Please try again or refresh the page.</p>
-            </div>
           )}
           <div ref={messagesEndRef} />
         </div>

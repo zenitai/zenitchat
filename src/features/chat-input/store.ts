@@ -65,6 +65,12 @@ export const useSelectedModel = () => {
 // Hook for reading input text
 export const useInputText = () => useChatInputStore((state) => state.inputText);
 
+// Getter function for accessing store outside React components
+export const getSelectedModel = () => {
+  const state = useChatInputStore.getState();
+  return state.selectedModel || DEFAULT_MODEL;
+};
+
 // Hook for reading input height
 export const useInputHeight = () =>
   useChatInputStore((state) => state.inputHeight);

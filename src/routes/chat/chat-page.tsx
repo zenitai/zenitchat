@@ -62,7 +62,6 @@ export function ChatPage() {
       await sendMessage({
         threadId: currentThreadId,
         content: text,
-        model: "gpt-4o-mini", // Default model
         isNewThread,
         convexFunctions,
       });

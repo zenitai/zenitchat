@@ -4,6 +4,7 @@ import { chatFetcher } from "./request/chat-fetcher";
 import { makeRequest } from "./request/make-request";
 import { getOrCreateStreamingStore } from "./core/streaming-registry";
 import { convexMessagesToUIMessages } from "@/features/messages/utils";
+import { getSelectedModel } from "@/features/chat-input/store";
 import type { MyUIMessage } from "@/features/messages/types";
 import type { SendMessageOptions } from "./types";
 
@@ -40,12 +41,16 @@ const sendMessageEffect = ({
   convexFunctions,
 }: SendMessageOptions) =>
   Effect.gen(function* () {
+    // Get model from Zustand if not provided
+    const selectedModel =
+      model || (yield* Effect.sync(() => getSelectedModel().id));
+
     const store = yield* Effect.sync(() => getOrCreateStreamingStore(threadId));
     store.message = null;
 
     const { userMessage, assistantMessage } = yield* createMessagesToAdd(
       content,
-      model,
+      selectedModel,
     );
 
     // Create thread if it's a new thread
@@ -53,7 +58,7 @@ const sendMessageEffect = ({
       yield* convexFunctions.mutations.createThread({
         threadId,
         title: "New thread",
-        model,
+        model: selectedModel,
       });
     }
 
@@ -95,7 +100,7 @@ const sendMessageEffect = ({
       fetchStream: () =>
         chatFetcher({
           messages: [...history, userMessage],
-          model,
+          model: selectedModel,
         }),
     }).pipe(
       Effect.tapErrorTag("MakeRequestError", (error) => {
@@ -111,7 +116,7 @@ const sendMessageEffect = ({
             generationStatus: "error",
             metadata: {
               ...partialMessage?.metadata,
-              model,
+              model: selectedModel,
               errors: [
                 {
                   type: error.type,
@@ -135,7 +140,7 @@ const sendMessageEffect = ({
       generationStatus: "ready",
       metadata: {
         ...result.metadata,
-        model,
+        model: selectedModel,
         errors: undefined,
       },
     });

@@ -1,5 +1,5 @@
 import { Effect, Stream } from "effect";
-import { createStreamingUIMessageState } from "../../core/streaming-ui-message-state";
+import { createStreamingUIMessageState } from "../core/streaming-ui-message-state";
 import { MyUIMessage, MessageMetadata } from "@/features/messages/types";
 import { type MakeRequestOptions, MakeRequestError } from "./types";
 import { processUIMessageStream } from "./process-ui-message";

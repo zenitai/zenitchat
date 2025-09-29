@@ -1,18 +1,17 @@
 import type { UIMessageChunk } from "ai";
 import type { MyUIMessage } from "@/features/messages/types";
-import type { StreamingMessageStore } from "../../core/streaming-message-store";
+import type { StreamingMessageStore } from "../core/streaming-message-store";
 import type {
   UIDataTypesToSchemas,
   InferUIMessageData,
   InferUIMessageMetadata,
-} from "../../core/types";
+} from "../core/types";
 import { StandardSchemaV1, Validator } from "@ai-sdk/provider-utils";
 import type { Effect, Stream } from "effect";
 import { Data } from "effect";
 import type { HttpClient } from "@effect/platform";
 import type { HttpBody } from "@effect/platform";
 import type { HttpClientError } from "@effect/platform/HttpClientError";
-import type { ConvexFunctions } from "./use-convex-functions";
 
 // ============================================================================
 // OPTIONS
@@ -48,14 +47,6 @@ export interface MakeRequestOptions {
   dataPartSchemas?: UIDataTypesToSchemas<InferUIMessageData<MyUIMessage>>;
   //onToolCall will go here
   //onData will go here
-}
-
-export interface SendMessageOptions {
-  threadId: string;
-  content: string;
-  model: string;
-  isNewThread: boolean;
-  convexFunctions: ConvexFunctions;
 }
 
 // ============================================================================

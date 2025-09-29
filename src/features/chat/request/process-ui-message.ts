@@ -5,12 +5,12 @@ import {
   validateTypes,
   Validator,
 } from "@ai-sdk/provider-utils";
-import { parsePartialJson } from "../../utils/parse-partial-json";
+import { parsePartialJson } from "../utils/parse-partial-json";
 import {
   isDataUIMessageChunk,
   isToolUIPart,
   getToolName,
-} from "../../utils/message-parts";
+} from "../utils/message-parts";
 import {
   updateToolPart,
   updateDynamicToolPart,
@@ -40,8 +40,8 @@ import type {
   DataUIMessageChunk,
   InferUIMessageChunk,
   StreamingUIMessageState,
-} from "../../core/types";
-import { StreamingMessageStore } from "../../core/streaming-message-store";
+} from "../core/types";
+import { StreamingMessageStore } from "../core/streaming-message-store";
 
 interface ProcessUIMessageStreamOptions<UI_MESSAGE extends UIMessage> {
   stream: Stream.Stream<UIMessageChunk>;

@@ -6,20 +6,20 @@ import {
   Validator,
   StandardSchemaV1,
 } from "@ai-sdk/provider-utils";
-import { mergeObjects } from "../../utils/merge-objects";
+import { mergeObjects } from "../utils/merge-objects";
 import type {
   InferUIMessageMetadata,
   InferUIMessageTools,
   StreamingUIMessageState,
-} from "../../core/types";
-import { isToolUIPart } from "../../utils/message-parts";
+} from "../core/types";
+import { isToolUIPart } from "../utils/message-parts";
 import type {
   DynamicToolUIPart,
   ToolUIPart,
   UIMessage,
   ProviderMetadata,
 } from "ai";
-import { StreamingMessageStore } from "../../core/streaming-message-store";
+import { StreamingMessageStore } from "../core/streaming-message-store";
 
 export const getToolInvocation = <UI_MESSAGE extends UIMessage>(
   toolCallId: string,

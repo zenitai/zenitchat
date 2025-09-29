@@ -2,7 +2,7 @@ import { Effect, Stream } from "effect";
 import { HttpClient, HttpBody } from "@effect/platform";
 import type { ChatFetcher } from "./types";
 import { env } from "@/env";
-import { processChatStream } from "../../utils/parse-json-event-stream";
+import { processChatStream } from "../utils/parse-json-event-stream";
 
 export const chatFetcher: ChatFetcher = ({ messages, model }) =>
   Effect.gen(function* () {

@@ -1,8 +1,8 @@
 import { Effect } from "effect";
 import { FetchHttpClient } from "@effect/platform";
-import { chatFetcher } from "./chat-fetcher";
-import { makeRequest } from "./make-request";
-import { getOrCreateStreamingStore } from "../../core/streaming-registry";
+import { chatFetcher } from "./request/chat-fetcher";
+import { makeRequest } from "./request/make-request";
+import { getOrCreateStreamingStore } from "./core/streaming-registry";
 import { convexMessagesToUIMessages } from "@/features/messages/utils";
 import type { MyUIMessage } from "@/features/messages/types";
 import type { SendMessageOptions } from "./types";

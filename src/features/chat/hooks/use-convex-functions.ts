@@ -2,7 +2,7 @@ import { useMutation, useConvex } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { Effect } from "effect";
-import { ConvexError } from "./types";
+import { ConvexError } from "../request/types";
 
 /**
  * Hook that provides all Convex mutations and queries needed for message operations

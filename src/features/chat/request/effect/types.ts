@@ -12,6 +12,11 @@ import { Data } from "effect";
 import type { HttpClient } from "@effect/platform";
 import type { HttpBody } from "@effect/platform";
 import type { HttpClientError } from "@effect/platform/HttpClientError";
+import type { ConvexFunctions } from "./use-convex-functions";
+
+// ============================================================================
+// OPTIONS
+// ============================================================================
 
 /**
  * Options for the chat fetcher function
@@ -35,6 +40,7 @@ export type ChatFetcher = (options: ChatFetcherOptions) => ChatFetcherResult;
 export interface MakeRequestOptions {
   store: StreamingMessageStore<MyUIMessage>;
   messages: MyUIMessage[];
+  messageId?: string;
   fetchStream: () => ChatFetcherResult;
   messageMetadataSchema?:
     | Validator<InferUIMessageMetadata<MyUIMessage>>
@@ -43,6 +49,18 @@ export interface MakeRequestOptions {
   //onToolCall will go here
   //onData will go here
 }
+
+export interface SendMessageOptions {
+  threadId: string;
+  content: string;
+  model: string;
+  isNewThread: boolean;
+  convexFunctions: ConvexFunctions;
+}
+
+// ============================================================================
+// ERRORS
+// ============================================================================
 
 export class MakeRequestError extends Data.TaggedError("MakeRequestError")<{
   readonly type:
@@ -62,6 +80,7 @@ export class MakeRequestError extends Data.TaggedError("MakeRequestError")<{
   readonly reason: string;
   readonly message: string;
   readonly originalError?: unknown;
+  readonly timestamp: number;
 }> {}
 
 export class ProcessUIMessageOperationError extends Data.TaggedError(
@@ -81,6 +100,8 @@ export class ProcessUIMessageStreamError extends Data.TaggedError(
 
 export class ConvexError extends Data.TaggedError("ConvexError")<{
   readonly operation: string;
-  readonly errorMessage: string;
+  readonly reason: string;
+  readonly message: string;
   readonly originalError: unknown;
+  readonly timestamp: number;
 }> {}

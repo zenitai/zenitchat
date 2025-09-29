@@ -63,8 +63,6 @@ export const processUIMessageStream = <UI_MESSAGE extends UIMessage>(
     (chunk) =>
       Effect.catchAll(
         Effect.gen(function* () {
-          console.log("Processing chunk:", chunk);
-
           switch (chunk.type) {
             case "text-start": {
               const textPart: TextUIPart = {
@@ -467,6 +465,7 @@ export const processUIMessageStream = <UI_MESSAGE extends UIMessage>(
                 reason: message,
                 message,
                 originalError: chunk,
+                timestamp: Date.now(),
               });
 
               return yield* Effect.fail(makeRequestError);

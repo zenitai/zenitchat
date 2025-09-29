@@ -1,5 +1,5 @@
 import { useCallback, useRef, useSyncExternalStore } from "react";
-import { peekStreamingStore } from "../core/streaming-registry";
+import { getOrCreateStreamingStore } from "../core/streaming-registry";
 import type { MyUIMessage } from "@/features/messages/types";
 
 interface UseStreamingAssistantOptions {
@@ -19,7 +19,7 @@ export function useStreamingAssistant(
   streamingMessage: MyUIMessage | null;
 } {
   const { throttleMs } = options || {};
-  const storeRef = useRef(peekStreamingStore(threadId));
+  const storeRef = useRef(getOrCreateStreamingStore(threadId));
 
   const subscribeToStreamingMessage = useCallback(
     (update: () => void) =>

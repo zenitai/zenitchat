@@ -15,6 +15,7 @@ import type * as emails_verification_email from "../emails/verification_email.js
 import type * as helpers from "../helpers.js";
 import type * as http from "../http.js";
 import type * as messages from "../messages.js";
+import type * as schema_messages from "../schema/messages.js";
 import type * as server_messages from "../server/messages.js";
 import type * as server_threads from "../server/threads.js";
 import type * as threads from "../threads.js";
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   helpers: typeof helpers;
   http: typeof http;
   messages: typeof messages;
+  "schema/messages": typeof schema_messages;
   "server/messages": typeof server_messages;
   "server/threads": typeof server_threads;
   threads: typeof threads;

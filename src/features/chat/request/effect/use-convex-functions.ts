@@ -1,13 +1,8 @@
 import { useMutation, useConvex } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { Micro } from "effect";
-
-export class ConvexError extends Micro.TaggedError("ConvexError")<{
-  readonly operation: string;
-  readonly errorMessage: string;
-  readonly originalError: unknown;
-}> {}
+import { Effect } from "effect";
+import { ConvexError } from "./types";
 
 /**
  * Hook that provides all Convex mutations and queries needed for message operations
@@ -98,65 +93,77 @@ export function useConvexFunctions() {
 
   // Effect-wrapped functions using Micro.tryPromise
   const createThread = (args: Parameters<typeof createThreadConvex>[0]) =>
-    Micro.tryPromise({
+    Effect.tryPromise({
       try: () => createThreadConvex(args),
       catch: (error) =>
         new ConvexError({
           operation: "createThread",
-          errorMessage: `Failed to create thread: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
+          reason: "Failed to create thread",
+          message: `Failed to create thread: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
           originalError: error,
+          timestamp: Date.now(),
         }),
     });
   const addMessagesToThread = (
     args: Parameters<typeof addMessagesToThreadConvex>[0],
   ) =>
-    Micro.tryPromise({
+    Effect.tryPromise({
       try: () => addMessagesToThreadConvex(args),
       catch: (error) =>
         new ConvexError({
           operation: "addMessagesToThread",
-          errorMessage: `Failed to add messages to thread: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
+          reason: "Failed to add messages to thread",
+          message: `Failed to add messages to thread: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
           originalError: error,
+          timestamp: Date.now(),
         }),
     });
   const updateMessage = (args: Parameters<typeof updateMessageConvex>[0]) =>
-    Micro.tryPromise({
+    Effect.tryPromise({
       try: () => updateMessageConvex(args),
       catch: (error) =>
         new ConvexError({
           operation: "updateMessage",
-          errorMessage: `Failed to update message: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
+          reason: "Failed to update message",
+          message: `Failed to update message: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
           originalError: error,
+          timestamp: Date.now(),
         }),
     });
   const setMessageError = (args: Parameters<typeof setMessageErrorConvex>[0]) =>
-    Micro.tryPromise({
+    Effect.tryPromise({
       try: () => setMessageErrorConvex(args),
       catch: (error) =>
         new ConvexError({
           operation: "setMessageError",
-          errorMessage: `Failed to set message error: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
+          reason: "Failed to set message error",
+          message: `Failed to set message error: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
           originalError: error,
+          timestamp: Date.now(),
         }),
     });
   const updateThread = (args: Parameters<typeof updateThreadConvex>[0]) =>
-    Micro.tryPromise({
+    Effect.tryPromise({
       try: () => updateThreadConvex(args),
       catch: (error) =>
         new ConvexError({
           operation: "updateThread",
-          errorMessage: `Failed to update thread: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
+          reason: "Failed to update thread",
+          message: `Failed to update thread: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
           originalError: error,
+          timestamp: Date.now(),
         }),
     });
   const fetchThreadMessages = (threadId: string) =>
-    Micro.tryPromise({
+    Effect.tryPromise({
       try: () => fetchThreadMessagesConvex(threadId),
       catch: (error) =>
         new ConvexError({
           operation: "fetchThreadMessages",
-          errorMessage: `Failed to fetch thread messages: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
+          reason: "Failed to fetch thread messages",
+          message: `Failed to fetch thread messages: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
           originalError: error,
+          timestamp: Date.now(),
         }),
     });
 

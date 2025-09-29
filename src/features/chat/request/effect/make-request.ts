@@ -1,7 +1,7 @@
 import { Effect, Stream } from "effect";
 import { createStreamingUIMessageState } from "../../core/streaming-ui-message-state";
 import { MyUIMessage, MessageMetadata } from "@/features/messages/types";
-import { MakeRequestOptions, MakeRequestError } from "./types";
+import { type MakeRequestOptions, MakeRequestError } from "./types";
 import { processUIMessageStream } from "./process-ui-message";
 import { updateMessageMetadata, write } from "./process-ui-message-utils";
 import isNetworkError from "is-network-error";
@@ -11,7 +11,7 @@ export const makeRequest = (options: MakeRequestOptions) =>
     Effect.sync(() => ({
       state: createStreamingUIMessageState<MyUIMessage>({
         lastMessage: options.messages.at(-1),
-        messageId: crypto.randomUUID(),
+        messageId: options.messageId ?? crypto.randomUUID(),
       }),
     })),
     (activeResponse) =>
@@ -35,15 +35,33 @@ export const makeRequest = (options: MakeRequestOptions) =>
           const errorMessage = error.message || "Request error occurred";
           const errorReason = error.reason;
 
+          // Truncate the request body to prevent memory issues
+          const sanitizedError = {
+            ...error,
+            request: {
+              ...error.request,
+              body:
+                error.request.body &&
+                typeof error.request.body === "object" &&
+                "body" in error.request.body
+                  ? {
+                      ...error.request.body,
+                      body: "TRUNCATED_BODY",
+                    }
+                  : error.request.body,
+            },
+          };
+
           // Check if it's a network error using is-network-error
-          if (isNetworkError(error)) {
+          if (isNetworkError(sanitizedError)) {
             return Effect.fail(
               new MakeRequestError({
                 type: "network",
                 reason:
                   "Unable to connect to the server. Please check your internet connection and try again.",
                 message: errorMessage,
-                originalError: error,
+                originalError: sanitizedError,
+                timestamp: Date.now(),
               }),
             );
           }
@@ -56,7 +74,8 @@ export const makeRequest = (options: MakeRequestOptions) =>
                   type: "transport",
                   reason: "Connection failed. Please try again in a moment.",
                   message: errorMessage,
-                  originalError: error,
+                  originalError: sanitizedError,
+                  timestamp: Date.now(),
                 }),
               );
             case "Encode":
@@ -65,7 +84,8 @@ export const makeRequest = (options: MakeRequestOptions) =>
                   type: "encode",
                   reason: "Failed to prepare your request. Please try again.",
                   message: errorMessage,
-                  originalError: error,
+                  originalError: sanitizedError,
+                  timestamp: Date.now(),
                 }),
               );
             case "InvalidUrl":
@@ -75,7 +95,8 @@ export const makeRequest = (options: MakeRequestOptions) =>
                   reason:
                     "Invalid request configuration. Please refresh the page and try again.",
                   message: errorMessage,
-                  originalError: error,
+                  originalError: sanitizedError,
+                  timestamp: Date.now(),
                 }),
               );
             default:
@@ -84,7 +105,8 @@ export const makeRequest = (options: MakeRequestOptions) =>
                   type: "unknown",
                   reason: "Something went wrong. Please try again.",
                   message: errorMessage,
-                  originalError: error,
+                  originalError: sanitizedError,
+                  timestamp: Date.now(),
                 }),
               );
           }
@@ -99,6 +121,7 @@ export const makeRequest = (options: MakeRequestOptions) =>
                   reason: "Server error occurred. Please try again later.",
                   message: error.message || "Response error occurred",
                   originalError: error,
+                  timestamp: Date.now(),
                 }),
               );
             case "Decode":
@@ -108,6 +131,7 @@ export const makeRequest = (options: MakeRequestOptions) =>
                   reason: "Received an invalid response. Please try again.",
                   message: error.message || "Response error occurred",
                   originalError: error,
+                  timestamp: Date.now(),
                 }),
               );
             case "EmptyBody":
@@ -118,6 +142,7 @@ export const makeRequest = (options: MakeRequestOptions) =>
                     "Server returned an empty response. Please try again.",
                   message: error.message || "Response error occurred",
                   originalError: error,
+                  timestamp: Date.now(),
                 }),
               );
             default:
@@ -130,6 +155,7 @@ export const makeRequest = (options: MakeRequestOptions) =>
                     "Something went wrong with the server response. Please try again.",
                   message: error.message || "Response error occurred",
                   originalError: error,
+                  timestamp: Date.now(),
                 }),
               );
           }
@@ -144,6 +170,7 @@ export const makeRequest = (options: MakeRequestOptions) =>
                   reason: "Invalid response format. Please try again.",
                   message: "HTTP body error occurred",
                   originalError: error,
+                  timestamp: Date.now(),
                 }),
               );
             case "SchemaError":
@@ -153,6 +180,7 @@ export const makeRequest = (options: MakeRequestOptions) =>
                   reason: "Response validation failed. Please try again.",
                   message: "HTTP body error occurred",
                   originalError: error,
+                  timestamp: Date.now(),
                 }),
               );
             default:
@@ -163,6 +191,7 @@ export const makeRequest = (options: MakeRequestOptions) =>
                     "Something went wrong processing the response. Please try again.",
                   message: "HTTP body error occurred",
                   originalError: error,
+                  timestamp: Date.now(),
                 }),
               );
           }
@@ -174,6 +203,7 @@ export const makeRequest = (options: MakeRequestOptions) =>
               reason: "Failed to process the response. Please try again.",
               message: `Stream processing failed with ${error.count} errors`,
               originalError: error.errors,
+              timestamp: Date.now(),
             }),
           );
         }),

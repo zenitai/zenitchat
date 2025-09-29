@@ -67,12 +67,7 @@ export const addMessagesToThread = mutation({
           ),
         ),
         attachmentIds: v.optional(v.array(v.string())),
-        metadata: v.optional(
-          v.object({
-            model: v.optional(v.string()),
-            providerOptions: v.optional(v.any()),
-          }),
-        ),
+        metadata: v.optional(messageMetadata),
       }),
     ),
   },
@@ -182,7 +177,6 @@ export const setMessageError = mutation({
 export const updateMessage = mutation({
   args: {
     messageId: v.string(),
-    threadId: v.optional(v.string()),
     parts: v.optional(messageParts),
     generationStatus: v.optional(
       v.union(
@@ -249,11 +243,11 @@ export const updateMessage = mutation({
     // Update the message
     await ctx.db.patch(message._id, updateData);
 
-    // Update thread status if threadId is provided and generationStatus changed
-    if (args.threadId && args.generationStatus !== undefined) {
+    // Update thread status if generationStatus changed, using the message's threadId
+    if (args.generationStatus !== undefined) {
       const thread = await ctx.db
         .query("threads")
-        .withIndex("by_thread_id", (q) => q.eq("threadId", args.threadId!))
+        .withIndex("by_thread_id", (q) => q.eq("threadId", message.threadId))
         .first();
 
       if (thread && thread.userId === userId) {
@@ -292,12 +286,7 @@ export const createThreadWithMessages = mutation({
           ),
         ),
         attachmentIds: v.optional(v.array(v.string())),
-        metadata: v.optional(
-          v.object({
-            model: v.optional(v.string()),
-            providerOptions: v.optional(v.any()),
-          }),
-        ),
+        metadata: v.optional(messageMetadata),
       }),
     ),
   },

@@ -1,4 +1,4 @@
-import { Effect, Stream } from "effect";
+import { Effect, Stream, Console } from "effect";
 import { createStreamingUIMessageState } from "../core/streaming-ui-message-state";
 import { MyUIMessage, MessageMetadata } from "@/features/messages/types";
 import { type MakeRequestOptions, MakeRequestError } from "./types";
@@ -35,32 +35,30 @@ export const makeRequest = (options: MakeRequestOptions) =>
           const errorMessage = error.message || "Request error occurred";
           const errorReason = error.reason;
 
-          // Truncate the request body to prevent memory issues
-          const sanitizedError = {
-            ...error,
-            request: {
-              ...error.request,
-              body:
-                error.request.body &&
-                typeof error.request.body === "object" &&
-                "body" in error.request.body
-                  ? {
-                      ...error.request.body,
-                      body: "TRUNCATED_BODY",
-                    }
-                  : error.request.body,
-            },
-          };
+          // Create sanitized error for storage
+          const sanitizedOriginalError = error.request
+            ? {
+                request: {
+                  ...error.request,
+                  body:
+                    error.request.body &&
+                    typeof error.request.body === "object" &&
+                    "body" in error.request.body
+                      ? { ...error.request.body, body: "TRUNCATED_BODY" }
+                      : error.request.body,
+                },
+              }
+            : undefined;
 
-          // Check if it's a network error using is-network-error
-          if (isNetworkError(sanitizedError)) {
+          // Check if it's a network error using original error (preserves Error prototype)
+          if (isNetworkError(error.cause ?? error)) {
             return Effect.fail(
               new MakeRequestError({
                 type: "network",
                 reason:
                   "Unable to connect to the server. Please check your internet connection and try again.",
                 message: errorMessage,
-                originalError: sanitizedError,
+                originalError: sanitizedOriginalError,
                 timestamp: Date.now(),
               }),
             );
@@ -74,7 +72,7 @@ export const makeRequest = (options: MakeRequestOptions) =>
                   type: "transport",
                   reason: "Connection failed. Please try again in a moment.",
                   message: errorMessage,
-                  originalError: sanitizedError,
+                  originalError: sanitizedOriginalError,
                   timestamp: Date.now(),
                 }),
               );
@@ -84,7 +82,7 @@ export const makeRequest = (options: MakeRequestOptions) =>
                   type: "encode",
                   reason: "Failed to prepare your request. Please try again.",
                   message: errorMessage,
-                  originalError: sanitizedError,
+                  originalError: sanitizedOriginalError,
                   timestamp: Date.now(),
                 }),
               );
@@ -95,7 +93,7 @@ export const makeRequest = (options: MakeRequestOptions) =>
                   reason:
                     "Invalid request configuration. Please refresh the page and try again.",
                   message: errorMessage,
-                  originalError: sanitizedError,
+                  originalError: sanitizedOriginalError,
                   timestamp: Date.now(),
                 }),
               );
@@ -105,7 +103,7 @@ export const makeRequest = (options: MakeRequestOptions) =>
                   type: "unknown",
                   reason: "Something went wrong. Please try again.",
                   message: errorMessage,
-                  originalError: sanitizedError,
+                  originalError: sanitizedOriginalError,
                   timestamp: Date.now(),
                 }),
               );
@@ -228,11 +226,10 @@ export const makeRequest = (options: MakeRequestOptions) =>
               yield* write(options.store, activeResponse.state);
             }),
             (operationError) => {
-              console.warn(
+              return Console.warn(
                 "Failed to update message metadata or write state:",
                 operationError,
               );
-              return Effect.void;
             },
           ),
         ),

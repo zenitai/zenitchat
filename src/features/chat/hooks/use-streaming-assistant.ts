@@ -1,5 +1,8 @@
 import { useCallback, useSyncExternalStore } from "react";
-import { getOrCreateStreamingStore } from "../core/streaming-registry";
+import {
+  getOrCreateStreamingStore,
+  peekStreamingStore,
+} from "../core/streaming-registry";
 import type { MyUIMessage } from "@/features/messages/types";
 
 interface UseStreamingAssistantOptions {
@@ -34,6 +37,11 @@ export function useStreamingAssistant(
     subscribeToStreamingMessage,
     () => {
       const store = getOrCreateStreamingStore(threadId);
+      return store?.message ?? null;
+    },
+    () => {
+      // Server snapshot for SSR to avoid hydration mismatch
+      const store = peekStreamingStore(threadId);
       return store?.message ?? null;
     },
   );

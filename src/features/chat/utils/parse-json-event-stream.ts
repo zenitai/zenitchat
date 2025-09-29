@@ -1,4 +1,4 @@
-import { Micro, Data, Stream, Option } from "effect";
+import { Effect, Data, Stream, Option } from "effect";
 import { createParser, type EventSourceMessage } from "eventsource-parser";
 import type { UIMessageChunk } from "ai";
 import { uiMessageChunkSchema } from "../request/schemas";
@@ -38,7 +38,7 @@ export const createParserState = (): ParserState => {
 };
 
 export const parseEventStreamChunk = (state: ParserState, chunk: string) =>
-  Micro.try({
+  Effect.try({
     try: () => {
       if (!state.parser) {
         throw new StreamParseError({
@@ -77,10 +77,10 @@ export const parseEventStreamChunk = (state: ParserState, chunk: string) =>
 
 export const safeParseEventData = (
   event: EventSourceMessage,
-): Micro.Micro<ParseResult<UIMessageChunk>, StreamParseError, never> =>
-  Micro.tryPromise({
+): Effect.Effect<ParseResult<UIMessageChunk>, StreamParseError, never> =>
+  Effect.tryPromise({
     try: async () => {
-      if (event.data == null) {
+      if (event.data === undefined || event.data === null) {
         throw new StreamParseError({
           message: "Missing event data in SSE message",
           type: "missing_data",

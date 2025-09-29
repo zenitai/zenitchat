@@ -68,6 +68,7 @@ export function ChatPage() {
     } catch (error) {
       console.error("Failed to send message:", error);
       // You could add error handling UI here
+      // or maybe telemetry/toast notifications
     }
   };
 

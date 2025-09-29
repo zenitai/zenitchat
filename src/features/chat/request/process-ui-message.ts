@@ -79,6 +79,15 @@ export const processUIMessageStream = <UI_MESSAGE extends UIMessage>(
 
             case "text-delta": {
               const textPart = options.state.activeTextParts[chunk.id];
+              if (!textPart) {
+                operationErrors.push(
+                  new ProcessUIMessageOperationError({
+                    reason: "Missing active text part",
+                    message: `text-delta without text-start id=${chunk.id}`,
+                  }),
+                );
+                break;
+              }
               textPart.text += chunk.delta;
               textPart.providerMetadata =
                 chunk.providerMetadata ?? textPart.providerMetadata;
@@ -88,6 +97,15 @@ export const processUIMessageStream = <UI_MESSAGE extends UIMessage>(
 
             case "text-end": {
               const textPart = options.state.activeTextParts[chunk.id];
+              if (!textPart) {
+                operationErrors.push(
+                  new ProcessUIMessageOperationError({
+                    reason: "Missing active text part",
+                    message: `text-end without text-start id=${chunk.id}`,
+                  }),
+                );
+                break;
+              }
               textPart.state = "done";
               textPart.providerMetadata =
                 chunk.providerMetadata ?? textPart.providerMetadata;
@@ -112,6 +130,15 @@ export const processUIMessageStream = <UI_MESSAGE extends UIMessage>(
             case "reasoning-delta": {
               const reasoningPart =
                 options.state.activeReasoningParts[chunk.id];
+              if (!reasoningPart) {
+                operationErrors.push(
+                  new ProcessUIMessageOperationError({
+                    reason: "Missing active reasoning part",
+                    message: `reasoning-delta without reasoning-start id=${chunk.id}`,
+                  }),
+                );
+                break;
+              }
               reasoningPart.text += chunk.delta;
               reasoningPart.providerMetadata =
                 chunk.providerMetadata ?? reasoningPart.providerMetadata;
@@ -122,6 +149,15 @@ export const processUIMessageStream = <UI_MESSAGE extends UIMessage>(
             case "reasoning-end": {
               const reasoningPart =
                 options.state.activeReasoningParts[chunk.id];
+              if (!reasoningPart) {
+                operationErrors.push(
+                  new ProcessUIMessageOperationError({
+                    reason: "Missing active reasoning part",
+                    message: `reasoning-end without reasoning-start id=${chunk.id}`,
+                  }),
+                );
+                break;
+              }
               reasoningPart.providerMetadata =
                 chunk.providerMetadata ?? reasoningPart.providerMetadata;
               reasoningPart.state = "done";
@@ -207,6 +243,15 @@ export const processUIMessageStream = <UI_MESSAGE extends UIMessage>(
             case "tool-input-delta": {
               const partialToolCall =
                 options.state.partialToolCalls[chunk.toolCallId];
+              if (!partialToolCall) {
+                operationErrors.push(
+                  new ProcessUIMessageOperationError({
+                    reason: "Missing partial tool call",
+                    message: `tool-input-delta without tool-input-start toolCallId=${chunk.toolCallId}`,
+                  }),
+                );
+                break;
+              }
 
               partialToolCall.text += chunk.inputTextDelta;
 
@@ -474,8 +519,14 @@ export const processUIMessageStream = <UI_MESSAGE extends UIMessage>(
             default: {
               if (isDataUIMessageChunk(chunk)) {
                 // validate data chunk if dataPartSchemas is provided
-                if (options.dataPartSchemas?.[chunk.type] != null) {
-                  const schema = options.dataPartSchemas[chunk.type];
+                const schemaKey = chunk.type.startsWith("data-")
+                  ? (chunk.type.slice(
+                      5,
+                    ) as keyof InferUIMessageData<UI_MESSAGE> & string)
+                  : (chunk.type as keyof InferUIMessageData<UI_MESSAGE> &
+                      string);
+                const schema = options.dataPartSchemas?.[schemaKey];
+                if (schema != null) {
                   yield* Effect.tryPromise({
                     try: () =>
                       validateTypes({

@@ -222,8 +222,12 @@ export function fixJson(input: string): string {
           }
 
           default: {
-            lastValidIndex = i;
             processValueStart(char, i, "INSIDE_ARRAY_AFTER_VALUE");
+            if (lastValidIndex !== i) {
+              // processValueStart updates lastValidIndex only for valid starts
+              // so if it didn't change, the character was invalid
+              // leave lastValidIndex untouched
+            }
             break;
           }
         }
@@ -245,7 +249,6 @@ export function fixJson(input: string): string {
           }
 
           default: {
-            lastValidIndex = i;
             break;
           }
         }
@@ -393,6 +396,7 @@ export function fixJson(input: string): string {
         } else if ("null".startsWith(partialLiteral)) {
           result += "null".slice(partialLiteral.length);
         }
+        break;
       }
     }
   }

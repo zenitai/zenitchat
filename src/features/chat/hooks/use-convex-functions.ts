@@ -4,6 +4,9 @@ import { Id } from "@/convex/_generated/dataModel";
 import { Effect } from "effect";
 import { ConvexError } from "../request/types";
 
+const formatError = (e: unknown) =>
+  e instanceof Error ? e.message : String(e);
+
 /**
  * Hook that provides all Convex mutations and queries needed for message operations
  * This centralizes all Convex operations for better integration, optimistic updates,
@@ -166,7 +169,7 @@ export function useConvexFunctions() {
         new ConvexError({
           operation: "createThread",
           reason: "Failed to create thread",
-          message: `Failed to create thread: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
+          message: `Failed to create thread: ${formatError(error)}`,
           originalError: error,
           timestamp: Date.now(),
         }),
@@ -180,7 +183,7 @@ export function useConvexFunctions() {
         new ConvexError({
           operation: "addMessagesToThread",
           reason: "Failed to add messages to thread",
-          message: `Failed to add messages to thread: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
+          message: `Failed to add messages to thread: ${formatError(error)}`,
           originalError: error,
           timestamp: Date.now(),
         }),
@@ -195,7 +198,7 @@ export function useConvexFunctions() {
         new ConvexError({
           operation: "createThreadWithMessages",
           reason: "Failed to create thread with messages",
-          message: `Failed to create thread with messages: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
+          message: `Failed to create thread with messages: ${formatError(error)}`,
           originalError: error,
           timestamp: Date.now(),
         }),
@@ -207,7 +210,7 @@ export function useConvexFunctions() {
         new ConvexError({
           operation: "updateMessage",
           reason: "Failed to update message",
-          message: `Failed to update message: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
+          message: `Failed to update message: ${formatError(error)}`,
           originalError: error,
           timestamp: Date.now(),
         }),
@@ -219,7 +222,7 @@ export function useConvexFunctions() {
         new ConvexError({
           operation: "setMessageError",
           reason: "Failed to set message error",
-          message: `Failed to set message error: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
+          message: `Failed to set message error: ${formatError(error)}`,
           originalError: error,
           timestamp: Date.now(),
         }),
@@ -231,7 +234,7 @@ export function useConvexFunctions() {
         new ConvexError({
           operation: "updateThread",
           reason: "Failed to update thread",
-          message: `Failed to update thread: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
+          message: `Failed to update thread: ${formatError(error)}`,
           originalError: error,
           timestamp: Date.now(),
         }),
@@ -243,7 +246,7 @@ export function useConvexFunctions() {
         new ConvexError({
           operation: "fetchThreadMessages",
           reason: "Failed to fetch thread messages",
-          message: `Failed to fetch thread messages: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
+          message: `Failed to fetch thread messages: ${formatError(error)}`,
           originalError: error,
           timestamp: Date.now(),
         }),

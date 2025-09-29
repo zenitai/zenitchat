@@ -96,7 +96,9 @@ export const createThread = mutation({
       .first();
 
     if (existingThread) {
-      // Thread already exists, just return success
+      if (existingThread.userId !== userId) {
+        throw new Error("Unauthorized");
+      }
       return { threadId: args.threadId, existed: true };
     }
 

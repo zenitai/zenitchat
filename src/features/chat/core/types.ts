@@ -7,7 +7,11 @@ import type {
   TextUIPart,
 } from "ai";
 import type { ValueOf } from "../utils/value-of";
-import { StandardSchemaV1, ToolCall, Validator } from "@ai-sdk/provider-utils";
+import type {
+  StandardSchemaV1,
+  ToolCall,
+  Validator,
+} from "@ai-sdk/provider-utils";
 
 /**
  * A job is an asynchronous function that returns a Promise<void>

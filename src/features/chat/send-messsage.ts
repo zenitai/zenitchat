@@ -2,7 +2,10 @@ import { Effect } from "effect";
 import { FetchHttpClient } from "@effect/platform";
 import { chatFetcher } from "./request/chat-fetcher";
 import { makeRequest } from "./request/make-request";
-import { getOrCreateStreamingStore } from "./core/streaming-registry";
+import {
+  getOrCreateStreamingStore,
+  clearStreamingStore,
+} from "./core/streaming-registry";
 import { convexMessagesToUIMessages } from "@/features/messages/utils";
 import { getSelectedModel } from "@/features/chat-input/store";
 import type { MyUIMessage } from "@/features/messages/types";
@@ -34,14 +37,24 @@ const createMessagesToAdd = (content: string, model: string) =>
         role: userMessage.role,
         parts: userMessage.parts,
         generationStatus: "ready" as const,
-        metadata: userMessage.metadata,
+        metadata: {
+          model: undefined,
+          providerOptions: undefined,
+          tokens: undefined,
+          errors: undefined,
+        },
       },
       {
         messageId: assistantMessage.id,
         role: assistantMessage.role,
         parts: assistantMessage.parts,
         generationStatus: "submitted" as const,
-        metadata: assistantMessage.metadata,
+        metadata: {
+          model,
+          providerOptions: undefined,
+          tokens: undefined,
+          errors: undefined,
+        },
       },
     ];
 
@@ -114,7 +127,6 @@ const sendMessageEffect = ({
           // Update the message with partial parts, error status, and error details in one call
           yield* convexFunctions.mutations.updateMessage({
             messageId: assistantMessage.id,
-            threadId,
             parts: partialMessage?.parts ?? [],
             generationStatus: "error",
             metadata: {
@@ -125,7 +137,6 @@ const sendMessageEffect = ({
                   type: error.type,
                   reason: error.reason,
                   message: error.message,
-                  originalError: error.originalError,
                   timestamp: error.timestamp,
                 },
               ],
@@ -138,7 +149,6 @@ const sendMessageEffect = ({
     // Update the assistant message in Convex with the final result
     yield* convexFunctions.mutations.updateMessage({
       messageId: assistantMessage.id,
-      threadId,
       parts: result.parts,
       generationStatus: "ready",
       metadata: {
@@ -147,6 +157,9 @@ const sendMessageEffect = ({
         errors: undefined,
       },
     });
+
+    // Clear the streaming store after saving to Convex
+    yield* Effect.sync(() => clearStreamingStore(threadId));
 
     return result;
   }).pipe(

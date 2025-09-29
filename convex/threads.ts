@@ -276,6 +276,33 @@ export const deleteThread = mutation({
       throw new Error("Unauthorized");
     }
 
+    // Delete all messages associated with this thread
+    // Use small batch size to stay well under 8MiB limit (16,384 docs max)
+    // Using 1000 per batch to be safe with message content size
+    let hasMore = true;
+    while (hasMore) {
+      const messages = await ctx.db
+        .query("messages")
+        .withIndex("by_thread", (q) => q.eq("threadId", args.threadId))
+        .take(1000);
+
+      if (messages.length === 0) {
+        hasMore = false;
+        break;
+      }
+
+      // Delete all messages in this batch
+      for (const message of messages) {
+        await ctx.db.delete(message._id);
+      }
+
+      // If we got less than 1000 messages, we're done
+      if (messages.length < 1000) {
+        hasMore = false;
+      }
+    }
+
+    // Delete the thread itself
     await ctx.db.delete(thread._id);
   },
 });

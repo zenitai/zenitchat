@@ -267,3 +267,90 @@ export const updateMessage = mutation({
     return { success: true };
   },
 });
+
+// Create thread and add messages in a single operation (for new threads)
+export const createThreadWithMessages = mutation({
+  args: {
+    threadId: v.string(),
+    title: v.string(),
+    model: v.string(),
+    messages: v.array(
+      v.object({
+        messageId: v.string(),
+        role: v.union(
+          v.literal("user"),
+          v.literal("assistant"),
+          v.literal("system"),
+        ),
+        parts: messageParts,
+        generationStatus: v.optional(
+          v.union(
+            v.literal("submitted"),
+            v.literal("streaming"),
+            v.literal("ready"),
+            v.literal("error"),
+          ),
+        ),
+        attachmentIds: v.optional(v.array(v.string())),
+        metadata: v.optional(
+          v.object({
+            model: v.optional(v.string()),
+            providerOptions: v.optional(v.any()),
+          }),
+        ),
+      }),
+    ),
+  },
+  handler: async (ctx, args) => {
+    const authUser = await authComponent.safeGetAuthUser(ctx);
+    const userId = authUser?.userId as Id<"users"> | null;
+    if (!userId) {
+      throw new Error("User not authenticated");
+    }
+
+    // Check if thread already exists
+    const existingThread = await ctx.db
+      .query("threads")
+      .withIndex("by_thread_id", (q) => q.eq("threadId", args.threadId))
+      .first();
+
+    if (existingThread) {
+      // Thread already exists, just return success
+      return { threadId: args.threadId, existed: true };
+    }
+
+    const now = Date.now();
+
+    // Create thread
+    await ctx.db.insert("threads", {
+      threadId: args.threadId,
+      title: args.title,
+      userId,
+      model: args.model,
+      createdAt: now,
+      updatedAt: now,
+      lastMessageAt: now,
+      generationStatus: "submitted",
+      userSetTitle: false,
+      pinned: false,
+    });
+
+    // Insert all messages
+    for (const message of args.messages) {
+      await ctx.db.insert("messages", {
+        messageId: message.messageId,
+        threadId: args.threadId,
+        userId,
+        role: message.role,
+        parts: message.parts,
+        createdAt: now,
+        updatedAt: now,
+        generationStatus: message.generationStatus || "submitted",
+        attachmentIds: message.attachmentIds || [],
+        metadata: message.metadata,
+      });
+    }
+
+    return { threadId: args.threadId, existed: false };
+  },
+});

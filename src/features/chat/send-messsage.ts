@@ -27,9 +27,28 @@ const createMessagesToAdd = (content: string, model: string) =>
       metadata: { model },
     };
 
+    // Structured messages for Convex insertion
+    const messagesForConvex = [
+      {
+        messageId: userMessage.id,
+        role: userMessage.role,
+        parts: userMessage.parts,
+        generationStatus: "ready" as const,
+        metadata: userMessage.metadata,
+      },
+      {
+        messageId: assistantMessage.id,
+        role: assistantMessage.role,
+        parts: assistantMessage.parts,
+        generationStatus: "submitted" as const,
+        metadata: assistantMessage.metadata,
+      },
+    ];
+
     return {
       userMessage,
       assistantMessage,
+      messagesForConvex,
     };
   });
 
@@ -48,17 +67,16 @@ const sendMessageEffect = ({
     const store = yield* Effect.sync(() => getOrCreateStreamingStore(threadId));
     store.message = null;
 
-    const { userMessage, assistantMessage } = yield* createMessagesToAdd(
-      content,
-      selectedModel,
-    );
+    const { userMessage, assistantMessage, messagesForConvex } =
+      yield* createMessagesToAdd(content, selectedModel);
 
     // Create thread if it's a new thread
     if (isNewThread) {
-      yield* convexFunctions.mutations.createThread({
+      yield* convexFunctions.mutations.createThreadWithMessages({
         threadId,
         title: "New thread",
         model: selectedModel,
+        messages: messagesForConvex,
       });
     }
 
@@ -70,28 +88,13 @@ const sendMessageEffect = ({
       history = yield* Effect.sync(() =>
         convexMessagesToUIMessages(threadMessages),
       );
-    }
 
-    // Add both user and assistant messages to Convex in single call
-    yield* convexFunctions.mutations.addMessagesToThread({
-      threadId,
-      messages: [
-        {
-          messageId: userMessage.id,
-          role: userMessage.role,
-          parts: userMessage.parts,
-          generationStatus: "ready",
-          metadata: userMessage.metadata,
-        },
-        {
-          messageId: assistantMessage.id,
-          role: assistantMessage.role,
-          parts: assistantMessage.parts,
-          generationStatus: "submitted",
-          metadata: assistantMessage.metadata,
-        },
-      ],
-    });
+      // Add both user and assistant messages to Convex in single call
+      yield* convexFunctions.mutations.addMessagesToThread({
+        threadId,
+        messages: messagesForConvex,
+      });
+    }
 
     const result = yield* makeRequest({
       store,

@@ -82,6 +82,73 @@ export function useConvexFunctions() {
       ]);
     }
   });
+
+  const createThreadWithMessagesConvex = useMutation(
+    api.messages.createThreadWithMessages,
+  ).withOptimisticUpdate((localStore, args) => {
+    const { threadId, title, model, messages } = args;
+    const now = Date.now();
+
+    // Create new thread
+    const newThread = {
+      _id: crypto.randomUUID() as Id<"threads">,
+      _creationTime: now,
+      threadId,
+      title,
+      userId: "temp-user" as Id<"users">,
+      model,
+      createdAt: now,
+      updatedAt: now,
+      lastMessageAt: now,
+      generationStatus: "submitted" as const,
+      userSetTitle: false,
+      pinned: false,
+    };
+
+    // Convert messages to the expected format
+    const newMessages = messages.map((message) => ({
+      _id: crypto.randomUUID() as Id<"messages">,
+      _creationTime: now,
+      messageId: message.messageId,
+      threadId,
+      userId: "temp-user" as Id<"users">,
+      role: message.role,
+      parts: message.parts,
+      createdAt: now,
+      updatedAt: now,
+      generationStatus: message.generationStatus || "submitted",
+      attachmentIds: message.attachmentIds || [],
+      metadata: message.metadata,
+    }));
+
+    // Add to threads list if it exists
+    const existingThreads = localStore.getQuery(api.threads.getUserThreads, {
+      paginationOpts: { numItems: 50, cursor: null },
+    });
+    if (existingThreads !== undefined) {
+      localStore.setQuery(
+        api.threads.getUserThreads,
+        { paginationOpts: { numItems: 50, cursor: null } },
+        {
+          ...existingThreads,
+          page: [newThread, ...existingThreads.page],
+        },
+      );
+    }
+
+    // Add to thread messages if it exists
+    const existingMessages = localStore.getQuery(
+      api.messages.getThreadMessages,
+      { threadId },
+    );
+    if (existingMessages !== undefined) {
+      localStore.setQuery(api.messages.getThreadMessages, { threadId }, [
+        ...existingMessages,
+        ...newMessages,
+      ]);
+    }
+  });
+
   const updateMessageConvex = useMutation(api.messages.updateMessage);
   const setMessageErrorConvex = useMutation(api.messages.setMessageError);
   const updateThreadConvex = useMutation(api.threads.updateThread);
@@ -114,6 +181,21 @@ export function useConvexFunctions() {
           operation: "addMessagesToThread",
           reason: "Failed to add messages to thread",
           message: `Failed to add messages to thread: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
+          originalError: error,
+          timestamp: Date.now(),
+        }),
+    });
+
+  const createThreadWithMessages = (
+    args: Parameters<typeof createThreadWithMessagesConvex>[0],
+  ) =>
+    Effect.tryPromise({
+      try: () => createThreadWithMessagesConvex(args),
+      catch: (error) =>
+        new ConvexError({
+          operation: "createThreadWithMessages",
+          reason: "Failed to create thread with messages",
+          message: `Failed to create thread with messages: ${error instanceof Error ? JSON.stringify(error) : String(error)}`,
           originalError: error,
           timestamp: Date.now(),
         }),
@@ -170,6 +252,7 @@ export function useConvexFunctions() {
   return {
     mutations: {
       createThread,
+      createThreadWithMessages,
       addMessagesToThread,
       updateMessage,
       setMessageError,

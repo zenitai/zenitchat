@@ -43,7 +43,10 @@ export async function POST(req: Request) {
         },
       }),
     },
-    experimental_transform: smoothStream(),
+    experimental_transform: smoothStream({
+      delayInMs: 10,
+      chunking: "word",
+    }),
   });
 
   return result.toUIMessageStreamResponse();

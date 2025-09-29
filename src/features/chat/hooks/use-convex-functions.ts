@@ -1,6 +1,6 @@
 import { useMutation, useConvex } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
+import type { Id } from "@/convex/_generated/dataModel";
 import { Effect } from "effect";
 import { ConvexError } from "../request/types";
 
@@ -161,7 +161,7 @@ export function useConvexFunctions() {
     return await convex.query(api.messages.getThreadMessages, { threadId });
   };
 
-  // Effect-wrapped functions using Micro.tryPromise
+  // Effect-wrapped functions using Effect.tryPromise
   const createThread = (args: Parameters<typeof createThreadConvex>[0]) =>
     Effect.tryPromise({
       try: () => createThreadConvex(args),

@@ -30,65 +30,63 @@ export function fixJson(input: string): string {
   let literalStart: number | null = null;
 
   function processValueStart(char: string, i: number, swapState: State) {
-    {
-      switch (char) {
-        case '"': {
-          lastValidIndex = i;
-          stack.pop();
-          stack.push(swapState);
-          stack.push("INSIDE_STRING");
-          break;
-        }
+    switch (char) {
+      case '"': {
+        lastValidIndex = i;
+        stack.pop();
+        stack.push(swapState);
+        stack.push("INSIDE_STRING");
+        break;
+      }
 
-        case "f":
-        case "t":
-        case "n": {
-          lastValidIndex = i;
-          literalStart = i;
-          stack.pop();
-          stack.push(swapState);
-          stack.push("INSIDE_LITERAL");
-          break;
-        }
+      case "f":
+      case "t":
+      case "n": {
+        lastValidIndex = i;
+        literalStart = i;
+        stack.pop();
+        stack.push(swapState);
+        stack.push("INSIDE_LITERAL");
+        break;
+      }
 
-        case "-": {
-          stack.pop();
-          stack.push(swapState);
-          stack.push("INSIDE_NUMBER");
-          break;
-        }
-        case "0":
-        case "1":
-        case "2":
-        case "3":
-        case "4":
-        case "5":
-        case "6":
-        case "7":
-        case "8":
-        case "9": {
-          lastValidIndex = i;
-          stack.pop();
-          stack.push(swapState);
-          stack.push("INSIDE_NUMBER");
-          break;
-        }
+      case "-": {
+        stack.pop();
+        stack.push(swapState);
+        stack.push("INSIDE_NUMBER");
+        break;
+      }
+      case "0":
+      case "1":
+      case "2":
+      case "3":
+      case "4":
+      case "5":
+      case "6":
+      case "7":
+      case "8":
+      case "9": {
+        lastValidIndex = i;
+        stack.pop();
+        stack.push(swapState);
+        stack.push("INSIDE_NUMBER");
+        break;
+      }
 
-        case "{": {
-          lastValidIndex = i;
-          stack.pop();
-          stack.push(swapState);
-          stack.push("INSIDE_OBJECT_START");
-          break;
-        }
+      case "{": {
+        lastValidIndex = i;
+        stack.pop();
+        stack.push(swapState);
+        stack.push("INSIDE_OBJECT_START");
+        break;
+      }
 
-        case "[": {
-          lastValidIndex = i;
-          stack.pop();
-          stack.push(swapState);
-          stack.push("INSIDE_ARRAY_START");
-          break;
-        }
+      case "[": {
+        lastValidIndex = i;
+        stack.pop();
+        stack.push(swapState);
+        stack.push("INSIDE_ARRAY_START");
+        break;
       }
     }
   }

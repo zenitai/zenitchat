@@ -7,7 +7,7 @@ import { Message } from "@/features/messages/message";
 import { ChatInput } from "@/features/chat-input/chat-input";
 import { useInputHeight } from "@/features/chat-input/store";
 import { useDisplayMessages } from "@/features/chat/hooks/use-display-messages";
-import { sendMessage } from "@/features/chat/send-messsage";
+import { sendMessage } from "@/features/chat/send-message";
 import { useConvexFunctions } from "@/features/chat/hooks/use-convex-functions";
 
 export function ChatPage() {

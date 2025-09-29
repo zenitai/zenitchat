@@ -6,6 +6,8 @@ import {
   messageParts,
   messageErrors,
   messageMetadata,
+} from "./schema/messages";
+import type {
   MessageParts,
   MessageMetadata,
   MessageErrors,

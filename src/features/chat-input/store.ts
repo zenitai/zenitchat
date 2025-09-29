@@ -66,7 +66,7 @@ export const useSelectedModel = () => {
 export const useInputText = () => useChatInputStore((state) => state.inputText);
 
 // Getter function for accessing store outside React components
-export const getSelectedModel = () => {
+export const getSelectedModel = (): ModelConfig => {
   const state = useChatInputStore.getState();
   return state.selectedModel || DEFAULT_MODEL;
 };

@@ -1,4 +1,4 @@
-import { useQuery } from "convex/react";
+import { useQuery } from "convex-helpers/react/cache/hooks";
 import { api } from "@/convex/_generated/api";
 import { useStreamingAssistant } from "./use-streaming-assistant";
 import { convexMessagesToUIMessages } from "@/features/messages/utils";

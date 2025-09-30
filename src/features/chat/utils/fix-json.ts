@@ -205,6 +205,7 @@ export function fixJson(input: string): string {
 
           default: {
             lastValidIndex = i;
+            break;
           }
         }
 

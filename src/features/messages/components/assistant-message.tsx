@@ -24,15 +24,12 @@ export const AssistantMessage = memo(
             <span className="sr-only">Assistant Reply: </span>
             <div className="flex flex-col gap-4">
               {/* Render parts array */}
-              {message.parts.map((part) => {
-                const key = `${message.id}-${part.type}-${"text" in part ? part.text.slice(0, 48) : ""}`;
+              {message.parts.map((part, index) => {
+                const key = `${message.id}-${part.type}-${index}`;
 
                 if (part.type === "text") {
                   return (
-                    <Markdown
-                      key={key}
-                      id={`${message.id}-content-${part.text.slice(0, 48)}`}
-                    >
+                    <Markdown key={key} id={`${message.id}-content-${index}`}>
                       {part.text}
                     </Markdown>
                   );
@@ -67,7 +64,7 @@ export const AssistantMessage = memo(
             <div className="mt-4">
               {message.metadata.errors.map((error, index) => (
                 <ErrorMessage
-                  key={`error-${message.id}-${index}-${error.message.slice(0, 30)}`}
+                  key={`error-${message.id}-${index}`}
                   message={error.message}
                 />
               ))}

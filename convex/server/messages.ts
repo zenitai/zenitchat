@@ -1,24 +1,14 @@
-import { Infer, v } from "convex/values";
-import { messageParts } from "../schema";
+import { v } from "convex/values";
+import {
+  messageParts,
+  messageMetadata,
+  messageErrors,
+  MessageParts,
+  MessageMetadata,
+  MessageErrors,
+} from "../schema/messages";
 import { Id } from "../_generated/dataModel";
 import { internalApiMutation } from "../helpers";
-import { mutation } from "../_generated/server";
-import { authComponent } from "../auth";
-
-// Type for message parts
-type MessageParts = Infer<typeof messageParts>;
-
-// Type for message metadata
-type MessageMetadata = {
-  model?: string;
-  providerOptions?: unknown;
-  tokens?: {
-    input?: number;
-    reasoning?: number;
-    output?: number;
-    total?: number;
-  };
-};
 
 // Add multiple messages to a thread
 export const addMessagesToThread = internalApiMutation({
@@ -43,12 +33,7 @@ export const addMessagesToThread = internalApiMutation({
           ),
         ),
         attachmentIds: v.optional(v.array(v.string())),
-        metadata: v.optional(
-          v.object({
-            model: v.optional(v.string()),
-            providerOptions: v.optional(v.any()),
-          }),
-        ),
+        metadata: v.optional(messageMetadata),
       }),
     ),
   },
@@ -98,8 +83,9 @@ export const addMessagesToThread = internalApiMutation({
 });
 
 // Update message
-export const updateMessage = mutation({
+export const updateMessage = internalApiMutation({
   args: {
+    userId: v.string(),
     messageId: v.string(),
     parts: v.optional(messageParts),
     generationStatus: v.optional(
@@ -111,27 +97,11 @@ export const updateMessage = mutation({
       ),
     ),
     attachmentIds: v.optional(v.array(v.string())),
-    metadata: v.optional(
-      v.object({
-        model: v.optional(v.string()),
-        providerOptions: v.optional(v.any()),
-        tokens: v.optional(
-          v.object({
-            input: v.optional(v.number()),
-            reasoning: v.optional(v.number()),
-            output: v.optional(v.number()),
-            total: v.optional(v.number()),
-          }),
-        ),
-      }),
-    ),
+    metadata: v.optional(messageMetadata),
+    errors: v.optional(messageErrors),
   },
   handler: async (ctx, args) => {
-    const authUser = await authComponent.safeGetAuthUser(ctx);
-    const userId = authUser?.userId as Id<"users"> | null;
-    if (!userId) {
-      throw new Error("User not authenticated");
-    }
+    const targetUserId = args.userId as Id<"users">;
 
     // Find the message
     const message = await ctx.db
@@ -144,7 +114,7 @@ export const updateMessage = mutation({
     }
 
     // Verify ownership
-    if (message.userId !== userId) {
+    if (message.userId !== targetUserId) {
       throw new Error("Unauthorized");
     }
 
@@ -155,6 +125,7 @@ export const updateMessage = mutation({
       generationStatus?: "submitted" | "streaming" | "ready" | "error";
       attachmentIds?: string[];
       metadata?: MessageMetadata;
+      errors?: MessageErrors;
     } = {
       updatedAt: Date.now(),
     };
@@ -171,9 +142,27 @@ export const updateMessage = mutation({
     if (args.metadata !== undefined) {
       updateData.metadata = args.metadata;
     }
+    if (args.errors !== undefined) {
+      updateData.errors = args.errors;
+    }
 
     // Update the message
     await ctx.db.patch(message._id, updateData);
+
+    // Update thread status if generationStatus changed, using the message's threadId
+    if (args.generationStatus !== undefined) {
+      const thread = await ctx.db
+        .query("threads")
+        .withIndex("by_thread_id", (q) => q.eq("threadId", message.threadId))
+        .first();
+
+      if (thread && thread.userId === targetUserId) {
+        await ctx.db.patch(thread._id, {
+          generationStatus: args.generationStatus,
+          updatedAt: Date.now(),
+        });
+      }
+    }
 
     return { success: true };
   },

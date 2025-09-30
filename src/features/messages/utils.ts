@@ -13,7 +13,14 @@ export function convexMessagesToUIMessages(
   return convexMessages.map((convexMessage) => ({
     id: convexMessage.messageId,
     role: convexMessage.role,
-    metadata: convexMessage.metadata,
+    metadata: {
+      ...(convexMessage.metadata ?? {}),
+      // Transform detailed Convex errors to simple UI errors (only message)
+      errors:
+        convexMessage.metadata?.errors?.map((error) => ({
+          message: error.message,
+        })) ?? undefined,
+    },
     parts: convexMessage.parts as MyUIMessage["parts"],
   }));
 }

@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Markdown } from "@/components/ui/markdown";
 import { Reasoning, ReasoningTrigger, ReasoningContent } from "./reasoning";
 import { AssistantMessageToolbar } from "./assistant-message-toolbar";
+import { ErrorMessage } from "./error-message";
 import { Brain } from "lucide-react";
 import type { MessageProps } from "../types";
 
@@ -24,7 +25,7 @@ export const AssistantMessage = memo(
             <div className="flex flex-col gap-4">
               {/* Render parts array */}
               {message.parts.map((part, index) => {
-                const key = `${message.id}-part-${index}`;
+                const key = `${message.id}-${part.type}-${index}`;
 
                 if (part.type === "text") {
                   return (
@@ -57,6 +58,18 @@ export const AssistantMessage = memo(
               })}
             </div>
           </div>
+
+          {/* Show error message if errors exist in metadata */}
+          {message.metadata?.errors && message.metadata.errors.length > 0 && (
+            <div className="mt-4">
+              {message.metadata.errors.map((error, index) => (
+                <ErrorMessage
+                  key={`error-${message.id}-${index}`}
+                  message={error.message}
+                />
+              ))}
+            </div>
+          )}
 
           {/* Assistant message toolbar - positioned absolutely to the left */}
           <div className="absolute left-0 -ml-0.5 mt-2 flex w-full flex-row justify-start gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100">

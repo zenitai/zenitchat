@@ -156,18 +156,15 @@ export function ThreadItem({
                   </TooltipTrigger>
                   <TooltipContent side="bottom">
                     {isEditing ? (
-                      <span>
-                        Press{" "}
-                        <code className="bg-muted px-1.5 py-0.5 rounded text-xs inline-flex items-center gap-1 align-middle">
+                      <div className="flex items-center gap-1">
+                        <span>Press</span>
+                        <kbd>
                           <CornerDownLeft className="size-3" />
-                          Enter
-                        </code>{" "}
-                        to save,{" "}
-                        <code className="bg-muted px-1.5 py-0.5 rounded text-xs align-middle">
-                          Esc
-                        </code>{" "}
-                        to cancel
-                      </span>
+                        </kbd>
+                        <span>to save,</span>
+                        <kbd>Esc</kbd>
+                        <span>to cancel</span>
+                      </div>
                     ) : (
                       item.title
                     )}

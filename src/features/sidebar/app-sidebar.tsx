@@ -3,7 +3,7 @@ import { useIsAuthenticated } from "@/features/auth/store";
 import { useThreadData } from "./hooks/use-thread-data";
 import { useThreadGroups } from "./hooks/use-thread-groups";
 import { siteConfig } from "@/config/site.config";
-import { Sidebar, SidebarContent, SidebarRail } from "@/components/ui/sidebar";
+import { Sidebar, SidebarContent } from "@/components/ui/sidebar";
 import { AppSidebarHeader } from "./components/app-sidebar-header";
 import { ThreadGroup } from "./components/thread-group";
 import { PinnedThreadGroup } from "./components/pinned-thread-group";
@@ -52,7 +52,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         )}
       </SidebarContent>
       <AppSidebarFooter />
-      <SidebarRail />
     </Sidebar>
   );
 }

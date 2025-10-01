@@ -4,7 +4,7 @@ import { chatFetcher } from "./request/chat-fetcher";
 import { makeRequest } from "./request/make-request";
 import {
   getOrCreateStreamingStore,
-  clearStreamingStore,
+  resetStreamingStore,
 } from "./core/streaming-registry";
 import { convexMessagesToUIMessages } from "@/features/messages/utils";
 import { getSelectedModel } from "@/features/chat-input/store";
@@ -159,7 +159,7 @@ const sendMessageEffect = ({
     });
 
     // Clear the streaming store after saving to Convex
-    yield* Effect.sync(() => clearStreamingStore(threadId));
+    yield* Effect.sync(() => resetStreamingStore(threadId));
 
     return result;
   }).pipe(

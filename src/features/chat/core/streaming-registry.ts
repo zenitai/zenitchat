@@ -23,6 +23,9 @@ export function peekStreamingStore(
   return stores.get(threadId);
 }
 
-export function clearStreamingStore(threadId: string) {
-  stores.delete(threadId);
+export function resetStreamingStore(threadId: string) {
+  const store = stores.get(threadId);
+  if (store) {
+    store.message = null;
+  }
 }

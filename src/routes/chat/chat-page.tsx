@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { AuthModal } from "@/features/auth";
 import { useIsAuthenticated } from "@/features/auth/store";
@@ -14,12 +14,21 @@ export function ChatPage() {
   const { threadId } = useParams<{ threadId?: string }>();
   const navigate = useNavigate();
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [pendingThreadId, setPendingThreadId] = useState<string | null>(null);
   const chatInputHeight = useInputHeight();
   const isAuthenticated = useIsAuthenticated();
   const convexFunctions = useConvexFunctions();
 
+  useEffect(() => {
+    if (threadId) {
+      setPendingThreadId(null);
+    }
+  }, [threadId]);
+
+  const activeThreadId = threadId ?? pendingThreadId ?? undefined;
+
   // Get display messages using our custom hook
-  const messages = useDisplayMessages(threadId);
+  const messages = useDisplayMessages(activeThreadId);
 
   // Use scroll to bottom hook
   const {
@@ -49,11 +58,12 @@ export function ChatPage() {
     }
 
     // Determine if this is a new thread
-    const isNewThread = !threadId;
-    const currentThreadId = threadId || crypto.randomUUID();
+    const isNewThread = !threadId && !pendingThreadId;
+    const currentThreadId = threadId ?? pendingThreadId ?? crypto.randomUUID();
 
     // If no threadId, navigate to the new thread URL
     if (isNewThread) {
+      setPendingThreadId(currentThreadId);
       navigate(`/chat/${currentThreadId}`, { replace: true });
     }
 

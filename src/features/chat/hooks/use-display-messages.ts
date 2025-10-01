@@ -24,38 +24,26 @@ export function useDisplayMessages(
   );
 
   // Get streaming message if any (always call hook, but pass empty string if no threadId)
-  const { streamingMessage } = useStreamingAssistant(threadId || "");
+  const { streamingMessage } = useStreamingAssistant(threadId ?? "");
 
   // Convert Convex messages to UI messages
   const convexUIMessages = convexMessages
     ? convexMessagesToUIMessages(convexMessages)
     : [];
 
-  // Robust streaming detection
-  const isStreaming = (() => {
-    // Must have both streaming message and Convex messages
-    if (!streamingMessage || convexUIMessages.length === 0) {
-      return false;
-    }
-
-    // Get the last Convex message
-    const lastConvexMessage = convexUIMessages[convexUIMessages.length - 1];
-
-    // Check if the streaming message ID matches the last Convex message ID
-    const messageIdsMatch = streamingMessage.id === lastConvexMessage.id;
-
-    // Check if the last message is an assistant message (not user)
-    const isLastMessageAssistant = lastConvexMessage.role === "assistant";
-
-    return messageIdsMatch && isLastMessageAssistant;
-  })();
-
-  if (isStreaming) {
-    // Remove the last message (placeholder assistant message) and add streaming message
-    const messagesWithoutPlaceholder = convexUIMessages.slice(0, -1);
-    return [...messagesWithoutPlaceholder, streamingMessage!]; // We know it's not null due to isStreaming check
+  if (!streamingMessage) {
+    return convexUIMessages;
   }
 
-  // Return Convex messages as-is (empty array if loading)
-  return convexUIMessages;
+  const placeholderIndex = convexUIMessages.findIndex(
+    (message) => message.id === streamingMessage.id,
+  );
+
+  if (placeholderIndex >= 0) {
+    const updatedMessages = convexUIMessages.slice();
+    updatedMessages[placeholderIndex] = streamingMessage;
+    return updatedMessages;
+  }
+
+  return [...convexUIMessages, streamingMessage];
 }

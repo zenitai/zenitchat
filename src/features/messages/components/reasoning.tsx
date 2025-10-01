@@ -14,6 +14,7 @@ import { Markdown } from "@/components/ui/markdown";
 type ReasoningContextType = {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  isStreaming?: boolean;
 };
 
 const ReasoningContext = createContext<ReasoningContextType | undefined>(
@@ -74,6 +75,7 @@ function Reasoning({
       value={{
         isOpen,
         onOpenChange: handleOpenChange,
+        isStreaming,
       }}
     >
       <div className={className}>{children}</div>

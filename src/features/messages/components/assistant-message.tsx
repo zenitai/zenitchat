@@ -6,6 +6,7 @@ import { AssistantMessageToolbar } from "./assistant-message-toolbar";
 import { ErrorMessage } from "./error-message";
 import { Brain } from "lucide-react";
 import type { MessageProps } from "../types";
+import { TextShimmer } from "@/components/ui/text-shimmer";
 
 export const AssistantMessage = memo(
   ({ message, className, ...props }: MessageProps) => {
@@ -36,15 +37,20 @@ export const AssistantMessage = memo(
                 }
 
                 if (part.type === "reasoning") {
+                  const isStreaming = part.state === "streaming";
                   return (
                     <Reasoning
                       key={key}
-                      isStreaming={part.state === "streaming"}
+                      isStreaming={isStreaming}
                     >
                       <ReasoningTrigger className="py-4">
                         <div className="flex items-center gap-2">
                           <Brain className="size-4" />
-                          <span>Reasoning</span>
+                          {isStreaming ? (
+                            <TextShimmer as="span" duration={1.5}>Reasoning</TextShimmer>
+                          ) : (
+                            <span>Reasoning</span>
+                          )}
                         </div>
                       </ReasoningTrigger>
                       <ReasoningContent markdown={true}>

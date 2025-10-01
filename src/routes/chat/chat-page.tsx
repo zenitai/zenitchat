@@ -117,7 +117,7 @@ export function ChatPage() {
       <div className="absolute bottom-0 left-0 right-0 z-10 px-2">
         <ChatInput
           onSubmit={handleSubmit}
-          showScrollToBottom={showScrollToBottom}
+          showScrollToBottom={showScrollToBottom && !!activeThreadId}
           onScrollToBottom={scrollToBottom}
         />
       </div>

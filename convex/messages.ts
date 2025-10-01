@@ -96,16 +96,18 @@ export const addMessagesToThread = mutation({
 
     const now = Date.now();
 
-    // Insert all messages
-    for (const message of args.messages) {
+    // Insert all messages with incrementing timestamps for stable ordering
+    for (let i = 0; i < args.messages.length; i++) {
+      const message = args.messages[i];
+      const timestamp = now + i;
       await ctx.db.insert("messages", {
         messageId: message.messageId,
         threadId: args.threadId,
         userId,
         role: message.role,
         parts: message.parts,
-        createdAt: now,
-        updatedAt: now,
+        createdAt: timestamp,
+        updatedAt: timestamp,
         generationStatus: message.generationStatus || "submitted",
         attachmentIds: message.attachmentIds || [],
         metadata: message.metadata,
@@ -329,16 +331,18 @@ export const createThreadWithMessages = mutation({
       pinned: false,
     });
 
-    // Insert all messages
-    for (const message of args.messages) {
+    // Insert all messages with incrementing timestamps for stable ordering
+    for (let i = 0; i < args.messages.length; i++) {
+      const message = args.messages[i];
+      const timestamp = now + i;
       await ctx.db.insert("messages", {
         messageId: message.messageId,
         threadId: args.threadId,
         userId,
         role: message.role,
         parts: message.parts,
-        createdAt: now,
-        updatedAt: now,
+        createdAt: timestamp,
+        updatedAt: timestamp,
         generationStatus: message.generationStatus || "submitted",
         attachmentIds: message.attachmentIds || [],
         metadata: message.metadata,
@@ -346,5 +350,111 @@ export const createThreadWithMessages = mutation({
     }
 
     return { threadId: args.threadId, existed: false };
+  },
+});
+
+// Regenerate from a specific message - deletes messages and adds new ones in a single operation
+export const regenerateFromMessage = mutation({
+  args: {
+    threadId: v.string(),
+    fromMessageId: v.string(),
+    messagesToAdd: v.array(
+      v.object({
+        messageId: v.string(),
+        role: v.union(
+          v.literal("user"),
+          v.literal("assistant"),
+          v.literal("system"),
+        ),
+        parts: messageParts,
+        generationStatus: v.optional(
+          v.union(
+            v.literal("submitted"),
+            v.literal("streaming"),
+            v.literal("ready"),
+            v.literal("error"),
+          ),
+        ),
+        attachmentIds: v.optional(v.array(v.string())),
+        metadata: v.optional(messageMetadata),
+      }),
+    ),
+  },
+  handler: async (ctx, args) => {
+    const authUser = await authComponent.safeGetAuthUser(ctx);
+    const userId = authUser?.userId as Id<"users"> | null;
+    if (!userId) {
+      throw new Error("User not authenticated");
+    }
+
+    // Verify thread ownership
+    const thread = await ctx.db
+      .query("threads")
+      .withIndex("by_thread_id", (q) => q.eq("threadId", args.threadId))
+      .first();
+
+    if (!thread) {
+      throw new Error("Thread not found");
+    }
+
+    if (thread.userId !== userId) {
+      throw new Error("Unauthorized");
+    }
+
+    // Get all messages for this thread ordered by creation time
+    const allMessages = await ctx.db
+      .query("messages")
+      .withIndex("by_thread_created", (q) => q.eq("threadId", args.threadId))
+      .order("asc")
+      .collect();
+
+    // Find the index of the message to regenerate from
+    const startIndex = allMessages.findIndex(
+      (m) => m.messageId === args.fromMessageId,
+    );
+
+    if (startIndex === -1) {
+      throw new Error("Message not found");
+    }
+
+    // Validate that we have messages to add
+    if (args.messagesToAdd.length === 0) {
+      throw new Error("Cannot regenerate without new messages");
+    }
+
+    // Delete all messages from that index onwards
+    const messagesToDelete = allMessages.slice(startIndex);
+    for (const message of messagesToDelete) {
+      await ctx.db.delete(message._id);
+    }
+
+    const now = Date.now();
+
+    // Insert new messages with incrementing timestamps for stable ordering
+    for (let i = 0; i < args.messagesToAdd.length; i++) {
+      const message = args.messagesToAdd[i];
+      const timestamp = now + i;
+      await ctx.db.insert("messages", {
+        messageId: message.messageId,
+        threadId: args.threadId,
+        userId,
+        role: message.role,
+        parts: message.parts,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+        generationStatus: message.generationStatus || "submitted",
+        attachmentIds: message.attachmentIds || [],
+        metadata: message.metadata,
+      });
+    }
+
+    // Update thread's lastMessageAt and generation status
+    await ctx.db.patch(thread._id, {
+      lastMessageAt: now,
+      updatedAt: now,
+      generationStatus: "submitted",
+    });
+
+    return { success: true, deletedCount: messagesToDelete.length };
   },
 });

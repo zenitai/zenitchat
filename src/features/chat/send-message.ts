@@ -37,12 +37,6 @@ const createMessagesToAdd = (content: string, model: string) =>
         role: userMessage.role,
         parts: userMessage.parts,
         generationStatus: "ready" as const,
-        metadata: {
-          model: undefined,
-          providerOptions: undefined,
-          tokens: undefined,
-          errors: undefined,
-        },
       },
       {
         messageId: assistantMessage.id,
@@ -51,9 +45,6 @@ const createMessagesToAdd = (content: string, model: string) =>
         generationStatus: "submitted" as const,
         metadata: {
           model,
-          providerOptions: undefined,
-          tokens: undefined,
-          errors: undefined,
         },
       },
     ];

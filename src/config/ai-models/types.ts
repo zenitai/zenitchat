@@ -125,6 +125,10 @@ export const CREATOR_NAMES: Record<ModelCreator, string> = {
   stealth: "Stealth",
 } as const;
 
+// Array of all model creators for iteration
+// Derived from CREATOR_NAMES keys to automatically stay in sync
+export const ALL_CREATORS = Object.keys(CREATOR_NAMES) as ModelCreator[];
+
 // Type-safe icon getter function
 export type GetIconFunction = <T extends ModelCreator>(
   creator: T,

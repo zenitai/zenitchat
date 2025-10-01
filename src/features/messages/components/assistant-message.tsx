@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Markdown } from "@/components/ui/markdown";
 import { Reasoning, ReasoningTrigger, ReasoningContent } from "./reasoning";
 import { AssistantMessageToolbar } from "./assistant-message-toolbar";
+import { AssistantMessageLoading } from "./assistant-message-loading";
 import { ErrorMessage } from "./error-message";
 import { Brain } from "lucide-react";
 import type { MessageProps } from "../types";
@@ -10,6 +11,8 @@ import { TextShimmer } from "@/components/ui/text-shimmer";
 
 export const AssistantMessage = memo(
   ({ message, className, ...props }: MessageProps) => {
+    const hasContent = message.parts.length > 0;
+
     return (
       <div
         data-message-id={message.id}
@@ -17,6 +20,13 @@ export const AssistantMessage = memo(
         {...props}
       >
         <div className="group relative w-full max-w-full break-words">
+          {/* Show loading state when no content */}
+          {!hasContent && (
+            <div className="flex items-center py-2">
+              <AssistantMessageLoading />
+            </div>
+          )}
+
           <div
             role="article"
             aria-label="Assistant message"
@@ -39,15 +49,14 @@ export const AssistantMessage = memo(
                 if (part.type === "reasoning") {
                   const isStreaming = part.state === "streaming";
                   return (
-                    <Reasoning
-                      key={key}
-                      isStreaming={isStreaming}
-                    >
+                    <Reasoning key={key} isStreaming={isStreaming}>
                       <ReasoningTrigger className="py-4">
                         <div className="flex items-center gap-2">
                           <Brain className="size-4" />
                           {isStreaming ? (
-                            <TextShimmer as="span" duration={1.5}>Reasoning</TextShimmer>
+                            <TextShimmer as="span" duration={1.5}>
+                              Reasoning
+                            </TextShimmer>
                           ) : (
                             <span>Reasoning</span>
                           )}
@@ -78,8 +87,12 @@ export const AssistantMessage = memo(
           )}
 
           {/* Assistant message toolbar - positioned absolutely to the left */}
-          <div className="absolute left-0 -ml-0.5 mt-2 flex w-full flex-row justify-start gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100">
-            <AssistantMessageToolbar parts={message.parts} />
+          <div className="absolute left-0 -ml-0.5 mt-2 flex w-full flex-row justify-start gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100 group-has-[[data-state=open]]:opacity-100 max-md:opacity-100">
+            <AssistantMessageToolbar
+              parts={message.parts}
+              messageId={message.id}
+              currentModel={message.metadata?.model}
+            />
           </div>
         </div>
       </div>

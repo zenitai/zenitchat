@@ -7,3 +7,10 @@ export interface SendMessageOptions {
   isNewThread: boolean;
   convexFunctions: ConvexFunctions;
 }
+
+export interface RegenerateMessageOptions {
+  threadId: string;
+  messageId: string;
+  model?: string;
+  convexFunctions: ConvexFunctions;
+}

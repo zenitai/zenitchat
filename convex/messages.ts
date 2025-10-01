@@ -96,16 +96,18 @@ export const addMessagesToThread = mutation({
 
     const now = Date.now();
 
-    // Insert all messages
-    for (const message of args.messages) {
+    // Insert all messages with incrementing timestamps for stable ordering
+    for (let i = 0; i < args.messages.length; i++) {
+      const message = args.messages[i];
+      const timestamp = now + i;
       await ctx.db.insert("messages", {
         messageId: message.messageId,
         threadId: args.threadId,
         userId,
         role: message.role,
         parts: message.parts,
-        createdAt: now,
-        updatedAt: now,
+        createdAt: timestamp,
+        updatedAt: timestamp,
         generationStatus: message.generationStatus || "submitted",
         attachmentIds: message.attachmentIds || [],
         metadata: message.metadata,
@@ -329,16 +331,18 @@ export const createThreadWithMessages = mutation({
       pinned: false,
     });
 
-    // Insert all messages
-    for (const message of args.messages) {
+    // Insert all messages with incrementing timestamps for stable ordering
+    for (let i = 0; i < args.messages.length; i++) {
+      const message = args.messages[i];
+      const timestamp = now + i;
       await ctx.db.insert("messages", {
         messageId: message.messageId,
         threadId: args.threadId,
         userId,
         role: message.role,
         parts: message.parts,
-        createdAt: now,
-        updatedAt: now,
+        createdAt: timestamp,
+        updatedAt: timestamp,
         generationStatus: message.generationStatus || "submitted",
         attachmentIds: message.attachmentIds || [],
         metadata: message.metadata,
@@ -413,6 +417,11 @@ export const regenerateFromMessage = mutation({
       throw new Error("Message not found");
     }
 
+    // Validate that we have messages to add
+    if (args.messagesToAdd.length === 0) {
+      throw new Error("Cannot regenerate without new messages");
+    }
+
     // Delete all messages from that index onwards
     const messagesToDelete = allMessages.slice(startIndex);
     for (const message of messagesToDelete) {
@@ -421,16 +430,18 @@ export const regenerateFromMessage = mutation({
 
     const now = Date.now();
 
-    // Insert new messages
-    for (const message of args.messagesToAdd) {
+    // Insert new messages with incrementing timestamps for stable ordering
+    for (let i = 0; i < args.messagesToAdd.length; i++) {
+      const message = args.messagesToAdd[i];
+      const timestamp = now + i;
       await ctx.db.insert("messages", {
         messageId: message.messageId,
         threadId: args.threadId,
         userId,
         role: message.role,
         parts: message.parts,
-        createdAt: now,
-        updatedAt: now,
+        createdAt: timestamp,
+        updatedAt: timestamp,
         generationStatus: message.generationStatus || "submitted",
         attachmentIds: message.attachmentIds || [],
         metadata: message.metadata,

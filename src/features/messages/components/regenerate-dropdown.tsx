@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,11 +25,15 @@ export function RegenerateDropdown({
   currentModel,
   onRegenerate,
 }: RegenerateDropdownProps) {
-  // Get only creators that have models available
-  const creators = ALL_CREATORS.filter((creator) => {
-    const models = getModelsByCreator(creator);
-    return models.length > 0;
-  });
+  // Get only creators that have models available (memoized since data is static)
+  const creators = useMemo(
+    () =>
+      ALL_CREATORS.filter((creator) => {
+        const models = getModelsByCreator(creator);
+        return models.length > 0;
+      }),
+    [],
+  );
 
   const handleRetry = () => {
     onRegenerate(currentModel);
@@ -41,12 +46,7 @@ export function RegenerateDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Regenerate message"
-          className="focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
-        >
+        <Button variant="ghost" size="icon" aria-label="Regenerate message">
           <RefreshCw className="size-4" />
         </Button>
       </DropdownMenuTrigger>

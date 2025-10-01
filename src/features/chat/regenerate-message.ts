@@ -62,9 +62,6 @@ const regenerateMessageEffect = ({
       generationStatus: "submitted" as const,
       metadata: {
         model: selectedModel,
-        providerOptions: undefined,
-        tokens: undefined,
-        errors: undefined,
       },
     };
 
@@ -125,11 +122,9 @@ const regenerateMessageEffect = ({
       },
     });
 
-    // Clear the streaming store after saving to Convex
-    yield* Effect.sync(() => resetStreamingStore(threadId));
-
     return result;
   }).pipe(
+    Effect.ensuring(Effect.sync(() => resetStreamingStore(threadId))),
     Effect.catchAll((error) => {
       return Effect.gen(function* () {
         console.error("Error occurred:", error);

@@ -34,7 +34,7 @@ export const UserMessage = memo(
             ))}
           </div>
           {/* User message toolbar - positioned absolutely to the right */}
-          <div className="absolute right-0 mt-5 flex items-center gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100">
+          <div className="absolute right-0 mt-5 flex items-center gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100 max-md:opacity-100">
             <UserMessageToolbar parts={message.parts} />
           </div>
         </div>

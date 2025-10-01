@@ -1,22 +1,24 @@
 import { useParams } from "react-router";
 import CopyButton from "@/components/ui/copy-button";
-import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
 import { formatMessageContent } from "../utils";
 import type { MyUIMessage } from "../types";
 import { cn } from "@/lib/utils";
 import { useConvexFunctions } from "@/features/chat/hooks/use-convex-functions";
 import { regenerateMessage } from "@/features/chat/regenerate-message";
+import { RegenerateDropdown } from "./regenerate-dropdown";
+import { getModelById } from "@/config/ai-models";
 
 interface AssistantMessageToolbarProps {
   parts: MyUIMessage["parts"];
   messageId: string;
+  currentModel?: string;
   className?: string;
 }
 
 export function AssistantMessageToolbar({
   parts,
   messageId,
+  currentModel,
   className,
 }: AssistantMessageToolbarProps) {
   const { threadId } = useParams<{ threadId: string }>();
@@ -34,13 +36,19 @@ export function AssistantMessageToolbar({
 
   const formattedContent = formatMessageContent(parts);
 
-  const handleRegenerate = async () => {
+  // Get model display name
+  const modelDisplayName = currentModel
+    ? getModelById(currentModel)?.displayName
+    : undefined;
+
+  const handleRegenerate = async (modelId?: string) => {
     if (!threadId) return;
 
     try {
       await regenerateMessage({
         threadId,
         messageId,
+        model: modelId,
         convexFunctions,
       });
     } catch (error) {
@@ -49,21 +57,22 @@ export function AssistantMessageToolbar({
   };
 
   return (
-    <div className={cn("flex items-center gap-1", className)}>
+    <div className={cn("flex items-center gap-1.5", className)}>
       <CopyButton
         content={formattedContent}
         showToast
         ariaLabel="Copy message"
         variant="ghost"
       />
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={handleRegenerate}
-        aria-label="Regenerate message"
-      >
-        <RefreshCw className="size-4" />
-      </Button>
+      <RegenerateDropdown
+        currentModel={currentModel}
+        onRegenerate={handleRegenerate}
+      />
+      {modelDisplayName && (
+        <span className="text-xs text-muted-foreground">
+          {modelDisplayName}
+        </span>
+      )}
     </div>
   );
 }

@@ -155,6 +155,52 @@ export function useConvexFunctions() {
   const updateMessageConvex = useMutation(api.messages.updateMessage);
   const setMessageErrorConvex = useMutation(api.messages.setMessageError);
   const updateThreadConvex = useMutation(api.threads.updateThread);
+  const regenerateFromMessageConvex = useMutation(
+    api.messages.regenerateFromMessage,
+  ).withOptimisticUpdate((localStore, args) => {
+    const { threadId, fromMessageId, messagesToAdd } = args;
+    const now = Date.now();
+
+    // Get existing messages
+    const existingMessages = localStore.getQuery(
+      api.messages.getThreadMessages,
+      { threadId },
+    );
+
+    if (existingMessages !== undefined) {
+      // Find the index of the message to regenerate from
+      const startIndex = existingMessages.findIndex(
+        (m) => m.messageId === fromMessageId,
+      );
+
+      if (startIndex !== -1) {
+        // Remove messages from that index onwards
+        const remainingMessages = existingMessages.slice(0, startIndex);
+
+        // Convert new messages to the expected format
+        const newMessages = messagesToAdd.map((message) => ({
+          _id: crypto.randomUUID() as Id<"messages">,
+          _creationTime: now,
+          messageId: message.messageId,
+          threadId,
+          userId: "temp-user" as Id<"users">,
+          role: message.role,
+          parts: message.parts,
+          createdAt: now,
+          updatedAt: now,
+          generationStatus: message.generationStatus || "submitted",
+          attachmentIds: message.attachmentIds || [],
+          metadata: message.metadata,
+        }));
+
+        // Set the updated messages list
+        localStore.setQuery(api.messages.getThreadMessages, { threadId }, [
+          ...remainingMessages,
+          ...newMessages,
+        ]);
+      }
+    }
+  });
 
   // One-off query function for getting thread messages
   const fetchThreadMessagesConvex = async (threadId: string) => {
@@ -251,6 +297,20 @@ export function useConvexFunctions() {
           timestamp: Date.now(),
         }),
     });
+  const regenerateFromMessage = (
+    args: Parameters<typeof regenerateFromMessageConvex>[0],
+  ) =>
+    Effect.tryPromise({
+      try: () => regenerateFromMessageConvex(args),
+      catch: (error) =>
+        new ConvexError({
+          operation: "regenerateFromMessage",
+          reason: "Failed to regenerate message",
+          message: `Failed to regenerate message: ${formatError(error)}`,
+          originalError: error,
+          timestamp: Date.now(),
+        }),
+    });
 
   return {
     mutations: {
@@ -260,6 +320,7 @@ export function useConvexFunctions() {
       updateMessage,
       setMessageError,
       updateThread,
+      regenerateFromMessage,
     },
     queries: {
       fetchThreadMessages,

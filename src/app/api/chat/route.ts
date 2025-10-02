@@ -79,7 +79,7 @@ const managedRuntime = ManagedRuntime.make(Logger.pretty);
 const runtime = await managedRuntime.runtime();
 
 // Convert the app to a web handler using the runtime
-export const POST = HttpApp.toWebHandlerRuntime(runtime)(
+const effectHandler = HttpApp.toWebHandlerRuntime(runtime)(
   app.pipe(
     Effect.catchTag("ValidationError", (error) =>
       Effect.gen(function* () {
@@ -99,3 +99,10 @@ export const POST = HttpApp.toWebHandlerRuntime(runtime)(
     ),
   ),
 );
+
+// Adapt to Next.js route handler signature (ignores context param since we have no dynamic routes)
+export const POST = (
+  request: Request,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _context: { params: Promise<Record<string, string | string[]>> }
+): Promise<Response> => effectHandler(request);

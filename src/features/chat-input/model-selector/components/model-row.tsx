@@ -1,7 +1,6 @@
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { ModelIcon } from "@/config/ai-models";
-import type { ModelConfig } from "@/config/ai-models/types";
-import { FeatureBadge } from "./feature-badge";
+import { ModelIcon, FeatureBadge } from "@/features/models";
+import type { ModelConfig } from "@/features/models";
 import {
   Tooltip,
   TooltipContent,

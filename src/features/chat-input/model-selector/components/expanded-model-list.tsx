@@ -1,6 +1,6 @@
 import { Pin } from "lucide-react";
 import { ModelCard } from "./model-card";
-import { ModelConfig } from "@/config/ai-models/types";
+import type { ModelConfig } from "@/features/models";
 import { useIsAuthenticated } from "@/features/auth/store";
 
 interface ExpandedModelListProps {

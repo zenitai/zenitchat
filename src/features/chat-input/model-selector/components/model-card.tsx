@@ -1,8 +1,7 @@
-import type { ModelConfig } from "@/config/ai-models/types";
+import type { ModelConfig } from "@/features/models";
+import { ModelIcon, FeatureBadge } from "@/features/models";
 import { cn } from "@/lib/utils";
-import { ModelIcon } from "@/config/ai-models";
 import { parseDisplayName } from "../utils/parse-display-name";
-import { FeatureBadge } from "./feature-badge";
 import { Gem, Pin, PinOff, FlaskConical } from "lucide-react";
 
 interface ModelCardProps {

@@ -6,12 +6,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ModelIcon } from "@/config/ai-models";
+import { ModelIcon } from "@/features/models";
 import type {
   ModelConfig,
   ModelCreator,
   ModelFeature,
-} from "@/config/ai-models/types";
+} from "@/features/models";
 import {
   ModelSearch,
   ModelRow,

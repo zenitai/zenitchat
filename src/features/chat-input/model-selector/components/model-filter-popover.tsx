@@ -16,12 +16,8 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import {
-  ModelFeature,
-  ModelCreator,
-  CREATOR_NAMES,
-} from "@/config/ai-models/types";
-import { FeatureBadge } from "./feature-badge";
+import { CREATOR_NAMES, FeatureBadge } from "@/features/models";
+import type { ModelFeature, ModelCreator } from "@/features/models";
 
 // Filter options based on available ModelFeature types
 const filterOptions: ModelFeature[] = [

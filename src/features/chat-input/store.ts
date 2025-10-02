@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { ModelConfig } from "@/config/ai-models/types";
-import { DEFAULT_MODEL } from "@/config/ai-models";
+import type { ModelConfig } from "@/features/models";
+import { DEFAULT_MODEL } from "@/features/models";
 import { env } from "@/env";
 
 const INITIAL_INPUT_HEIGHT = 141;

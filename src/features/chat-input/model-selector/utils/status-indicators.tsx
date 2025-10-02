@@ -1,5 +1,5 @@
 import { FlaskConical, Gem, Key, Sparkles, LucideIcon } from "lucide-react";
-import type { ModelConfig } from "@/config/ai-models/types";
+import type { ModelConfig } from "@/features/models";
 
 export interface StatusIndicator {
   icon: LucideIcon;

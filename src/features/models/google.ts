@@ -1,4 +1,4 @@
-import { ModelConfig } from "./types";
+import type { ModelConfig } from "./types";
 
 export const GOOGLE_MODELS = [
   {

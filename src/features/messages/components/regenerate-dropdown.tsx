@@ -12,9 +12,13 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getModelsByCreator, ModelIcon } from "@/config/ai-models";
-import { ALL_CREATORS, CREATOR_NAMES } from "@/config/ai-models/types";
-import { FeatureBadge } from "@/features/chat-input/model-selector/components/feature-badge";
+import {
+  getModelsByCreator,
+  ModelIcon,
+  FeatureBadge,
+  getAvailableCreators,
+  getCreatorDisplayName,
+} from "@/features/models";
 
 interface RegenerateDropdownProps {
   currentModel?: string;
@@ -26,14 +30,7 @@ export function RegenerateDropdown({
   onRegenerate,
 }: RegenerateDropdownProps) {
   // Get only creators that have models available (memoized since data is static)
-  const creators = useMemo(
-    () =>
-      ALL_CREATORS.filter((creator) => {
-        const models = getModelsByCreator(creator);
-        return models.length > 0;
-      }),
-    [],
-  );
+  const creators = useMemo(() => getAvailableCreators(), []);
 
   const handleRetry = () => {
     onRegenerate(currentModel);
@@ -65,7 +62,7 @@ export function RegenerateDropdown({
             <DropdownMenuSub key={creator}>
               <DropdownMenuSubTrigger className="gap-2">
                 <ModelIcon creator={creator} className="size-4 opacity-60" />
-                <span>{CREATOR_NAMES[creator]}</span>
+                <span>{getCreatorDisplayName(creator)}</span>
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent

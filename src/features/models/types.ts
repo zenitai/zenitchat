@@ -100,36 +100,3 @@ export interface ModelConfig {
   infrastructureProviderOptions: InfrastructureProviderOptions;
   defaultProviderOptions?: Record<string, unknown>;
 }
-
-// Icon component type
-export interface IconComponent {
-  (props: React.SVGProps<SVGSVGElement>): React.JSX.Element;
-}
-
-// Type-safe icon mapping
-export type IconMap = {
-  [K in ModelCreator]: IconComponent;
-};
-
-// Icon name mapping for type safety
-export const CREATOR_NAMES: Record<ModelCreator, string> = {
-  openai: "OpenAI",
-  google: "Google",
-  anthropic: "Anthropic",
-  meta: "Meta",
-  deepseek: "Deepseek",
-  moonshotai: "MoonshotAI",
-  xai: "Xai",
-  zai: "Zai",
-  qwen: "Qwen",
-  stealth: "Stealth",
-} as const;
-
-// Array of all model creators for iteration
-// Derived from CREATOR_NAMES keys to automatically stay in sync
-export const ALL_CREATORS = Object.keys(CREATOR_NAMES) as ModelCreator[];
-
-// Type-safe icon getter function
-export type GetIconFunction = <T extends ModelCreator>(
-  creator: T,
-) => IconMap[T];

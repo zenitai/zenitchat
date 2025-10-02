@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { ALL_MODELS } from "@/config/ai-models";
-import type { ModelFeature, ModelCreator } from "@/config/ai-models/types";
+import { ALL_MODELS } from "@/features/models";
+import type { ModelFeature, ModelCreator } from "@/features/models";
 
 interface UseFilteredModelsProps {
   searchQuery: string;

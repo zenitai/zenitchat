@@ -1,5 +1,5 @@
 import { Eye, Brain, FileBox, Wrench, type LucideIcon } from "lucide-react";
-import type { ModelFeature } from "@/config/ai-models/types";
+import type { ModelFeature } from "../types";
 import {
   Tooltip,
   TooltipContent,

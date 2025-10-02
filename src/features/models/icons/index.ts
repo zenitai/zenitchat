@@ -8,3 +8,4 @@ export { MoonshotAI } from "./moonshotai";
 export { Deepseek } from "./deepseek";
 export { Qwen } from "./qwen";
 export { Stealth } from "./stealth";
+export { ModelIcon } from "./icon-registry";

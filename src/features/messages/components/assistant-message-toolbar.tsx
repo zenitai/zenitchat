@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { useConvexFunctions } from "@/features/chat/hooks/use-convex-functions";
 import { regenerateMessage } from "@/features/chat/regenerate-message";
 import { RegenerateDropdown } from "./regenerate-dropdown";
-import { getModelById } from "@/config/ai-models";
+import { getModelById } from "@/features/models";
 
 interface AssistantMessageToolbarProps {
   parts: MyUIMessage["parts"];

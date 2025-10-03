@@ -1,16 +1,11 @@
 import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useChatInputContext } from "../context";
 
-interface ScrollToBottomButtonProps {
-  showScrollToBottom?: boolean;
-  onScrollToBottom?: () => void;
-}
+export function ScrollToBottomButton() {
+  const { showScrollToBottom, onScrollToBottom } = useChatInputContext();
 
-export function ScrollToBottomButton({
-  showScrollToBottom,
-  onScrollToBottom,
-}: ScrollToBottomButtonProps) {
   if (!showScrollToBottom) {
     return null;
   }
@@ -27,7 +22,7 @@ export function ScrollToBottomButton({
           "disabled:hover:bg-secondary/50 h-8 px-3 text-xs",
           "flex border-secondary",
           "text-secondary-foreground/70 hover:bg-secondary",
-          "bg-background/80 backdrop-blur-md",
+          "bg-background/80 backdrop-blur-sm",
         )}
       >
         <span className="pb-0.5">Scroll to bottom</span>

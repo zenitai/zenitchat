@@ -14,3 +14,11 @@ export interface RegenerateMessageOptions {
   model?: string;
   convexFunctions: ConvexFunctions;
 }
+
+export interface EditMessageOptions {
+  threadId: string;
+  messageId: string;
+  content: string;
+  model?: string;
+  convexFunctions: ConvexFunctions;
+}

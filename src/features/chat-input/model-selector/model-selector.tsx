@@ -7,11 +7,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ModelIcon } from "@/features/models";
-import type {
-  ModelConfig,
-  ModelCreator,
-  ModelFeature,
-} from "@/features/models";
+import type { ModelCreator, ModelFeature } from "@/features/models";
 import {
   ModelSearch,
   ModelRow,
@@ -21,12 +17,11 @@ import {
 } from "./components";
 import { useUserModels } from "./hooks/use-user-models";
 import { useFilteredModels } from "./hooks/use-filtered-models";
-import { useSelectedModel, useChatInputActions } from "../store";
+import { useChatInputContext } from "../context";
 import { cn } from "@/lib/utils";
 
 export const ModelSelector = () => {
-  const selectedModel = useSelectedModel();
-  const { setSelectedModel } = useChatInputActions();
+  const { selectedModel, setSelectedModel } = useChatInputContext();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showExpanded, setShowExpanded] = useState(false);
@@ -45,7 +40,7 @@ export const ModelSelector = () => {
     selectedProvider,
   });
 
-  const handleModelSelect = (model: ModelConfig) => {
+  const handleModelSelect = (model: typeof selectedModel) => {
     setSelectedModel(model);
     setOpen(false);
     setSearchQuery(""); // Clear search when selecting a model
@@ -163,3 +158,5 @@ export const ModelSelector = () => {
     </DropdownMenu>
   );
 };
+
+ModelSelector.displayName = "ChatInput.ModelSelector";

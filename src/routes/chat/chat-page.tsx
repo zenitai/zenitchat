@@ -4,7 +4,7 @@ import { AuthModal } from "@/features/auth";
 import { useIsAuthenticated } from "@/features/auth/store";
 import { useScrollToBottom } from "@/features/chat-input/hooks/use-scroll-to-bottom";
 import { Message } from "@/features/messages/message";
-import { ChatInput } from "@/features/chat-input/chat-input";
+import { ChatInputDefault } from "@/features/chat-input";
 import { useInputHeight } from "@/features/chat-input/store";
 import { useDisplayMessages } from "@/features/chat/hooks/use-display-messages";
 import { sendMessage } from "@/features/chat/send-message";
@@ -115,7 +115,7 @@ export function ChatPage() {
 
       {/* Prompt input area - sticky to bottom */}
       <div className="absolute bottom-0 left-0 right-0 z-10 px-2">
-        <ChatInput
+        <ChatInputDefault
           onSubmit={handleSubmit}
           showScrollToBottom={showScrollToBottom && !!activeThreadId}
           onScrollToBottom={scrollToBottom}

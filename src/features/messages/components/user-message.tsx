@@ -6,12 +6,24 @@ import { ChatInputEdit } from "@/features/chat-input";
 import { editMessage } from "@/features/chat/edit-message";
 import { useConvexFunctions } from "@/features/chat/hooks/use-convex-functions";
 import { getModelById, type ModelConfig } from "@/features/models";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import type { MessageProps } from "../types";
 
 export const UserMessage = memo(
   ({ message, threadId, className, ...props }: MessageProps) => {
     const [isEditing, setIsEditing] = useState(false);
+    const [showCancelDialog, setShowCancelDialog] = useState(false);
+    const [hasChanges, setHasChanges] = useState(false);
     const convexFunctions = useConvexFunctions();
 
     const textParts = useMemo(
@@ -46,9 +58,24 @@ export const UserMessage = memo(
           convexFunctions,
         });
         setIsEditing(false);
+        setHasChanges(false);
       } catch (error) {
         console.error("Failed to edit message:", error);
       }
+    };
+
+    const handleCancelEdit = () => {
+      if (hasChanges) {
+        setShowCancelDialog(true);
+      } else {
+        setIsEditing(false);
+      }
+    };
+
+    const handleConfirmCancel = () => {
+      setIsEditing(false);
+      setHasChanges(false);
+      setShowCancelDialog(false);
     };
 
     return (
@@ -76,6 +103,12 @@ export const UserMessage = memo(
                 initialText={messageText}
                 initialModel={initialModel}
                 onSubmit={handleEditSubmit}
+                onChange={(text, model) => {
+                  const textChanged = text !== messageText;
+                  const modelChanged =
+                    model.id !== (message.metadata?.model || initialModel?.id);
+                  setHasChanges(textChanged || modelChanged);
+                }}
               >
                 <ChatInputEdit.Container>
                   <ChatInputEdit.Form className="!bg-transparent !border-0 !shadow-none !rounded-none max-sm:!px-1">
@@ -131,10 +164,28 @@ export const UserMessage = memo(
               parts={message.parts}
               isEditing={isEditing}
               onEditClick={() => setIsEditing(true)}
-              onCancelEdit={() => setIsEditing(false)}
+              onCancelEdit={handleCancelEdit}
             />
           </div>
         </div>
+
+        {/* Cancel Edits Confirmation Dialog */}
+        <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Cancel edits?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to discard your edits?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>No, keep editing</AlertDialogCancel>
+              <AlertDialogAction onClick={handleConfirmCancel}>
+                Yes, discard
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     );
   },

@@ -5,6 +5,7 @@ import {
   ChangeEvent,
   KeyboardEvent,
 } from "react";
+import { toast } from "sonner";
 import { ChatInputContext } from "./context";
 import { useAutoResizeTextarea } from "./hooks/use-auto-resize-textarea";
 import { DEFAULT_MODEL, type ModelConfig } from "@/features/models";
@@ -14,6 +15,7 @@ export interface ChatInputEditRootProps {
   initialText: string;
   initialModel?: ModelConfig;
   onSubmit: (text: string, model: ModelConfig) => void;
+  onChange?: (text: string, model: ModelConfig) => void;
 }
 
 export const ChatInputEditRoot = ({
@@ -21,8 +23,10 @@ export const ChatInputEditRoot = ({
   initialText,
   initialModel,
   onSubmit,
+  onChange,
 }: ChatInputEditRootProps) => {
   const [inputText, setInputText] = useState(initialText);
+  const [showingEmptyToast, setShowingEmptyToast] = useState(false);
 
   const [selectedModel, setSelectedModel] = useState<ModelConfig>(
     initialModel || DEFAULT_MODEL,
@@ -41,15 +45,26 @@ export const ChatInputEditRoot = ({
       setInputText(""); // Clear local state
       // Reset height after clearing
       adjustHeight(true);
+    } else {
+      // Prevent duplicate toasts
+      if (!showingEmptyToast) {
+        setShowingEmptyToast(true);
+        toast.error("Message cannot be empty", {
+          onDismiss: () => setShowingEmptyToast(false),
+          onAutoClose: () => setShowingEmptyToast(false),
+        });
+      }
     }
   };
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => {
-      setInputText(e.target.value);
+      const newText = e.target.value;
+      setInputText(newText);
       adjustHeight();
+      onChange?.(newText, selectedModel);
     },
-    [adjustHeight],
+    [adjustHeight, onChange, selectedModel],
   );
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -73,6 +88,14 @@ export const ChatInputEditRoot = ({
     }
   };
 
+  const handleSetSelectedModel = useCallback(
+    (model: ModelConfig) => {
+      setSelectedModel(model);
+      onChange?.(inputText, model);
+    },
+    [inputText, onChange],
+  );
+
   const contextValue = {
     inputText,
     selectedModel,
@@ -81,7 +104,7 @@ export const ChatInputEditRoot = ({
     handleSubmit,
     handleChange,
     handleKeyDown,
-    setSelectedModel,
+    setSelectedModel: handleSetSelectedModel,
     onSubmit,
     showScrollToBottom: false, // No scroll button in edit mode
     onScrollToBottom: undefined,

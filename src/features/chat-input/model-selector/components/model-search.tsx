@@ -13,7 +13,7 @@ export const ModelSearch = ({
   placeholder = "Search models...",
 }: ModelSearchProps) => {
   return (
-    <div className="fixed inset-x-4 top-0 rounded-t-lg bg-popover px-3.5 pt-0.5 sm:inset-x-0">
+    <div className="absolute inset-x-0 top-0 rounded-t-lg bg-popover px-3.5 pt-0.5">
       <div className="flex items-center">
         <Search className="ml-px mr-1.5 !size-4 text-muted-foreground/75" />
         <Input

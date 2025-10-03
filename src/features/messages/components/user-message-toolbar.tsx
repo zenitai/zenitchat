@@ -34,23 +34,21 @@ export function UserMessageToolbar({
           <PenOff className="size-4" />
         </Button>
       ) : (
-        <>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onEditClick}
-            aria-label="Edit message"
-          >
-            <SquarePen className="size-4" />
-          </Button>
-          <CopyButton
-            content={formattedContent}
-            showToast
-            ariaLabel="Copy message"
-            variant="ghost"
-          />
-        </>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onEditClick}
+          aria-label="Edit message"
+        >
+          <SquarePen className="size-4" />
+        </Button>
       )}
+      <CopyButton
+        content={formattedContent}
+        showToast
+        ariaLabel="Copy message"
+        variant="ghost"
+      />
     </div>
   );
 }

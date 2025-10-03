@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { ChevronDownIcon, Gem } from "lucide-react";
 import {
   DropdownMenu,
@@ -20,7 +20,11 @@ import { useFilteredModels } from "./hooks/use-filtered-models";
 import { useChatInputContext } from "../context";
 import { cn } from "@/lib/utils";
 
-export const ModelSelector = () => {
+export interface ModelSelectorProps {
+  variant?: "default" | "compact";
+}
+
+export const ModelSelector = ({ variant = "default" }: ModelSelectorProps) => {
   const { selectedModel, setSelectedModel } = useChatInputContext();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -56,18 +60,18 @@ export const ModelSelector = () => {
     }
   };
 
-  const handleShowAll = () => {
-    setShowExpanded(!showExpanded);
-  };
+  const handleShowAll = useCallback(() => {
+    setShowExpanded((prev) => !prev);
+  }, []);
 
-  const handleCloseExpanded = () => {
+  const handleCloseExpanded = useCallback(() => {
     setShowExpanded(false);
-  };
+  }, []);
 
-  const handleClearAllFilters = () => {
+  const handleClearAllFilters = useCallback(() => {
     setSelectedProvider("all");
     setSelectedFilters([]);
-  };
+  }, []);
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -93,11 +97,17 @@ export const ModelSelector = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="start"
+        avoidCollisions={true}
+        collisionPadding={16}
         className={cn(
           "!outline-1 !outline-chat-border/20 dark:!outline-white/5",
           "relative overflow-hidden rounded-lg !border-none",
-          "p-0 pb-11 pt-10 max-w-[calc(100vw-2rem)] transition-[height,width]",
-          "max-sm:mx-4 sm:rounded-lg max-h-[calc(100vh-80px)]",
+          "p-0 pb-11 pt-10 max-w-[calc(100vw-2rem)] transition-[width] duration-300 ease-out",
+          "max-sm:mx-4 sm:rounded-lg",
+          "!max-h-[min(600px,var(--radix-dropdown-menu-content-available-height))]", // Respect available space
+          variant === "compact"
+            ? "sm:!max-h-[min(600px,var(--radix-dropdown-menu-content-available-height))]"
+            : "sm:!max-h-[min(800px,var(--radix-dropdown-menu-content-available-height))]",
           // Adjust width when showing grid
           showExpanded ? "sm:w-[640px]" : "sm:w-[420px]",
         )}
@@ -119,11 +129,18 @@ export const ModelSelector = () => {
             favoriteModels={favoriteModels}
             toggleModelFavorite={toggleModelFavorite}
             isFavorite={isFavorite}
+            variant={variant}
           />
         ) : (
           /* Row-based List */
           <div
-            className="max-h-[calc(100vh-200px)] overflow-y-auto px-1.5 pb-3 scrollbar-hide scroll-shadow"
+            className={cn(
+              "overflow-y-auto px-1.5 pb-3 custom-scrollbar scroll-shadow",
+              "max-h-[450px]", // Always compact on mobile
+              variant === "compact"
+                ? "sm:max-h-[450px]"
+                : "sm:max-h-[min(650px,calc(100vh-200px))]", // Responsive on desktop, capped at 650px
+            )}
             data-shadow="true"
           >
             {filteredModels
@@ -139,7 +156,7 @@ export const ModelSelector = () => {
         )}
 
         {/* Footer and Filter */}
-        <div className="fixed inset-x-4 bottom-0 z-10 flex items-center justify-between rounded-b-lg bg-popover pb-1 pl-1 pr-2.5 pt-1.5 sm:inset-x-0">
+        <div className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-between rounded-b-lg bg-popover pb-1 pl-1 pr-2.5 pt-1.5">
           <div className="absolute inset-x-3.5 top-0 border-b"></div>
           <ShowAllButton
             onShowAll={handleShowAll}

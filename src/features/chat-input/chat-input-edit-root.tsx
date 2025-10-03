@@ -13,7 +13,7 @@ export interface ChatInputEditRootProps {
   children: ReactNode;
   initialText: string;
   initialModel?: ModelConfig;
-  onSubmit: (text: string) => void;
+  onSubmit: (text: string, model: ModelConfig) => void;
 }
 
 export const ChatInputEditRoot = ({
@@ -37,7 +37,7 @@ export const ChatInputEditRoot = ({
     e.preventDefault();
 
     if (inputText.trim()) {
-      onSubmit(inputText.trim());
+      onSubmit(inputText.trim(), selectedModel);
       setInputText(""); // Clear local state
       // Reset height after clearing
       adjustHeight(true);

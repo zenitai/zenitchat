@@ -23,7 +23,9 @@ export interface ChatInputContextValue {
   setSelectedModel: (model: ModelConfig) => void;
 
   // Callbacks from parent
-  onSubmit: (text: string) => void;
+  onSubmit:
+    | ((text: string) => void)
+    | ((text: string, model: ModelConfig) => void);
   showScrollToBottom?: boolean;
   onScrollToBottom?: () => void;
 }

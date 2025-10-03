@@ -2,6 +2,7 @@ import { Pin } from "lucide-react";
 import { ModelCard } from "./model-card";
 import type { ModelConfig } from "@/features/models";
 import { useIsAuthenticated } from "@/features/auth/store";
+import { cn } from "@/lib/utils";
 
 interface ExpandedModelListProps {
   selectedModel: string;
@@ -11,6 +12,7 @@ interface ExpandedModelListProps {
   favoriteModels: string[];
   toggleModelFavorite: (modelId: string) => Promise<void>;
   isFavorite: (modelId: string) => boolean;
+  variant?: "default" | "compact";
 }
 
 export function ExpandedModelList({
@@ -21,6 +23,7 @@ export function ExpandedModelList({
   favoriteModels,
   toggleModelFavorite,
   isFavorite,
+  variant = "default",
 }: ExpandedModelListProps) {
   const isAuthenticated = useIsAuthenticated();
   // Separate pinned and unpinned models
@@ -42,7 +45,13 @@ export function ExpandedModelList({
 
   return (
     <div
-      className="max-h-[calc(100vh-200px)] overflow-y-auto px-1.5 sm:w-[640px] custom-scrollbar scroll-shadow"
+      className={cn(
+        "overflow-y-auto px-1.5 sm:w-[640px] custom-scrollbar scroll-shadow",
+        "max-h-[450px]", // Always compact on mobile
+        variant === "compact"
+          ? "sm:max-h-[450px]"
+          : "sm:max-h-[min(650px,calc(100vh-200px))]", // Responsive on desktop, capped at 650px
+      )}
       data-shadow="true"
     >
       <div className="flex w-full flex-wrap justify-start gap-3.5 pb-4 pl-3 pr-2 pt-2.5">

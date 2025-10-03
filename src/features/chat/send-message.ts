@@ -11,7 +11,7 @@ import { getSelectedModel } from "@/features/chat-input/store";
 import type { MyUIMessage } from "@/features/messages/types";
 import type { SendMessageOptions } from "./types";
 
-const createMessagesToAdd = (content: string, model: string) =>
+const createMessagesToAdd = (content: string, selectedModel: string) =>
   Effect.sync(() => {
     const userMessageId = crypto.randomUUID();
     const assistantMessageId = crypto.randomUUID();
@@ -20,14 +20,14 @@ const createMessagesToAdd = (content: string, model: string) =>
       id: userMessageId,
       role: "user",
       parts: [{ type: "text", text: content.trim() }],
-      metadata: {},
+      metadata: { model: selectedModel },
     };
 
     const assistantMessage: MyUIMessage = {
       id: assistantMessageId,
       role: "assistant",
       parts: [],
-      metadata: { model },
+      metadata: { model: selectedModel },
     };
 
     // Structured messages for Convex insertion
@@ -37,15 +37,14 @@ const createMessagesToAdd = (content: string, model: string) =>
         role: userMessage.role,
         parts: userMessage.parts,
         generationStatus: "ready" as const,
+        metadata: { model: selectedModel },
       },
       {
         messageId: assistantMessage.id,
         role: assistantMessage.role,
         parts: assistantMessage.parts,
         generationStatus: "submitted" as const,
-        metadata: {
-          model,
-        },
+        metadata: { model: selectedModel },
       },
     ];
 

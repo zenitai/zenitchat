@@ -55,7 +55,7 @@ const editMessageEffect = ({
       id: newUserMessageId,
       role: "user",
       parts: [{ type: "text", text: content.trim() }],
-      metadata: {},
+      metadata: { model: selectedModel },
     };
 
     const assistantMessage: MyUIMessage = {
@@ -71,6 +71,7 @@ const editMessageEffect = ({
         role: newUserMessage.role,
         parts: newUserMessage.parts,
         generationStatus: "ready" as const,
+        metadata: { model: selectedModel },
       },
       {
         messageId: assistantMessage.id,

@@ -6,6 +6,11 @@ import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { ComponentProps } from "react";
 
 interface CopyButtonProps {
@@ -15,6 +20,7 @@ interface CopyButtonProps {
   ariaLabel?: string;
   data?: unknown; // For copying structured data like JSON
   variant?: ComponentProps<typeof Button>["variant"];
+  tooltipText?: string; // Custom tooltip text (defaults to "Copy")
 }
 
 export default function CopyButton({
@@ -24,6 +30,7 @@ export default function CopyButton({
   ariaLabel = "Copy button",
   data,
   variant = "outline",
+  tooltipText = "Copy",
 }: CopyButtonProps) {
   const [isCopied, setIsCopied] = useState<boolean>(false);
 
@@ -53,29 +60,36 @@ export default function CopyButton({
   };
 
   return (
-    <Button
-      variant={variant}
-      size="icon"
-      onClick={handleCopy}
-      aria-label={isCopied ? "Copied" : ariaLabel}
-      className={cn("transition-all duration-200", className)}
-    >
-      <div className="relative size-4">
-        <Copy
-          className={cn(
-            "absolute inset-0 transition-all duration-200 ease-in-out",
-            isCopied ? "scale-0 opacity-0" : "scale-100 opacity-100",
-          )}
-          aria-hidden="true"
-        />
-        <Check
-          className={cn(
-            "absolute inset-0 transition-all duration-200 ease-in-out",
-            isCopied ? "scale-100 opacity-100" : "scale-0 opacity-0",
-          )}
-          aria-hidden="true"
-        />
-      </div>
-    </Button>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant={variant}
+          size="icon"
+          onClick={handleCopy}
+          aria-label={isCopied ? "Copied" : ariaLabel}
+          className={cn("transition-all duration-200", className)}
+        >
+          <div className="relative size-4">
+            <Copy
+              className={cn(
+                "absolute inset-0 transition-all duration-200 ease-in-out",
+                isCopied ? "scale-0 opacity-0" : "scale-100 opacity-100",
+              )}
+              aria-hidden="true"
+            />
+            <Check
+              className={cn(
+                "absolute inset-0 transition-all duration-200 ease-in-out",
+                isCopied ? "scale-100 opacity-100" : "scale-0 opacity-0",
+              )}
+              aria-hidden="true"
+            />
+          </div>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">
+        {isCopied ? "Copied!" : tooltipText}
+      </TooltipContent>
+    </Tooltip>
   );
 }

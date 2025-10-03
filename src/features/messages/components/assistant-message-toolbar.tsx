@@ -63,6 +63,7 @@ export function AssistantMessageToolbar({
         showToast
         ariaLabel="Copy message"
         variant="ghost"
+        tooltipText="Copy message"
       />
       <RegenerateDropdown
         currentModel={currentModel}

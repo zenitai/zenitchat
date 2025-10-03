@@ -13,6 +13,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   getModelsByCreator,
   ModelIcon,
   FeatureBadge,
@@ -42,11 +47,16 @@ export function RegenerateDropdown({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Regenerate message">
-          <RefreshCw className="size-4" />
-        </Button>
-      </DropdownMenuTrigger>
+      <Tooltip>
+        <DropdownMenuTrigger asChild>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label="Regenerate message">
+              <RefreshCw className="size-4" />
+            </Button>
+          </TooltipTrigger>
+        </DropdownMenuTrigger>
+        <TooltipContent side="bottom">Regenerate message</TooltipContent>
+      </Tooltip>
       <DropdownMenuContent align="start">
         <DropdownMenuItem onClick={handleRetry}>
           <RefreshCw size={16} className="opacity-60" aria-hidden="true" />

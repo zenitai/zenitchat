@@ -1,5 +1,10 @@
 import CopyButton from "@/components/ui/copy-button";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { SquarePen, PenOff } from "lucide-react";
 import { formatMessageContent } from "../utils";
 import type { MyUIMessage } from "../types";
@@ -25,29 +30,40 @@ export function UserMessageToolbar({
   return (
     <div className={cn("flex items-center gap-1", className)}>
       {isEditing ? (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onCancelEdit}
-          aria-label="Cancel editing"
-        >
-          <PenOff className="size-4" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onCancelEdit}
+              aria-label="Cancel editing"
+            >
+              <PenOff className="size-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">Cancel editing</TooltipContent>
+        </Tooltip>
       ) : (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onEditClick}
-          aria-label="Edit message"
-        >
-          <SquarePen className="size-4" />
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onEditClick}
+              aria-label="Edit message"
+            >
+              <SquarePen className="size-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">Edit message</TooltipContent>
+        </Tooltip>
       )}
       <CopyButton
         content={formattedContent}
         showToast
         ariaLabel="Copy message"
         variant="ghost"
+        tooltipText="Copy message"
       />
     </div>
   );

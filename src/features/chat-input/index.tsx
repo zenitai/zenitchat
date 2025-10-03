@@ -1,5 +1,6 @@
 import { PaperclipIcon, GlobeIcon } from "lucide-react";
 import { ChatInputRoot } from "./chat-input-root";
+import { ChatInputEditRoot } from "./chat-input-edit-root";
 import { ChatInputContainer } from "./components/chat-input-container";
 import { ChatInputForm } from "./components/chat-input-form";
 import { ChatInputTextarea } from "./components/chat-input-textarea";
@@ -23,6 +24,20 @@ export const ChatInput = Object.assign(ChatInputRoot, {
   Submit: ChatInputSubmit,
   ModelSelector: ModelSelector,
   ScrollToBottom: ScrollToBottomButton,
+});
+
+// Export edit chat input with isolated Root
+export const ChatInputEdit = Object.assign(ChatInputEditRoot, {
+  Root: ChatInputEditRoot,
+  // All other components are shared/reused from ChatInput
+  Container: ChatInputContainer,
+  Form: ChatInputForm,
+  Textarea: ChatInputTextarea,
+  Toolbar: ChatInputToolbar,
+  Tools: ChatInputTools,
+  Button: ChatInputButton,
+  Submit: ChatInputSubmit,
+  ModelSelector: ModelSelector,
 });
 
 // Default composition - pre-assembled with Root

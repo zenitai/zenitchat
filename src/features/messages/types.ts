@@ -33,4 +33,5 @@ export type MyUIMessage = UIMessage<MessageMetadata>;
 export interface MessageProps {
   message: MyUIMessage;
   className?: string;
+  threadId?: string;
 }

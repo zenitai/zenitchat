@@ -103,7 +103,11 @@ export function ChatPage() {
         >
           {messages.length > 0 ? (
             messages.map((message) => (
-              <Message key={message.id} message={message} />
+              <Message
+                key={message.id}
+                message={message}
+                threadId={activeThreadId}
+              />
             ))
           ) : (
             // Empty state - no text during loading, just empty space

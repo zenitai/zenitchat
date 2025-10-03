@@ -21,7 +21,7 @@ export class ValidationError extends Data.TaggedError("ValidationError")<{
  * Request body schema - validates structure before AI SDK validation
  */
 const RequestBodySchema = z.object({
-  messages: z.array(z.any()),
+  messages: z.array(z.any()).min(1, "No messages provided"),
   model: z.string().refine((val) => ALL_MODELS.some((m) => m.id === val), {
     message: "Invalid model",
   }),
@@ -40,14 +40,38 @@ export const validateRequestBody = (rawBody: unknown) =>
       const parseResult = RequestBodySchema.safeParse(rawBody);
 
       if (!parseResult.success) {
-        throw new Error("Request body validation failed");
+        // Extract specific error messages from Zod
+        const errors = parseResult.error.issues;
+        const errorMessages = errors.map((err) => err.message);
+
+        // Check for combined validation case
+        const hasInvalidModel = errorMessages.some(
+          (msg) => msg === "Invalid model",
+        );
+        const hasNoMessages = errorMessages.some(
+          (msg) => msg === "No messages provided",
+        );
+
+        let reason: string;
+        if (hasInvalidModel && hasNoMessages) {
+          reason = "Invalid model and no messages provided";
+        } else if (hasInvalidModel) {
+          reason = "Invalid model";
+        } else if (hasNoMessages) {
+          reason = "No messages provided";
+        } else {
+          reason = "Invalid request structure";
+        }
+
+        throw new Error(reason);
       }
 
       return parseResult.data;
     },
     catch: (error) =>
       new ValidationError({
-        reason: "Invalid request structure",
+        reason:
+          error instanceof Error ? error.message : "Invalid request structure",
         message:
           error instanceof Error
             ? error.message

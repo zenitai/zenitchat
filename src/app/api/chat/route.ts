@@ -101,8 +101,9 @@ const effectHandler = HttpApp.toWebHandlerRuntime(runtime)(
 );
 
 // Adapt to Next.js route handler signature (ignores context param since we have no dynamic routes)
+// We might wanna do something about it later...
 export const POST = (
   request: Request,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _context: { params: Promise<Record<string, string | string[]>> }
+  _context: { params: Promise<Record<string, string | string[]>> },
 ): Promise<Response> => effectHandler(request);

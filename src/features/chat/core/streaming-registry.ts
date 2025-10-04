@@ -27,5 +27,7 @@ export function resetStreamingStore(threadId: string) {
   const store = stores.get(threadId);
   if (store) {
     store.message = null;
+    store.fiber = null;
+    store.status = "ready";
   }
 }

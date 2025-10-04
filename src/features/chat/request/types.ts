@@ -40,6 +40,7 @@ export interface MakeRequestOptions {
   store: StreamingMessageStore<MyUIMessage>;
   messages: MyUIMessage[];
   messageId?: string;
+  seedMessage?: MyUIMessage;
   fetchStream: () => ChatFetcherResult;
   messageMetadataSchema?:
     | Validator<InferUIMessageMetadata<MyUIMessage>>

@@ -75,6 +75,7 @@ const regenerateMessageEffect = ({
     // Stream the response
     const result = yield* makeRequest({
       store,
+      seedMessage: assistantMessage,
       messages: messagesToUse,
       messageId: assistantMessage.id,
       messageMetadataSchema,
@@ -115,12 +116,11 @@ const regenerateMessageEffect = ({
 
     // Update the assistant message in Convex with the final result
     yield* convexFunctions.mutations.updateMessage({
-      messageId: assistantMessage.id,
+      messageId: result.id,
       parts: result.parts,
       generationStatus: "ready",
       metadata: {
         ...result.metadata,
-        model: selectedModel,
         errors: undefined,
       },
     });
@@ -130,6 +130,41 @@ const regenerateMessageEffect = ({
 
     return result;
   }).pipe(
+    Effect.onInterrupt(() =>
+      Effect.gen(function* () {
+        const partialMessage = store.message;
+
+        // Always save abort error so user knows generation was stopped
+        if (partialMessage) {
+          // Save to Convex (optimistic update will show error immediately)
+          yield* convexFunctions.mutations.updateMessage({
+            messageId: partialMessage.id,
+            parts: partialMessage.parts,
+            generationStatus: "error",
+            metadata: {
+              ...partialMessage.metadata,
+              errors: [
+                {
+                  type: "abort",
+                  reason: "Generation was stopped by user",
+                  message: "Generation was stopped by user",
+                  timestamp: Date.now(),
+                },
+              ],
+            },
+          });
+        }
+      }).pipe(
+        Effect.catchAll((error) =>
+          Effect.sync(() => {
+            console.error(
+              "Failed to save partial message on interrupt:",
+              error,
+            );
+          }),
+        ),
+      ),
+    ),
     Effect.ensuring(Effect.sync(() => resetStreamingStore(threadId))),
     Effect.catchAll((error) => {
       return Effect.gen(function* () {

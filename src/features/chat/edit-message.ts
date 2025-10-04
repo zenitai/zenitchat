@@ -18,6 +18,7 @@ const editMessageEffect = ({
   content,
   model,
   convexFunctions,
+  store,
 }: EditMessageOptions) =>
   Effect.gen(function* () {
     // Get model from Zustand if not provided
@@ -44,8 +45,6 @@ const editMessageEffect = ({
     // Get conversation history up to (but not including) this message
     const messagesToUse = history.slice(0, targetIndex);
 
-    // Get streaming store
-    const store = yield* Effect.sync(() => getOrCreateStreamingStore(threadId));
     store.message = null;
 
     // Create new user and assistant messages
@@ -106,6 +105,8 @@ const editMessageEffect = ({
     }).pipe(
       Effect.tapErrorTag("MakeRequestError", (error) => {
         return Effect.gen(function* () {
+          store.status = "error";
+
           // Read the partial message from the store
           const partialMessage = store.message;
 
@@ -143,17 +144,31 @@ const editMessageEffect = ({
       },
     });
 
+    // Set status to ready after Convex save succeeds
+    store.status = "ready";
+
     return result;
   }).pipe(
     Effect.ensuring(Effect.sync(() => resetStreamingStore(threadId))),
     Effect.catchAll((error) => {
       return Effect.gen(function* () {
         console.error("Error occurred:", error);
+        store.status = "error";
       });
     }),
   );
 
-export const editMessage = (options: EditMessageOptions) =>
-  Effect.runPromise(
-    editMessageEffect(options).pipe(Effect.provide(FetchHttpClient.layer)),
+export const editMessage = (
+  options: Omit<EditMessageOptions, "store">,
+): void => {
+  const store = getOrCreateStreamingStore(options.threadId);
+  store.status = "submitted";
+
+  const fiber = Effect.runFork(
+    editMessageEffect({ ...options, store }).pipe(
+      Effect.provide(FetchHttpClient.layer),
+    ),
   );
+
+  store.fiber = fiber;
+};

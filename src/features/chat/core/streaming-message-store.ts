@@ -1,16 +1,33 @@
 import type { UIMessage } from "ai";
+import type { RuntimeFiber } from "effect/Fiber";
 import { throttle } from "../utils/throttle";
 
+export type ChatStatus = "submitted" | "streaming" | "ready" | "error";
+
+export type ChatFiber<UI_MESSAGE extends UIMessage = UIMessage> = RuntimeFiber<
+  UI_MESSAGE | void,
+  never
+>;
+
 /**
- * Ephemeral store for streaming assistant messages.
+ * Ephemeral store for streaming assistant messages with status tracking.
  *
  * This implements the external store pattern to prevent React render loops
  * during high-frequency streaming updates. It's similar to ReactChatState from useChat
- * but simplified for just the streaming assistant message.
+ * but adapted for our Effect.ts-based architecture.
+ *
+ * Tracks:
+ * - message: The streaming assistant message content
+ * - status: Current chat status (submitted/streaming/ready/error)
+ * - fiber: Effect fiber for interruption (stop functionality)
  */
 export class StreamingMessageStore<UI_MESSAGE extends UIMessage = UIMessage> {
   #message: UI_MESSAGE | null = null;
+  #status: ChatStatus = "ready";
+  #fiber: ChatFiber<UI_MESSAGE> | null = null;
+
   #messageCallbacks = new Set<() => void>();
+  #statusCallbacks = new Set<() => void>();
 
   get message(): UI_MESSAGE | null {
     return this.#message;
@@ -19,6 +36,23 @@ export class StreamingMessageStore<UI_MESSAGE extends UIMessage = UIMessage> {
   set message(newMessage: UI_MESSAGE | null) {
     this.#message = newMessage ? this.snapshot(newMessage) : null;
     this.#callMessageCallbacks();
+  }
+
+  get status(): ChatStatus {
+    return this.#status;
+  }
+
+  set status(newStatus: ChatStatus) {
+    this.#status = newStatus;
+    this.#callStatusCallbacks();
+  }
+
+  get fiber(): ChatFiber<UI_MESSAGE> | null {
+    return this.#fiber;
+  }
+
+  set fiber(newFiber: ChatFiber<UI_MESSAGE> | null) {
+    this.#fiber = newFiber;
   }
 
   /**
@@ -42,10 +76,26 @@ export class StreamingMessageStore<UI_MESSAGE extends UIMessage = UIMessage> {
   };
 
   /**
+   * Register a callback to be notified when the status changes.
+   * Returns an unsubscribe function.
+   */
+  "~registerStatusCallback" = (onChange: () => void): (() => void) => {
+    this.#statusCallbacks.add(onChange);
+    return () => this.#statusCallbacks.delete(onChange);
+  };
+
+  /**
    * Notify all registered callbacks of a message change
    */
   #callMessageCallbacks = () => {
     this.#messageCallbacks.forEach((callback) => callback());
+  };
+
+  /**
+   * Notify all registered callbacks of a status change
+   */
+  #callStatusCallbacks = () => {
+    this.#statusCallbacks.forEach((callback) => callback());
   };
 }
 

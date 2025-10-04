@@ -62,13 +62,13 @@ const sendMessageEffect = ({
   model,
   isNewThread,
   convexFunctions,
+  store,
 }: SendMessageOptions) =>
   Effect.gen(function* () {
     // Get model from Zustand if not provided
     const selectedModel =
       model || (yield* Effect.sync(() => getSelectedModel().id));
 
-    const store = yield* Effect.sync(() => getOrCreateStreamingStore(threadId));
     store.message = null;
 
     const { userMessage, assistantMessage, messagesForConvex } =
@@ -113,6 +113,8 @@ const sendMessageEffect = ({
     }).pipe(
       Effect.tapErrorTag("MakeRequestError", (error) => {
         return Effect.gen(function* () {
+          store.status = "error";
+
           // Read the partial message from the store (contains any parts that streamed before error)
           const partialMessage = store.message;
 
@@ -150,6 +152,9 @@ const sendMessageEffect = ({
       },
     });
 
+    // Set status to ready after Convex save succeeds
+    store.status = "ready";
+
     // Clear the streaming store after saving to Convex
     yield* Effect.sync(() => resetStreamingStore(threadId));
 
@@ -158,11 +163,22 @@ const sendMessageEffect = ({
     Effect.catchAll((error) => {
       return Effect.gen(function* () {
         console.error("Error occurred:", error);
+        store.status = "error";
       });
     }),
   );
 
-export const sendMessage = (options: SendMessageOptions) =>
-  Effect.runPromise(
-    sendMessageEffect(options).pipe(Effect.provide(FetchHttpClient.layer)),
+export const sendMessage = (
+  options: Omit<SendMessageOptions, "store">,
+): void => {
+  const store = getOrCreateStreamingStore(options.threadId);
+  store.status = "submitted";
+
+  const fiber = Effect.runFork(
+    sendMessageEffect({ ...options, store }).pipe(
+      Effect.provide(FetchHttpClient.layer),
+    ),
   );
+
+  store.fiber = fiber;
+};

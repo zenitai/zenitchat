@@ -286,6 +286,11 @@ export const write = <UI_MESSAGE extends UIMessage>(
 ) =>
   Effect.try({
     try: () => {
+      // Set status to "streaming" on first write (when first chunk arrives)
+      if (store.status === "submitted") {
+        store.status = "streaming";
+      }
+
       store.message = state.message;
     },
     catch: (error) =>

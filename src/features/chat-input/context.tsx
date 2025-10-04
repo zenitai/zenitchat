@@ -11,6 +11,7 @@ export interface ChatInputContextValue {
   // State
   inputText: string;
   selectedModel: ModelConfig;
+  threadId?: string;
 
   // Refs
   textareaRef: RefObject<HTMLTextAreaElement | null>;

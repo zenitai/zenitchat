@@ -155,7 +155,16 @@ const editMessageEffect = ({
 
         // Always save abort error so user knows generation was stopped
         if (partialMessage) {
-          // Save to Convex (optimistic update will show error immediately)
+          // Update store immediately so UI shows error without waiting for Convex
+          store.message = {
+            ...partialMessage,
+            metadata: {
+              ...partialMessage.metadata,
+              errors: [{ message: "Generation was stopped by user" }],
+            },
+          };
+
+          // Save to Convex with full error details
           yield* convexFunctions.mutations.updateMessage({
             messageId: partialMessage.id,
             parts: partialMessage.parts,

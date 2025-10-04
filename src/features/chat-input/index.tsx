@@ -43,18 +43,21 @@ export const ChatInputEdit = Object.assign(ChatInputEditRoot, {
 // Default composition - pre-assembled with Root
 export interface ChatInputDefaultProps {
   onSubmit: (text: string) => void;
+  threadId?: string;
   showScrollToBottom?: boolean;
   onScrollToBottom?: () => void;
 }
 
 export const ChatInputDefault = ({
   onSubmit,
+  threadId,
   showScrollToBottom,
   onScrollToBottom,
 }: ChatInputDefaultProps) => {
   return (
     <ChatInput.Root
       onSubmit={onSubmit}
+      threadId={threadId}
       showScrollToBottom={showScrollToBottom}
       onScrollToBottom={onScrollToBottom}
     >

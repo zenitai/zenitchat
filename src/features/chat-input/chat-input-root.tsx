@@ -13,6 +13,7 @@ import { useChatInputHeight } from "./hooks/use-chat-input-height";
 export interface ChatInputRootProps {
   children: ReactNode;
   onSubmit: (text: string) => void;
+  threadId?: string;
   showScrollToBottom?: boolean;
   onScrollToBottom?: () => void;
 }
@@ -20,6 +21,7 @@ export interface ChatInputRootProps {
 export const ChatInputRoot = ({
   children,
   onSubmit,
+  threadId,
   showScrollToBottom,
   onScrollToBottom,
 }: ChatInputRootProps) => {
@@ -80,6 +82,7 @@ export const ChatInputRoot = ({
   const contextValue = {
     inputText,
     selectedModel,
+    threadId,
     textareaRef,
     chatInputContainerRef,
     handleSubmit,

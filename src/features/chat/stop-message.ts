@@ -17,16 +17,11 @@ const stopMessageEffect = (threadId: string) =>
       return;
     }
 
-    // Only interrupt if actively streaming or submitted
-    if (store.status !== "streaming" && store.status !== "submitted") {
-      return;
-    }
-
     if (!store.fiber) {
       return;
     }
 
-    // Interrupt the fiber
+    // Interrupt the fiber (don't check status - it was already updated for UI)
     // The interrupted Effect's onInterrupt handler will save the partial message
     // and the ensuring handler will cleanup the store
     yield* Fiber.interrupt(store.fiber);
@@ -46,5 +41,12 @@ const stopMessageEffect = (threadId: string) =>
  * @param threadId - The thread ID to stop streaming for
  */
 export const stopMessage = (threadId: string): void => {
+  // Update status immediately (synchronous) for instant UI feedback
+  const store = peekStreamingStore(threadId);
+  if (store && (store.status === "streaming" || store.status === "submitted")) {
+    store.status = "ready";
+  }
+
+  // Then interrupt the fiber (async)
   Effect.runFork(stopMessageEffect(threadId));
 };

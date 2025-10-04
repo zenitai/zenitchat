@@ -13,6 +13,7 @@ import {
 import { validateRequestBody, validateMessages } from "./utils/validator";
 import { createErrorStream } from "./utils/create-error-stream";
 import { transformError } from "./utils/ai-errors";
+import { extractMessageMetadata } from "./utils/extract-message-metadata";
 
 export const maxDuration = 30;
 
@@ -52,10 +53,12 @@ const app = Effect.gen(function* () {
   });
 
   // Get the UI message stream response with error transformation
+  // messageMetadata callback extracts data to send in start/finish events
   const streamResponse = result.toUIMessageStreamResponse({
     onError: (error) => {
       return transformError(error);
     },
+    messageMetadata: extractMessageMetadata,
   });
 
   yield* Effect.log("Sending AI stream response");

@@ -8,6 +8,7 @@ import {
 } from "./core/streaming-registry";
 import { convexMessagesToUIMessages } from "@/features/messages/utils";
 import { getSelectedModel } from "@/features/chat-input/store";
+import { messageMetadataSchema } from "@/features/messages/types";
 import type { MyUIMessage } from "@/features/messages/types";
 import type { SendMessageOptions } from "./types";
 
@@ -103,6 +104,7 @@ const sendMessageEffect = ({
       store,
       messages: [...history, userMessage],
       messageId: assistantMessage.id,
+      messageMetadataSchema,
       fetchStream: () =>
         chatFetcher({
           messages: [...history, userMessage],

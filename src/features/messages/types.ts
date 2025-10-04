@@ -1,12 +1,12 @@
 import type { UIMessage } from "ai";
 import * as v from "valibot";
 
-// Message metadata schema with Valibot
-export const messageMetadataSchema = v.object({
+// Message metadata schema with Valibot (strict mode - rejects unknown properties)
+export const messageMetadataSchema = v.strictObject({
   model: v.optional(v.string()),
   providerOptions: v.optional(v.unknown()),
   tokens: v.optional(
-    v.object({
+    v.strictObject({
       input: v.optional(v.number()),
       reasoning: v.optional(v.number()),
       output: v.optional(v.number()),
@@ -15,7 +15,7 @@ export const messageMetadataSchema = v.object({
   ),
   errors: v.optional(
     v.array(
-      v.object({
+      v.strictObject({
         message: v.string(),
       }),
     ),

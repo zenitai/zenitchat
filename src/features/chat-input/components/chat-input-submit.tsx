@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import type { ComponentProps, MouseEvent } from "react";
-import { ArrowUpIcon, SquareIcon } from "lucide-react";
+import { ArrowUpIcon } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -28,9 +28,9 @@ export const ChatInputSubmit = ({
   const isStreaming = status === "streaming" || status === "submitted";
 
   const Icon = isStreaming ? (
-    <SquareIcon className="size-4" />
+    <div className="size-4 bg-current rounded-[2px]" />
   ) : (
-    <ArrowUpIcon className="size-4" />
+    <ArrowUpIcon className="size-5 stroke-2" />
   );
 
   const getTooltipText = () => {

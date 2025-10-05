@@ -98,18 +98,21 @@ export const ModelSelector = ({ variant = "default" }: ModelSelectorProps) => {
       <DropdownMenuContent
         align="start"
         avoidCollisions={true}
-        collisionPadding={16}
+        collisionPadding={8}
+        sticky="always"
         className={cn(
           "!outline-1 !outline-chat-border/20 dark:!outline-white/5",
           "relative overflow-hidden rounded-lg !border-none",
-          "p-0 pb-11 pt-10 max-w-[calc(100vw-2rem)] transition-[width] duration-300 ease-out",
-          "max-sm:mx-4 sm:rounded-lg",
+          "p-0 pb-11 pt-10",
+          "max-sm:mx-2 sm:rounded-lg",
           "!max-h-[min(600px,var(--radix-dropdown-menu-content-available-height))]", // Respect available space
           variant === "compact"
             ? "sm:!max-h-[min(600px,var(--radix-dropdown-menu-content-available-height))]"
             : "sm:!max-h-[min(800px,var(--radix-dropdown-menu-content-available-height))]",
           // Adjust width when showing grid
-          showExpanded ? "sm:w-[640px]" : "sm:w-[420px]",
+          showExpanded
+            ? "w-[min(640px,calc(100vw-1rem))]"
+            : "w-[min(420px,calc(100vw-1rem))]",
         )}
         style={
           { outline: "none", "--shadow-height": "10px" } as React.CSSProperties
@@ -136,10 +139,10 @@ export const ModelSelector = ({ variant = "default" }: ModelSelectorProps) => {
           <div
             className={cn(
               "overflow-y-auto px-1.5 pb-3 custom-scrollbar scroll-shadow",
-              "max-h-[450px]", // Always compact on mobile
+              "max-h-[min(450px,calc(var(--radix-dropdown-menu-content-available-height)-120px))]",
               variant === "compact"
-                ? "sm:max-h-[450px]"
-                : "sm:max-h-[min(650px,calc(100vh-200px))]", // Responsive on desktop, capped at 650px
+                ? "sm:max-h-[min(450px,calc(var(--radix-dropdown-menu-content-available-height)-120px))]"
+                : "sm:max-h-[min(650px,calc(var(--radix-dropdown-menu-content-available-height)-120px))]",
             )}
             data-shadow="true"
           >

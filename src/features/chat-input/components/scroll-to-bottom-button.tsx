@@ -11,11 +11,12 @@ export function ScrollToBottomButton() {
   }
 
   return (
-    <div className="flex justify-center pb-4">
+    <div className="pointer-events-none flex justify-center pb-4">
       <Button
         onClick={onScrollToBottom}
         variant="outline"
         className={cn(
+          "pointer-events-auto",
           "transition-colors",
           "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
           "[&_svg]:size-4",
@@ -23,6 +24,7 @@ export function ScrollToBottomButton() {
           "flex border-secondary",
           "text-secondary-foreground/70 hover:bg-secondary",
           "bg-background/80 backdrop-blur-sm",
+          "select-none",
         )}
       >
         <span className="pb-0.5">Scroll to bottom</span>

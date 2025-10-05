@@ -47,10 +47,10 @@ export function ExpandedModelList({
     <div
       className={cn(
         "overflow-y-auto px-1.5 sm:w-[640px] custom-scrollbar scroll-shadow",
-        "max-h-[450px]", // Always compact on mobile
+        "max-h-[min(450px,calc(var(--radix-dropdown-menu-content-available-height)-120px))]",
         variant === "compact"
-          ? "sm:max-h-[450px]"
-          : "sm:max-h-[min(650px,calc(100vh-200px))]", // Responsive on desktop, capped at 650px
+          ? "sm:max-h-[min(450px,calc(var(--radix-dropdown-menu-content-available-height)-120px))]"
+          : "sm:max-h-[min(650px,calc(var(--radix-dropdown-menu-content-available-height)-120px))]",
       )}
       data-shadow="true"
     >

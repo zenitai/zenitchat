@@ -39,7 +39,7 @@ export function ModelCard({
         onClick={() => !disabled && onSelect(model)}
         disabled={disabled}
         className={cn(
-          "group relative flex h-[9.25rem] w-[6.75rem] flex-col items-start gap-0.5 overflow-hidden rounded-xl border px-1 py-3 text-color-heading",
+          "group relative flex h-[9.25rem] w-[6.75rem] max-sm:h-[7.5rem] max-sm:w-[5.5rem] flex-col items-start gap-0.5 overflow-hidden rounded-xl border px-1 py-3 max-sm:px-0.5 max-sm:py-2 text-color-heading",
           "[--model-muted:hsl(var(--muted-foreground)/0.9)] [--model-primary:hsl(var(--color-heading))]",
           disabled
             ? "cursor-not-allowed opacity-50 hover:bg-transparent [&>*:not(.preserve-hover)]:opacity-50 bg-sidebar/20 border-chat-border/50 dark:border-chat-border dark:bg-sidebar/20"
@@ -61,16 +61,20 @@ export function ModelCard({
           )}
         >
           {/* Model icon */}
-          <ModelIcon creator={model.creator} className="size-7" />
+          <ModelIcon creator={model.creator} className="size-7 max-sm:size-5" />
 
           {/* Model name */}
           <div className="w-full text-center text-model-primary">
-            <div className="text-base font-semibold">{firstPart}</div>
+            <div className="text-base max-sm:text-sm font-semibold">
+              {firstPart}
+            </div>
             {secondPart && (
-              <div className="-mt-0.5 text-sm font-semibold">{secondPart}</div>
+              <div className="-mt-0.5 text-sm max-sm:text-xs font-semibold">
+                {secondPart}
+              </div>
             )}
             {parenText && (
-              <div className="-mt-1 text-[11px] text-model-muted">
+              <div className="-mt-1 text-[11px] max-sm:text-[9px] text-model-muted">
                 {parenText}
               </div>
             )}
@@ -78,7 +82,7 @@ export function ModelCard({
 
           {/* NEW badge */}
           {model.new && (
-            <div className="absolute right-[7px] top-1 text-[11px] text-model-muted">
+            <div className="absolute right-[7px] max-sm:right-1 top-1 text-[11px] max-sm:text-[9px] text-model-muted">
               NEW
             </div>
           )}
@@ -87,11 +91,11 @@ export function ModelCard({
           {model.pricingTier === "premium" && (
             <div
               className={cn(
-                "absolute right-1.5 text-model-muted opacity-80",
-                model.new ? "top-6" : "top-1",
+                "absolute right-1.5 max-sm:right-1 text-model-muted opacity-80",
+                model.new ? "top-6 max-sm:top-5" : "top-1",
               )}
             >
-              <Gem className="size-4 text-blue-400 dark:text-blue-500" />
+              <Gem className="size-4 max-sm:size-3 text-blue-400 dark:text-blue-500" />
             </div>
           )}
 
@@ -99,30 +103,34 @@ export function ModelCard({
           {model.experimental && model.pricingTier !== "premium" && (
             <div
               className={cn(
-                "absolute right-1.5 text-model-muted opacity-80",
-                model.new ? "top-6" : "top-1",
+                "absolute right-1.5 max-sm:right-1 text-model-muted opacity-80",
+                model.new ? "top-6 max-sm:top-5" : "top-1",
               )}
             >
-              <FlaskConical className="size-4" />
+              <FlaskConical className="size-4 max-sm:size-3" />
             </div>
           )}
         </div>
 
         {/* Feature icons at bottom */}
-        <div className="absolute inset-x-0 bottom-3 flex w-full items-center justify-center gap-2">
+        <div className="absolute inset-x-0 bottom-3 max-sm:bottom-2 flex w-full items-center justify-center gap-2 max-sm:gap-1.5">
           {model.features
             .filter((feature) =>
               ["vision", "documents", "reasoning"].includes(feature),
             )
             .map((feature) => (
-              <FeatureBadge key={feature} feature={feature} />
+              <FeatureBadge
+                key={feature}
+                feature={feature}
+                className="max-sm:scale-75"
+              />
             ))}
         </div>
       </button>
 
       {/* Hover pin/unpin button */}
       {onPin && (
-        <div className="absolute -right-1.5 -top-1.5 left-auto z-50 flex w-auto translate-y-2 scale-95 items-center rounded-[10px] border border-chat-border/40 bg-card p-1 text-xs text-muted-foreground opacity-0 transition-all group-hover:translate-y-0 group-hover:scale-100 group-hover:opacity-100">
+        <div className="absolute -right-1.5 -top-1.5 left-auto z-50 flex w-auto translate-y-2 scale-95 items-center rounded-[10px] border border-chat-border/40 bg-card p-1 max-sm:p-0.5 text-xs text-muted-foreground opacity-0 transition-all group-hover:translate-y-0 group-hover:scale-100 group-hover:opacity-100">
           <button
             type="button"
             onClick={(e) => {
@@ -130,14 +138,14 @@ export function ModelCard({
               onPin(model);
             }}
             disabled={!canToggle}
-            className="cursor-pointer rounded-md bg-accent/30 p-1.5 hover:bg-muted/50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="cursor-pointer rounded-md bg-accent/30 p-1.5 max-sm:p-1 hover:bg-muted/50 disabled:cursor-not-allowed disabled:opacity-50"
             tabIndex={-1}
             aria-label={isPinned ? "Unpin model" : "Pin model"}
           >
             {isPinned ? (
-              <PinOff className="size-4" />
+              <PinOff className="size-4 max-sm:size-3" />
             ) : (
-              <Pin className="size-4" />
+              <Pin className="size-4 max-sm:size-3" />
             )}
           </button>
         </div>

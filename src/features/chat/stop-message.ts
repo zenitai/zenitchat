@@ -21,14 +21,17 @@ const stopMessageEffect = (threadId: string) =>
       return;
     }
 
+    // Capture fiber reference to prevent race condition
+    const fiberRef = store.fiber;
+
     // Interrupt the fiber (don't check status - it was already updated for UI)
     // The interrupted Effect's onInterrupt handler will save the partial message
     // and the ensuring handler will cleanup the store
-    yield* Fiber.interrupt(store.fiber);
-
-    // Clear fiber reference
+    yield* Fiber.interrupt(fiberRef);
     yield* Effect.sync(() => {
-      store.fiber = null;
+      if (store.fiber === fiberRef) {
+        store.fiber = null;
+      }
     });
   });
 

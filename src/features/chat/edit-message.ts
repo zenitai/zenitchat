@@ -10,6 +10,7 @@ import { convexMessagesToUIMessages } from "@/features/messages/utils";
 import { getSelectedModel } from "@/features/chat-input/store";
 import { messageMetadataSchema } from "@/features/messages/types";
 import { handleInterrupt } from "./request/handle-interrupt";
+import { handleMakeRequestError } from "./request/handle-error";
 import type { MyUIMessage } from "@/features/messages/types";
 import type { EditMessageOptions } from "./types";
 
@@ -108,33 +109,15 @@ const editMessageEffect = ({
           model: selectedModel,
         }),
     }).pipe(
-      Effect.tapErrorTag("MakeRequestError", (error) => {
-        return Effect.gen(function* () {
-          store.status = "error";
-
-          // Read the partial message from the store
-          const partialMessage = store.message;
-
-          // Update the message with partial parts, error status, and error details
-          yield* convexFunctions.mutations.updateMessage({
-            messageId: assistantMessage.id,
-            parts: partialMessage?.parts ?? [],
-            generationStatus: "error",
-            metadata: {
-              ...partialMessage?.metadata,
-              model: selectedModel,
-              errors: [
-                {
-                  type: error.type,
-                  reason: error.reason,
-                  message: error.message,
-                  timestamp: error.timestamp,
-                },
-              ],
-            },
-          });
-        });
-      }),
+      Effect.tapErrorTag("MakeRequestError", (error) =>
+        handleMakeRequestError(
+          store,
+          assistantMessageId,
+          selectedModel,
+          error,
+          convexFunctions,
+        ),
+      ),
     );
 
     // Update the assistant message in Convex with the final result
@@ -155,12 +138,12 @@ const editMessageEffect = ({
   }).pipe(
     Effect.onInterrupt(() => handleInterrupt(store, convexFunctions)),
     Effect.ensuring(Effect.sync(() => resetStreamingStore(threadId))),
-    Effect.catchAll((error) => {
-      return Effect.gen(function* () {
+    Effect.catchAll((error) =>
+      Effect.sync(() => {
         console.error("Error occurred:", error);
         store.status = "error";
-      });
-    }),
+      }),
+    ),
   );
 
 export const editMessage = (

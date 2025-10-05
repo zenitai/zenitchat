@@ -9,6 +9,7 @@ import {
 import { convexMessagesToUIMessages } from "@/features/messages/utils";
 import { getSelectedModel } from "@/features/chat-input/store";
 import { messageMetadataSchema } from "@/features/messages/types";
+import { handleInterrupt } from "./request/handle-interrupt";
 import type { MyUIMessage } from "@/features/messages/types";
 import type { EditMessageOptions } from "./types";
 
@@ -84,6 +85,9 @@ const editMessageEffect = ({
       },
     ];
 
+    // Immediately write seed message to store so it's available on interrupt
+    store.message = assistantMessage;
+
     // Delete old messages and add new messages in one call
     yield* convexFunctions.mutations.regenerateFromMessage({
       threadId,
@@ -149,50 +153,7 @@ const editMessageEffect = ({
 
     return result;
   }).pipe(
-    Effect.onInterrupt(() =>
-      Effect.gen(function* () {
-        const partialMessage = store.message;
-
-        // Always save abort error so user knows generation was stopped
-        if (partialMessage) {
-          // Update store immediately so UI shows error without waiting for Convex
-          store.message = {
-            ...partialMessage,
-            metadata: {
-              ...partialMessage.metadata,
-              errors: [{ message: "Generation was stopped by user" }],
-            },
-          };
-
-          // Save to Convex with full error details
-          yield* convexFunctions.mutations.updateMessage({
-            messageId: partialMessage.id,
-            parts: partialMessage.parts,
-            generationStatus: "error",
-            metadata: {
-              ...partialMessage.metadata,
-              errors: [
-                {
-                  type: "abort",
-                  reason: "Generation was stopped by user",
-                  message: "Generation was stopped by user",
-                  timestamp: Date.now(),
-                },
-              ],
-            },
-          });
-        }
-      }).pipe(
-        Effect.catchAll((error) =>
-          Effect.sync(() => {
-            console.error(
-              "Failed to save partial message on interrupt:",
-              error,
-            );
-          }),
-        ),
-      ),
-    ),
+    Effect.onInterrupt(() => handleInterrupt(store, convexFunctions)),
     Effect.ensuring(Effect.sync(() => resetStreamingStore(threadId))),
     Effect.catchAll((error) => {
       return Effect.gen(function* () {

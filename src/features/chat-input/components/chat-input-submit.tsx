@@ -1,12 +1,15 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import type { ComponentProps, MouseEvent } from "react";
-import { ArrowUpIcon } from "lucide-react";
+import { ArrowUpIcon, SquareIcon } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useStreamingStatus } from "@/features/chat/hooks/use-streaming-status";
+import { stopMessage } from "@/features/chat/stop-message";
+import { useChatInputContext } from "../context";
 
 export type ChatInputSubmitProps = ComponentProps<typeof Button> & {
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
@@ -20,14 +23,27 @@ export const ChatInputSubmit = ({
   onClick,
   ...props
 }: ChatInputSubmitProps) => {
-  const Icon = <ArrowUpIcon className="size-4" />;
+  const { threadId } = useChatInputContext();
+  const status = useStreamingStatus(threadId ?? "");
+  const isStreaming = status === "streaming" || status === "submitted";
+
+  const Icon = isStreaming ? (
+    <SquareIcon className="size-4" />
+  ) : (
+    <ArrowUpIcon className="size-4" />
+  );
 
   const getTooltipText = () => {
-    return "Send message";
+    return isStreaming ? "Stop generation" : "Send message";
   };
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
-    onClick?.(e);
+    if (isStreaming && threadId) {
+      e.preventDefault();
+      stopMessage(threadId);
+    } else {
+      onClick?.(e);
+    }
   };
 
   return (

@@ -10,7 +10,7 @@ export const makeRequest = (options: MakeRequestOptions) =>
   Effect.flatMap(
     Effect.sync(() => ({
       state: createStreamingUIMessageState<MyUIMessage>({
-        lastMessage: options.messages.at(-1),
+        lastMessage: options.seedMessage ?? options.messages.at(-1),
         messageId: options.messageId ?? crypto.randomUUID(),
       }),
     })),

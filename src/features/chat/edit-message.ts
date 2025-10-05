@@ -9,6 +9,8 @@ import {
 import { convexMessagesToUIMessages } from "@/features/messages/utils";
 import { getSelectedModel } from "@/features/chat-input/store";
 import { messageMetadataSchema } from "@/features/messages/types";
+import { handleInterrupt } from "./request/handle-interrupt";
+import { handleMakeRequestError } from "./request/handle-error";
 import type { MyUIMessage } from "@/features/messages/types";
 import type { EditMessageOptions } from "./types";
 
@@ -18,6 +20,7 @@ const editMessageEffect = ({
   content,
   model,
   convexFunctions,
+  store,
 }: EditMessageOptions) =>
   Effect.gen(function* () {
     // Get model from Zustand if not provided
@@ -44,8 +47,6 @@ const editMessageEffect = ({
     // Get conversation history up to (but not including) this message
     const messagesToUse = history.slice(0, targetIndex);
 
-    // Get streaming store
-    const store = yield* Effect.sync(() => getOrCreateStreamingStore(threadId));
     store.message = null;
 
     // Create new user and assistant messages
@@ -85,6 +86,9 @@ const editMessageEffect = ({
       },
     ];
 
+    // Immediately write seed message to store so it's available on interrupt
+    store.message = assistantMessage;
+
     // Delete old messages and add new messages in one call
     yield* convexFunctions.mutations.regenerateFromMessage({
       threadId,
@@ -95,6 +99,7 @@ const editMessageEffect = ({
     // Stream the response
     const result = yield* makeRequest({
       store,
+      seedMessage: assistantMessage,
       messages: [...messagesToUse, newUserMessage],
       messageId: assistantMessage.id,
       messageMetadataSchema,
@@ -104,56 +109,54 @@ const editMessageEffect = ({
           model: selectedModel,
         }),
     }).pipe(
-      Effect.tapErrorTag("MakeRequestError", (error) => {
-        return Effect.gen(function* () {
-          // Read the partial message from the store
-          const partialMessage = store.message;
-
-          // Update the message with partial parts, error status, and error details
-          yield* convexFunctions.mutations.updateMessage({
-            messageId: assistantMessage.id,
-            parts: partialMessage?.parts ?? [],
-            generationStatus: "error",
-            metadata: {
-              ...partialMessage?.metadata,
-              model: selectedModel,
-              errors: [
-                {
-                  type: error.type,
-                  reason: error.reason,
-                  message: error.message,
-                  timestamp: error.timestamp,
-                },
-              ],
-            },
-          });
-        });
-      }),
+      Effect.tapErrorTag("MakeRequestError", (error) =>
+        handleMakeRequestError(
+          store,
+          assistantMessageId,
+          selectedModel,
+          error,
+          convexFunctions,
+        ),
+      ),
     );
 
     // Update the assistant message in Convex with the final result
     yield* convexFunctions.mutations.updateMessage({
-      messageId: assistantMessage.id,
+      messageId: result.id,
       parts: result.parts,
       generationStatus: "ready",
       metadata: {
         ...result.metadata,
-        model: selectedModel,
         errors: undefined,
       },
     });
 
+    // Set status to ready after Convex save succeeds
+    store.status = "ready";
+
     return result;
   }).pipe(
+    Effect.onInterrupt(() => handleInterrupt(store, convexFunctions)),
     Effect.ensuring(Effect.sync(() => resetStreamingStore(threadId))),
-    Effect.catchAll((error) => {
-      return Effect.gen(function* () {
+    Effect.catchAll((error) =>
+      Effect.sync(() => {
         console.error("Error occurred:", error);
-      });
-    }),
+        store.status = "error";
+      }),
+    ),
   );
 
-export const editMessage = (options: EditMessageOptions) =>
-  Effect.runPromise(
-    editMessageEffect(options).pipe(Effect.provide(FetchHttpClient.layer)),
+export const editMessage = (
+  options: Omit<EditMessageOptions, "store">,
+): void => {
+  const store = getOrCreateStreamingStore(options.threadId);
+  store.status = "submitted";
+
+  const fiber = Effect.runFork(
+    editMessageEffect({ ...options, store }).pipe(
+      Effect.provide(FetchHttpClient.layer),
+    ),
   );
+
+  store.fiber = fiber;
+};

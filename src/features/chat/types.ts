@@ -1,4 +1,6 @@
 import type { ConvexFunctions } from "./hooks/use-convex-functions";
+import type { StreamingMessageStore } from "./core/streaming-message-store";
+import type { MyUIMessage } from "@/features/messages/types";
 
 export interface SendMessageOptions {
   threadId: string;
@@ -6,6 +8,7 @@ export interface SendMessageOptions {
   model?: string;
   isNewThread: boolean;
   convexFunctions: ConvexFunctions;
+  store: StreamingMessageStore<MyUIMessage>;
 }
 
 export interface RegenerateMessageOptions {
@@ -13,6 +16,7 @@ export interface RegenerateMessageOptions {
   messageId: string;
   model?: string;
   convexFunctions: ConvexFunctions;
+  store: StreamingMessageStore<MyUIMessage>;
 }
 
 export interface EditMessageOptions {
@@ -21,4 +25,5 @@ export interface EditMessageOptions {
   content: string;
   model?: string;
   convexFunctions: ConvexFunctions;
+  store: StreamingMessageStore<MyUIMessage>;
 }

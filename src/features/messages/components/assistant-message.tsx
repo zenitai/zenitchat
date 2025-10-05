@@ -15,6 +15,14 @@ export const AssistantMessage = memo(
     const hasErrors =
       message.metadata?.errors && message.metadata.errors.length > 0;
 
+    // Check if any part is currently streaming
+    const isStreaming = message.parts.some(
+      (part) => "state" in part && part.state === "streaming",
+    );
+
+    // Show toolbar if we have (content OR errors) AND nothing is streaming
+    const showToolbar = (hasContent || hasErrors) && !isStreaming;
+
     return (
       <div
         data-message-id={message.id}
@@ -89,13 +97,15 @@ export const AssistantMessage = memo(
           )}
 
           {/* Assistant message toolbar - positioned absolutely to the left */}
-          <div className="absolute left-0 -ml-0.5 mt-2 flex w-full flex-row justify-start gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100 group-has-[[data-state=open]]:opacity-100 max-md:opacity-100">
-            <AssistantMessageToolbar
-              parts={message.parts}
-              messageId={message.id}
-              currentModel={message.metadata?.model}
-            />
-          </div>
+          {showToolbar && (
+            <div className="absolute left-0 -ml-0.5 mt-2 flex w-full flex-row justify-start gap-1 opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100 group-focus:opacity-100 group-has-[[data-state=open]]:opacity-100 max-md:opacity-100">
+              <AssistantMessageToolbar
+                parts={message.parts}
+                messageId={message.id}
+                currentModel={message.metadata?.model}
+              />
+            </div>
+          )}
         </div>
       </div>
     );

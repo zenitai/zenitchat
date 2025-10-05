@@ -9,10 +9,12 @@ import { ChatInputContext } from "./context";
 import { useChatInputActions, useSelectedModel } from "./store";
 import { useAutoResizeTextarea } from "./hooks/use-auto-resize-textarea";
 import { useChatInputHeight } from "./hooks/use-chat-input-height";
+import { useStreamingStatus } from "@/features/chat/hooks/use-streaming-status";
 
 export interface ChatInputRootProps {
   children: ReactNode;
   onSubmit: (text: string) => void;
+  threadId?: string;
   showScrollToBottom?: boolean;
   onScrollToBottom?: () => void;
 }
@@ -20,6 +22,7 @@ export interface ChatInputRootProps {
 export const ChatInputRoot = ({
   children,
   onSubmit,
+  threadId,
   showScrollToBottom,
   onScrollToBottom,
 }: ChatInputRootProps) => {
@@ -27,6 +30,7 @@ export const ChatInputRoot = ({
   const [inputText, setInputText] = useState("");
   const { setSelectedModel } = useChatInputActions();
   const selectedModel = useSelectedModel();
+  const status = useStreamingStatus(threadId ?? "");
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({
     minHeight: 64,
     maxHeight: 192,
@@ -39,6 +43,11 @@ export const ChatInputRoot = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Safety guard: don't submit when actively submitting or streaming
+    if (status === "submitted" || status === "streaming") {
+      return;
+    }
 
     if (inputText.trim()) {
       onSubmit(inputText.trim());
@@ -68,6 +77,12 @@ export const ChatInputRoot = ({
         return;
       }
 
+      // Don't submit when not ready - just do nothing
+      if (status === "submitted" || status === "streaming") {
+        e.preventDefault();
+        return;
+      }
+
       // Submit on Enter (without Shift)
       e.preventDefault();
       const form = e.currentTarget.form;
@@ -80,6 +95,7 @@ export const ChatInputRoot = ({
   const contextValue = {
     inputText,
     selectedModel,
+    threadId,
     textareaRef,
     chatInputContainerRef,
     handleSubmit,

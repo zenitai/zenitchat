@@ -219,7 +219,8 @@ export function useConvexFunctions() {
           originalError: error,
           timestamp: Date.now(),
         }),
-    });
+    }).pipe(Effect.retry({ times: 2 }));
+
   const addMessagesToThread = (
     args: Parameters<typeof addMessagesToThreadConvex>[0],
   ) =>
@@ -233,7 +234,7 @@ export function useConvexFunctions() {
           originalError: error,
           timestamp: Date.now(),
         }),
-    });
+    }).pipe(Effect.retry({ times: 2 }));
 
   const createThreadWithMessages = (
     args: Parameters<typeof createThreadWithMessagesConvex>[0],
@@ -248,7 +249,8 @@ export function useConvexFunctions() {
           originalError: error,
           timestamp: Date.now(),
         }),
-    });
+    }).pipe(Effect.retry({ times: 2 }));
+
   const updateMessage = (args: Parameters<typeof updateMessageConvex>[0]) =>
     Effect.tryPromise({
       try: () => updateMessageConvex(args),
@@ -260,7 +262,8 @@ export function useConvexFunctions() {
           originalError: error,
           timestamp: Date.now(),
         }),
-    });
+    }).pipe(Effect.retry({ times: 2 }));
+
   const setMessageError = (args: Parameters<typeof setMessageErrorConvex>[0]) =>
     Effect.tryPromise({
       try: () => setMessageErrorConvex(args),
@@ -272,7 +275,8 @@ export function useConvexFunctions() {
           originalError: error,
           timestamp: Date.now(),
         }),
-    });
+    }).pipe(Effect.retry({ times: 2 }));
+
   const updateThread = (args: Parameters<typeof updateThreadConvex>[0]) =>
     Effect.tryPromise({
       try: () => updateThreadConvex(args),
@@ -284,7 +288,8 @@ export function useConvexFunctions() {
           originalError: error,
           timestamp: Date.now(),
         }),
-    });
+    }).pipe(Effect.retry({ times: 2 }));
+
   const fetchThreadMessages = (threadId: string) =>
     Effect.tryPromise({
       try: () => fetchThreadMessagesConvex(threadId),
@@ -296,7 +301,8 @@ export function useConvexFunctions() {
           originalError: error,
           timestamp: Date.now(),
         }),
-    });
+    }).pipe(Effect.retry({ times: 2 }));
+
   const regenerateFromMessage = (
     args: Parameters<typeof regenerateFromMessageConvex>[0],
   ) =>
@@ -310,7 +316,7 @@ export function useConvexFunctions() {
           originalError: error,
           timestamp: Date.now(),
         }),
-    });
+    }).pipe(Effect.retry({ times: 2 }));
 
   return {
     mutations: {

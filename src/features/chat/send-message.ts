@@ -76,7 +76,9 @@ const sendMessageEffect = ({
     const { userMessage, assistantMessage, messagesForConvex } =
       yield* createMessagesToAdd(content, selectedModel);
 
-    // Immediately write seed message to store so it's available on interrupt
+    // Set pending user message for optimistic UI (before Convex sync)
+    store.pendingUserMessage = userMessage;
+    // Set assistant message ready for streaming
     store.message = assistantMessage;
 
     // Create thread if it's a new thread
@@ -87,6 +89,8 @@ const sendMessageEffect = ({
         model: selectedModel,
         messages: messagesForConvex,
       });
+      // Clear pending user message - now in Convex
+      store.pendingUserMessage = null;
     }
 
     // Fetch thread messages for history
@@ -103,6 +107,8 @@ const sendMessageEffect = ({
         threadId,
         messages: messagesForConvex,
       });
+      // Clear pending user message - now in Convex/optimistic
+      store.pendingUserMessage = null;
     }
 
     const result = yield* makeRequest({

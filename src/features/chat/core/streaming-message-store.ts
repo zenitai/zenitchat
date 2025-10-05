@@ -23,10 +23,12 @@ export type ChatFiber<UI_MESSAGE extends UIMessage = UIMessage> = RuntimeFiber<
  */
 export class StreamingMessageStore<UI_MESSAGE extends UIMessage = UIMessage> {
   #message: UI_MESSAGE | null = null;
+  #pendingUserMessage: UI_MESSAGE | null = null;
   #status: ChatStatus = "ready";
   #fiber: ChatFiber<UI_MESSAGE> | null = null;
 
   #messageCallbacks = new Set<() => void>();
+  #pendingUserMessageCallbacks = new Set<() => void>();
   #statusCallbacks = new Set<() => void>();
 
   get message(): UI_MESSAGE | null {
@@ -36,6 +38,15 @@ export class StreamingMessageStore<UI_MESSAGE extends UIMessage = UIMessage> {
   set message(newMessage: UI_MESSAGE | null) {
     this.#message = newMessage ? this.snapshot(newMessage) : null;
     this.#callMessageCallbacks();
+  }
+
+  get pendingUserMessage(): UI_MESSAGE | null {
+    return this.#pendingUserMessage;
+  }
+
+  set pendingUserMessage(newMessage: UI_MESSAGE | null) {
+    this.#pendingUserMessage = newMessage ? this.snapshot(newMessage) : null;
+    this.#callPendingUserMessageCallbacks();
   }
 
   get status(): ChatStatus {
@@ -76,6 +87,17 @@ export class StreamingMessageStore<UI_MESSAGE extends UIMessage = UIMessage> {
   };
 
   /**
+   * Register a callback to be notified when the pending user message changes.
+   * Returns an unsubscribe function.
+   */
+  "~registerPendingUserMessageCallback" = (
+    onChange: () => void,
+  ): (() => void) => {
+    this.#pendingUserMessageCallbacks.add(onChange);
+    return () => this.#pendingUserMessageCallbacks.delete(onChange);
+  };
+
+  /**
    * Register a callback to be notified when the status changes.
    * Returns an unsubscribe function.
    */
@@ -89,6 +111,13 @@ export class StreamingMessageStore<UI_MESSAGE extends UIMessage = UIMessage> {
    */
   #callMessageCallbacks = () => {
     this.#messageCallbacks.forEach((callback) => callback());
+  };
+
+  /**
+   * Notify all registered callbacks of a pending user message change
+   */
+  #callPendingUserMessageCallbacks = () => {
+    this.#pendingUserMessageCallbacks.forEach((callback) => callback());
   };
 
   /**

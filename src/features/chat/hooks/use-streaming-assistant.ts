@@ -20,6 +20,8 @@ export function useStreamingAssistant(
   options?: UseStreamingAssistantOptions,
 ): {
   streamingMessage: MyUIMessage | null;
+  pendingUserMessage: MyUIMessage | null;
+  clearPendingUserMessage: () => void;
 } {
   const { throttleMs } = options || {};
 
@@ -31,6 +33,16 @@ export function useStreamingAssistant(
       );
     },
     [threadId, throttleMs],
+  );
+
+  const subscribeToPendingUserMessage = useCallback(
+    (update: () => void) => {
+      const store = getOrCreateStreamingStore(threadId);
+      return (
+        store?.["~registerPendingUserMessageCallback"](update) ?? (() => {})
+      );
+    },
+    [threadId],
   );
 
   const streamingMessage = useSyncExternalStore(
@@ -46,7 +58,27 @@ export function useStreamingAssistant(
     },
   );
 
+  const pendingUserMessage = useSyncExternalStore(
+    subscribeToPendingUserMessage,
+    () => {
+      const store = getOrCreateStreamingStore(threadId);
+      return store?.pendingUserMessage ?? null;
+    },
+    () => {
+      // Server snapshot for SSR to avoid hydration mismatch
+      const store = peekStreamingStore(threadId);
+      return store?.pendingUserMessage ?? null;
+    },
+  );
+
+  const clearPendingUserMessage = useCallback(() => {
+    const store = getOrCreateStreamingStore(threadId);
+    if (store) store.pendingUserMessage = null;
+  }, [threadId]);
+
   return {
     streamingMessage,
+    pendingUserMessage,
+    clearPendingUserMessage,
   };
 }

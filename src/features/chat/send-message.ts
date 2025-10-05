@@ -76,7 +76,9 @@ const sendMessageEffect = ({
     const { userMessage, assistantMessage, messagesForConvex } =
       yield* createMessagesToAdd(content, selectedModel);
 
-    // Immediately write seed message to store so it's available on interrupt
+    // Set pending user message for optimistic UI (before Convex sync)
+    store.pendingUserMessage = userMessage;
+    // Set assistant message ready for streaming
     store.message = assistantMessage;
 
     // Create thread if it's a new thread
@@ -150,6 +152,8 @@ const sendMessageEffect = ({
       Effect.sync(() => {
         console.error("Error occurred:", error);
         store.status = "error";
+        // Clear pending user message on error to prevent stuck state
+        store.pendingUserMessage = null;
       }),
     ),
   );

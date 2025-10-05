@@ -21,6 +21,7 @@ export function useStreamingAssistant(
 ): {
   streamingMessage: MyUIMessage | null;
   pendingUserMessage: MyUIMessage | null;
+  clearPendingUserMessage: () => void;
 } {
   const { throttleMs } = options || {};
 
@@ -70,8 +71,14 @@ export function useStreamingAssistant(
     },
   );
 
+  const clearPendingUserMessage = useCallback(() => {
+    const store = getOrCreateStreamingStore(threadId);
+    if (store) store.pendingUserMessage = null;
+  }, [threadId]);
+
   return {
     streamingMessage,
     pendingUserMessage,
+    clearPendingUserMessage,
   };
 }

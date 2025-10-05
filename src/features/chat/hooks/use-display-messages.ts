@@ -1,3 +1,4 @@
+import { useEffect, useMemo } from "react";
 import { useQuery } from "convex-helpers/react/cache/hooks";
 import { api } from "@/convex/_generated/api";
 import { useStreamingAssistant } from "./use-streaming-assistant";
@@ -22,14 +23,24 @@ export function useDisplayMessages(
   );
 
   // Get streaming message and pending user message (always call hook, but pass empty string if no threadId)
-  const { streamingMessage, pendingUserMessage } = useStreamingAssistant(
-    threadId ?? "",
-  );
+  const { streamingMessage, pendingUserMessage, clearPendingUserMessage } =
+    useStreamingAssistant(threadId ?? "");
 
   // Convert Convex messages to UI messages
-  const convexUIMessages = convexMessages
-    ? convexMessagesToUIMessages(convexMessages)
-    : [];
+  const convexUIMessages = useMemo(
+    () => (convexMessages ? convexMessagesToUIMessages(convexMessages) : []),
+    [convexMessages],
+  );
+
+  // Clear pending user message when it appears in Convex
+  useEffect(() => {
+    if (
+      pendingUserMessage &&
+      convexUIMessages.some((m) => m.id === pendingUserMessage.id)
+    ) {
+      clearPendingUserMessage();
+    }
+  }, [pendingUserMessage, convexUIMessages, clearPendingUserMessage]);
 
   // Build base messages
   let messages = convexUIMessages;

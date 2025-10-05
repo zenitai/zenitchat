@@ -89,8 +89,6 @@ const sendMessageEffect = ({
         model: selectedModel,
         messages: messagesForConvex,
       });
-      // Clear pending user message - now in Convex
-      store.pendingUserMessage = null;
     }
 
     // Fetch thread messages for history
@@ -107,8 +105,6 @@ const sendMessageEffect = ({
         threadId,
         messages: messagesForConvex,
       });
-      // Clear pending user message - now in Convex/optimistic
-      store.pendingUserMessage = null;
     }
 
     const result = yield* makeRequest({
@@ -156,6 +152,8 @@ const sendMessageEffect = ({
       Effect.sync(() => {
         console.error("Error occurred:", error);
         store.status = "error";
+        // Clear pending user message on error to prevent stuck state
+        store.pendingUserMessage = null;
       }),
     ),
   );

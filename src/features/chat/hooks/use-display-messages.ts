@@ -40,7 +40,8 @@ export function useDisplayMessages(
     ) {
       clearPendingUserMessage();
     }
-  }, [pendingUserMessage, convexUIMessages, clearPendingUserMessage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingUserMessage?.id, convexUIMessages, clearPendingUserMessage]);
 
   // Build base messages
   let messages = convexUIMessages;

@@ -24,16 +24,6 @@ export function AssistantMessageToolbar({
   const { threadId } = useParams<{ threadId: string }>();
   const convexFunctions = useConvexFunctions();
 
-  // Check if any part is still streaming
-  const isStreaming = parts.some(
-    (part) => "state" in part && part.state === "streaming",
-  );
-
-  // Don't show toolbar during streaming
-  if (isStreaming) {
-    return null;
-  }
-
   const formattedContent = formatMessageContent(parts);
 
   // Get model display name

@@ -1,8 +1,9 @@
-import { useMutation, useConvex } from "convex/react";
+import { useMutation, useConvex, useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { Effect } from "effect";
 import { ConvexError } from "../request/types";
+import type { MyUIMessage } from "@/features/messages/types";
 
 const formatError = (e: unknown) =>
   e instanceof Error ? e.message : String(e);
@@ -155,6 +156,32 @@ export function useConvexFunctions() {
   const updateMessageConvex = useMutation(api.messages.updateMessage);
   const setMessageErrorConvex = useMutation(api.messages.setMessageError);
   const updateThreadConvex = useMutation(api.threads.updateThread);
+  const updateThreadTitleConvex = useMutation(
+    api.threads.updateThreadTitle,
+  ).withOptimisticUpdate((localStore, args) => {
+    const { threadId, title } = args;
+    const now = Date.now();
+
+    // Update in threads list if it exists
+    const existingThreads = localStore.getQuery(api.threads.getUserThreads, {
+      paginationOpts: { numItems: 50, cursor: null },
+    });
+    if (existingThreads !== undefined) {
+      const updatedPage = existingThreads.page.map((thread) =>
+        thread.threadId === threadId
+          ? { ...thread, title, updatedAt: now, userSetTitle: true }
+          : thread,
+      );
+      localStore.setQuery(
+        api.threads.getUserThreads,
+        { paginationOpts: { numItems: 50, cursor: null } },
+        {
+          ...existingThreads,
+          page: updatedPage,
+        },
+      );
+    }
+  });
   const regenerateFromMessageConvex = useMutation(
     api.messages.regenerateFromMessage,
   ).withOptimisticUpdate((localStore, args) => {
@@ -206,6 +233,9 @@ export function useConvexFunctions() {
   const fetchThreadMessagesConvex = async (threadId: string) => {
     return await convex.query(api.messages.getThreadMessages, { threadId });
   };
+
+  // Actions
+  const generateTitleActionConvex = useAction(api.actions.generateTitle);
 
   // Effect-wrapped functions using Effect.tryPromise
   const createThread = (args: Parameters<typeof createThreadConvex>[0]) =>
@@ -290,6 +320,21 @@ export function useConvexFunctions() {
         }),
     }).pipe(Effect.retry({ times: 2 }));
 
+  const updateThreadTitle = (
+    args: Parameters<typeof updateThreadTitleConvex>[0],
+  ) =>
+    Effect.tryPromise({
+      try: () => updateThreadTitleConvex(args),
+      catch: (error) =>
+        new ConvexError({
+          operation: "updateThreadTitle",
+          reason: "Failed to update thread title",
+          message: `Failed to update thread title: ${formatError(error)}`,
+          originalError: error,
+          timestamp: Date.now(),
+        }),
+    }).pipe(Effect.retry({ times: 2 }));
+
   const fetchThreadMessages = (threadId: string) =>
     Effect.tryPromise({
       try: () => fetchThreadMessagesConvex(threadId),
@@ -318,6 +363,23 @@ export function useConvexFunctions() {
         }),
     }).pipe(Effect.retry({ times: 2 }));
 
+  const generateTitle = (message: MyUIMessage) =>
+    Effect.tryPromise(() => generateTitleActionConvex({ message })).pipe(
+      Effect.retry({ times: 1 }),
+      Effect.catchAll(() => {
+        // Fallback: extract first 40 chars from message text
+        const textContent = message.parts
+          .filter((part) => part.type === "text")
+          .map((part) => part.text)
+          .join(" ")
+          .slice(0, 40);
+
+        const fallbackTitle = textContent + "...";
+
+        return Effect.succeed(fallbackTitle);
+      }),
+    );
+
   return {
     mutations: {
       createThread,
@@ -326,10 +388,14 @@ export function useConvexFunctions() {
       updateMessage,
       setMessageError,
       updateThread,
+      updateThreadTitle,
       regenerateFromMessage,
     },
     queries: {
       fetchThreadMessages,
+    },
+    actions: {
+      generateTitle,
     },
   };
 }

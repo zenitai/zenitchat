@@ -89,6 +89,18 @@ const sendMessageEffect = ({
         model: selectedModel,
         messages: messagesForConvex,
       });
+
+      // Fork effect to generate title and update thread
+      yield* Effect.fork(
+        convexFunctions.actions.generateTitle(userMessage).pipe(
+          Effect.flatMap((title) =>
+            convexFunctions.mutations.updateThreadTitle({
+              threadId,
+              title,
+            }),
+          ),
+        ),
+      );
     }
 
     // Fetch thread messages for history

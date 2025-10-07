@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { useMutation } from "convex/react";
+import { useMutation, useAction } from "convex/react";
 import { useNavigate, useLocation } from "react-router";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
@@ -9,6 +9,7 @@ export function useThreadActions(threadId: string) {
   const [editTitle, setEditTitle] = useState("");
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isRegeneratingTitle, setIsRegeneratingTitle] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const isSwitchingToEditRef = useRef(false);
   const navigate = useNavigate();
@@ -118,6 +119,8 @@ export function useThreadActions(threadId: string) {
     }
   });
 
+  const regenerateTitle = useAction(api.actions.regenerateTitle);
+
   const startEditing = (currentTitle: string) => {
     isSwitchingToEditRef.current = true;
     setIsEditing(true);
@@ -198,8 +201,24 @@ export function useThreadActions(threadId: string) {
 
   const handleDeleteOpenChange = (open: boolean) => setShowDeleteDialog(open);
 
-  const handleRegenerateTitle = () => {
-    toast.success("Regenerate title not implemented yet");
+  const handleRegenerateTitle = async () => {
+    try {
+      setIsRegeneratingTitle(true);
+      const newTitle = await regenerateTitle({ threadId });
+
+      // Update the thread title with the new title
+      await updateThreadTitle({
+        threadId,
+        title: newTitle,
+      });
+
+      toast.success("Thread title regenerated successfully");
+    } catch (error) {
+      toast.error("Failed to regenerate thread title");
+      console.error("Error regenerating thread title:", error);
+    } finally {
+      setIsRegeneratingTitle(false);
+    }
   };
 
   const handleExport = () => {
@@ -213,6 +232,7 @@ export function useThreadActions(threadId: string) {
     setEditTitle,
     showDeleteDialog,
     isDeleting,
+    isRegeneratingTitle,
     inputRef,
     isSwitchingToEditRef,
 

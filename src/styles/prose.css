@@ -48,10 +48,18 @@
   opacity: 0.8;
 }
 
-/* User message bubbles: Remove ALL margins for clean spacing */
+/* User message bubbles: Remove outer margins only, keep internal spacing */
 .prose.user-message
-  :where(*):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  :where(*):not(
+    :where([class~="not-prose"], [class~="not-prose"] *)
+  ):first-child {
   margin-top: 0;
+}
+
+.prose.user-message
+  :where(*):not(
+    :where([class~="not-prose"], [class~="not-prose"] *)
+  ):last-child {
   margin-bottom: 0;
 }
 
@@ -83,4 +91,33 @@
     :where([class~="not-prose"], [class~="not-prose"] *)
   ):last-child {
   margin-bottom: 0;
+}
+
+/* Tables - Mobile responsive */
+.prose table {
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: block;
+  /* Custom scrollbar for tables */
+  scrollbar-width: thin;
+  scrollbar-color: oklch(from var(--muted-foreground) l c h / 0.4) transparent;
+}
+
+.prose table::-webkit-scrollbar {
+  height: 4px;
+}
+
+.prose table::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.prose table::-webkit-scrollbar-thumb {
+  background: oklch(from var(--muted-foreground) l c h / 0.4);
+  border-radius: 4px;
+  background-clip: content-box;
+  -webkit-background-clip: content-box;
+}
+
+.prose table::-webkit-scrollbar-thumb:hover {
+  background: oklch(from var(--muted-foreground) l c h / 0.6);
 }

@@ -231,7 +231,10 @@ export function ThreadItem({
             <TextCursor className="text-muted-foreground" />
             Rename
           </ContextMenuItem>
-          <ContextMenuItem onClick={handleRegenerateTitle}>
+          <ContextMenuItem
+            onClick={handleRegenerateTitle}
+            disabled={isRegeneratingTitle}
+          >
             {isRegeneratingTitle ? <Spinner /> : <Sparkles />}
             Regenerate Title
           </ContextMenuItem>

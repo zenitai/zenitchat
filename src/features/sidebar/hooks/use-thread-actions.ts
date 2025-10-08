@@ -202,6 +202,7 @@ export function useThreadActions(threadId: string) {
   const handleDeleteOpenChange = (open: boolean) => setShowDeleteDialog(open);
 
   const handleRegenerateTitle = async () => {
+    if (isRegeneratingTitle) return;
     try {
       setIsRegeneratingTitle(true);
       const newTitle = await regenerateTitle({ threadId });

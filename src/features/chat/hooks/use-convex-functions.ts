@@ -368,15 +368,17 @@ export function useConvexFunctions() {
       Effect.retry({ times: 1 }),
       Effect.catchAll(() => {
         // Fallback: extract first 40 chars from message text
-        const textContent = message.parts
+        const fullTextContent = message.parts
           .filter((part) => part.type === "text")
           .map((part) => part.text)
-          .join(" ")
-          .slice(0, 40);
+          .join(" ");
 
-        const fallbackTitle = textContent + "...";
+        const textContent =
+          fullTextContent.length > 40
+            ? fullTextContent.slice(0, 40) + "..."
+            : fullTextContent;
 
-        return Effect.succeed(fallbackTitle);
+        return Effect.succeed(textContent);
       }),
     );
 

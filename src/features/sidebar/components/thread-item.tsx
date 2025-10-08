@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/context-menu";
 import { useThreadActions } from "../hooks/use-thread-actions";
 import { DeleteThreadDialog } from "./delete-thread-dialog";
+import { Spinner } from "@/components/ui/spinner";
 
 import type { ThreadItemData } from "../types";
 
@@ -46,6 +47,7 @@ export function ThreadItem({
     setEditTitle,
     showDeleteDialog,
     isDeleting,
+    isRegeneratingTitle,
     inputRef,
     isSwitchingToEditRef,
     startEditing,
@@ -131,6 +133,7 @@ export function ThreadItem({
                       onDoubleClick={handleDoubleClick}
                     >
                       <div className="relative w-full flex items-center">
+                        {isRegeneratingTitle && <Spinner />}
                         <Input
                           ref={inputRef}
                           id={`thread-title-${item.id}`}
@@ -228,8 +231,11 @@ export function ThreadItem({
             <TextCursor className="text-muted-foreground" />
             Rename
           </ContextMenuItem>
-          <ContextMenuItem onClick={handleRegenerateTitle}>
-            <Sparkles />
+          <ContextMenuItem
+            onClick={handleRegenerateTitle}
+            disabled={isRegeneratingTitle}
+          >
+            {isRegeneratingTitle ? <Spinner /> : <Sparkles />}
             Regenerate Title
           </ContextMenuItem>
           <ContextMenuItem onClick={handleContextMenuDelete}>

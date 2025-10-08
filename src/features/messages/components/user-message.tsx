@@ -49,12 +49,14 @@ export const UserMessage = memo(
     const handleEditSubmit = async (text: string, model: ModelConfig) => {
       if (!threadId) return;
 
-      // Check if content actually changed
+      // Check if content OR model actually changed
       const trimmedText = text.trim();
       const originalText = messageText.trim();
+      const originalModel = message.metadata?.model || initialModel?.id;
+      const modelChanged = model.id !== originalModel;
 
-      if (trimmedText === originalText) {
-        // No changes made, just exit edit mode
+      if (trimmedText === originalText && !modelChanged) {
+        // No changes made to text OR model, just exit edit mode
         setIsEditing(false);
         setHasChanges(false);
         return;

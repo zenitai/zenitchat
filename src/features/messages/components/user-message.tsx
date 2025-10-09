@@ -1,11 +1,10 @@
-import { memo, useMemo, useState } from "react";
+import { memo, useMemo } from "react";
 import { PaperclipIcon, GlobeIcon } from "lucide-react";
 import { Markdown } from "@/components/ui/markdown";
 import { UserMessageToolbar } from "./user-message-toolbar";
 import { ChatInputEdit } from "@/features/chat-input";
-import { editMessage } from "@/features/chat/edit-message";
-import { useConvexFunctions } from "@/features/chat/hooks/use-convex-functions";
-import { getModelById, type ModelConfig } from "@/features/models";
+import { getModelById } from "@/features/models";
+import { useMessageEdit } from "../hooks/use-message-edit";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,11 +20,6 @@ import type { MessageProps } from "../types";
 
 export const UserMessage = memo(
   ({ message, threadId, className, ...props }: MessageProps) => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [showCancelDialog, setShowCancelDialog] = useState(false);
-    const [hasChanges, setHasChanges] = useState(false);
-    const convexFunctions = useConvexFunctions();
-
     const textParts = useMemo(
       () => message.parts.filter((part) => part.type === "text"),
       [message.parts],
@@ -46,50 +40,21 @@ export const UserMessage = memo(
       [message.metadata?.model],
     );
 
-    const handleEditSubmit = async (text: string, model: ModelConfig) => {
-      if (!threadId) return;
-
-      // Check if content OR model actually changed
-      const trimmedText = text.trim();
-      const originalText = messageText.trim();
-      const originalModel = message.metadata?.model || initialModel?.id;
-      const modelChanged = model.id !== originalModel;
-
-      if (trimmedText === originalText && !modelChanged) {
-        // No changes made to text OR model, just exit edit mode
-        setIsEditing(false);
-        setHasChanges(false);
-        return;
-      }
-
-      try {
-        editMessage({
-          threadId,
-          messageId: message.id,
-          content: text,
-          model: model.id,
-          convexFunctions,
-        });
-        setIsEditing(false);
-        setHasChanges(false);
-      } catch (error) {
-        console.error("Failed to edit message:", error);
-      }
-    };
-
-    const handleCancelEdit = () => {
-      if (hasChanges) {
-        setShowCancelDialog(true);
-      } else {
-        setIsEditing(false);
-      }
-    };
-
-    const handleConfirmCancel = () => {
-      setIsEditing(false);
-      setHasChanges(false);
-      setShowCancelDialog(false);
-    };
+    const {
+      isEditing,
+      setIsEditing,
+      showCancelDialog,
+      setShowCancelDialog,
+      handleEditSubmit,
+      handleCancelEdit,
+      handleConfirmCancel,
+      handleChange,
+    } = useMessageEdit({
+      messageId: message.id,
+      threadId,
+      messageText,
+      initialModel,
+    });
 
     return (
       <div
@@ -116,12 +81,7 @@ export const UserMessage = memo(
                 initialText={messageText}
                 initialModel={initialModel}
                 onSubmit={handleEditSubmit}
-                onChange={(text, model) => {
-                  const textChanged = text !== messageText;
-                  const modelChanged =
-                    model.id !== (message.metadata?.model || initialModel?.id);
-                  setHasChanges(textChanged || modelChanged);
-                }}
+                onChange={handleChange}
               >
                 <ChatInputEdit.Container>
                   <ChatInputEdit.Form className="!bg-transparent !border-0 !shadow-none !rounded-none max-sm:!px-1">

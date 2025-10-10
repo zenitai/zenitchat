@@ -58,13 +58,13 @@ export const { generateUploadUrl, syncMetadata, onSyncMetadata } = r2.clientApi(
 
 // Helper function to generate public R2 URLs
 export const getPublicUrl = (key: string): string => {
-  const domain = process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN;
-  if (!domain) {
+  const publicUrl = process.env.NEXT_PUBLIC_R2_PUBLIC_URL;
+  if (!publicUrl) {
     throw new Error(
-      "NEXT_PUBLIC_R2_PUBLIC_DOMAIN environment variable not set in Convex",
+      "NEXT_PUBLIC_R2_PUBLIC_URL environment variable not set in Convex",
     );
   }
-  return `https://${domain}/${key}`;
+  return `${publicUrl}/${key}`;
 };
 
 // Delete a file from R2 storage

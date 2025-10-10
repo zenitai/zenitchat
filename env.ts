@@ -23,8 +23,8 @@ export const env = createEnv({
       v.nonEmpty(),
       v.regex(/^[A-Za-z0-9_-]+$/),
     ),
-    // R2 Public Domain - needed for generating public URLs
-    NEXT_PUBLIC_R2_PUBLIC_DOMAIN: v.pipe(v.string(), v.nonEmpty()),
+    // R2 Public URL - needed for generating public URLs
+    NEXT_PUBLIC_R2_PUBLIC_URL: v.pipe(v.string(), v.nonEmpty()),
   },
   // If you're using Next.js < 13.4.4, you'll need to specify the runtimeEnv manually
   // For Next.js >= 13.4.4, you only need to destructure client variables:
@@ -35,7 +35,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     NEXT_PUBLIC_LOCALSTORAGE_PREFIX:
       process.env.NEXT_PUBLIC_LOCALSTORAGE_PREFIX,
-    NEXT_PUBLIC_R2_PUBLIC_DOMAIN: process.env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN,
+    NEXT_PUBLIC_R2_PUBLIC_URL: process.env.NEXT_PUBLIC_R2_PUBLIC_URL,
   },
   emptyStringAsUndefined: true,
 });

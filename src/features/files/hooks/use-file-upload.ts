@@ -157,7 +157,7 @@ export const useFileUpload = (
               if (Either.isRight(uploadResult)) {
                 // Upload succeeded - update state with URL
                 const key = uploadResult.right;
-                const url = `https://${env.NEXT_PUBLIC_R2_PUBLIC_DOMAIN}/${key}`;
+                const url = `${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${key}`;
 
                 yield* Effect.sync(() =>
                   setFiles((prev) =>

@@ -1,4 +1,5 @@
 import { Data } from "effect";
+import type { ReactNode } from "react";
 
 // Custom error type for file validation using Data.TaggedError
 export class FileValidationError extends Data.TaggedError(
@@ -23,12 +24,31 @@ export interface FileItem {
   status: "uploading" | "complete" | "marked-for-deletion";
 }
 
-// Component props = FileItem + callbacks
-export interface FileItemProps extends FileItem {
+// FileItem component props
+export interface FileItemProps {
+  file: FileItem;
   onRemove?: () => void; // Delete immediately (chat input)
   onMarkForDeletion?: () => void; // Mark for deletion (message edit)
   onRestore?: () => void; // Restore marked file (message edit)
   onClick?: () => void; // Open preview
+}
+
+// FileList component props
+export interface FileListProps {
+  files: FileItem[];
+  onRemove?: (id: string) => void;
+  onMarkForDeletion?: (id: string) => void;
+  onRestore?: (id: string) => void;
+  onClick?: (file: FileItem) => void;
+}
+
+// FileUploadTrigger component props
+export interface FileUploadTriggerProps {
+  onFilesSelect: (files: FileList) => void;
+  accept?: string; // MIME types to accept
+  multiple?: boolean; // Allow multiple files
+  disabled?: boolean;
+  children: ReactNode;
 }
 
 // File validation configuration

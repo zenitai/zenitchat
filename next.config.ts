@@ -5,6 +5,14 @@ const nextConfig: NextConfig = {
     reactCompiler: true,
     browserDebugInfoInTerminal: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**.r2.dev",
+      },
+    ],
+  },
   rewrites: async () => {
     return [
       {

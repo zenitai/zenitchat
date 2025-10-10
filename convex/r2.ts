@@ -1,6 +1,8 @@
 import { R2 } from "@convex-dev/r2";
 import { components } from "./_generated/api";
 import { authComponent } from "./auth";
+import { mutation } from "./_generated/server";
+import { v } from "convex/values";
 import type { Id } from "./_generated/dataModel";
 
 export const r2 = new R2(components.r2);
@@ -19,7 +21,7 @@ export const { generateUploadUrl, syncMetadata, onSyncMetadata } = r2.clientApi(
       // - Rate limiting
     },
 
-    onUpload: async (ctx, key) => {
+    onUpload: async (ctx, bucket, key) => {
       // This callback runs AFTER file is uploaded to R2
       // Get file metadata from R2
       const metadata = await r2.getMetadata(ctx, key);
@@ -64,3 +66,32 @@ export const getPublicUrl = (key: string): string => {
   }
   return `https://${domain}/${key}`;
 };
+
+// Delete a file from R2 storage
+export const deleteFile = mutation({
+  args: { key: v.string() },
+  handler: async (ctx, { key }) => {
+    const authUser = await authComponent.safeGetAuthUser(ctx);
+    if (!authUser) {
+      throw new Error("User not authenticated");
+    }
+
+    const attachment = await ctx.db
+      .query("attachments")
+      .filter((q) => q.eq(q.field("attachmentId"), key))
+      .first();
+
+    if (!attachment) {
+      throw new Error("File not found");
+    }
+
+    if (attachment.userId !== authUser.userId) {
+      throw new Error("Unauthorized");
+    }
+
+    await r2.deleteObject(ctx, key);
+    await ctx.db.delete(attachment._id);
+
+    return { success: true };
+  },
+});

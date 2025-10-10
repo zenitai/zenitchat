@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useUploadFile } from "@convex-dev/r2/react";
+import { useMutation } from "convex/react";
 import { toast } from "sonner";
 import { Effect, Either } from "effect";
 import { api } from "@/convex/_generated/api";
@@ -17,6 +18,7 @@ export const useFileUpload = (
 ): UseFileUploadReturn => {
   const [files, setFiles] = useState<FileItem[]>([]);
   const uploadFile = useUploadFile(api.r2);
+  const deleteFile = useMutation(api.r2.deleteFile);
 
   // Add files and start uploading with Effect.ts
   const addFiles = useCallback(
@@ -184,14 +186,32 @@ export const useFileUpload = (
     [files, config, uploadFile],
   );
 
-  // Remove file from state (delete immediately in chat input)
-  const removeFile = useCallback((id: string) => {
-    setFiles((prev) => prev.filter((f) => f.id !== id));
+  // Remove file from state and delete from R2
+  const removeFile = useCallback(
+    async (id: string) => {
+      const file = files.find((f) => f.id === id);
+      if (!file) return;
 
-    // TODO: Delete from R2 if needed
-    // For now, files stay in R2 even if removed from UI
-    // Cleanup can be handled separately
-  }, []);
+      // Remove from state immediately
+      setFiles((prev) => prev.filter((f) => f.id !== id));
+
+      // Delete from R2 if file has been uploaded
+      if (file.url && file.status === "complete") {
+        try {
+          // Extract key from URL: https://domain.com/path/to/file -> path/to/file
+          const url = new URL(file.url);
+          const key = url.pathname.substring(1); // Remove leading slash
+          if (key) {
+            await deleteFile({ key });
+          }
+        } catch (error) {
+          console.error("Failed to delete file from R2:", error);
+          toast.error("Failed to delete file");
+        }
+      }
+    },
+    [files, deleteFile],
+  );
 
   // Mark file for deletion (used in message editing)
   const markForDeletion = useCallback((id: string) => {

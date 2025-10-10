@@ -13,6 +13,53 @@ import {
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site.config";
 import { Link } from "react-router";
+import { FileList } from "@/features/files/components/file-list";
+import type { FileItem as FileItemType } from "@/features/files/types";
+
+const DEMO_FILES: FileItemType[] = [
+  {
+    id: "1",
+    filename: "W3_Regression Analysis_Stata_Notes (1).pdf",
+    mediaType: "application/pdf",
+    url: "/Users/apalon1/Downloads/W3_Regression Analysis_Stata_Notes (1).pdf",
+    status: "uploading",
+  },
+  {
+    id: "2",
+    filename: "W3_Regression Analysis_Stata_Notes (1).pdf",
+    mediaType: "application/pdf",
+    url: "/Users/apalon1/Downloads/W3_Regression Analysis_Stata_Notes (1).pdf",
+    status: "complete",
+  },
+  {
+    id: "6",
+    filename: "W3_Regression Analysis_Stata_Notes (1).pdf",
+    mediaType: "application/pdf",
+    url: "/Users/apalon1/Downloads/W3_Regression Analysis_Stata_Notes (1).pdf",
+    status: "marked-for-deletion",
+  },
+  {
+    id: "3",
+    filename: "IMG_9537.PNG",
+    mediaType: "image/png",
+    url: "https://pub-8db9e91f9f0f42d1874bfe5e0c01140d.r2.dev/0f97375f-86c5-47b6-376c-7cac8ac1cd03",
+    status: "uploading",
+  },
+  {
+    id: "4",
+    filename: "IMG_9537.PNG",
+    mediaType: "image/png",
+    url: "https://pub-8db9e91f9f0f42d1874bfe5e0c01140d.r2.dev/0f97375f-86c5-47b6-376c-7cac8ac1cd03",
+    status: "complete",
+  },
+  {
+    id: "5",
+    filename: "IMG_9537.PNG",
+    mediaType: "image/png",
+    url: "https://pub-8db9e91f9f0f42d1874bfe5e0c01140d.r2.dev/0f97375f-86c5-47b6-376c-7cac8ac1cd03",
+    status: "marked-for-deletion",
+  },
+];
 
 export function Home() {
   const colorVars = [
@@ -112,6 +159,24 @@ export function Home() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* FileItem Component Showcase */}
+        <div className="space-y-4">
+          <div className="text-center">
+            <h3 className="text-2xl font-semibold">FileItem Component</h3>
+            <p className="text-muted-foreground text-sm">
+              Showing all states: uploading and uploaded for both file and image
+              types
+            </p>
+          </div>
+          <div className="flex justify-center">
+            <FileList
+              files={DEMO_FILES}
+              onRemove={(fileId) => console.log("Remove", fileId)}
+              onClick={(file) => console.log("Click", file.id)}
+            />
           </div>
         </div>
 

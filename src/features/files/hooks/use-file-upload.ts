@@ -1,13 +1,11 @@
 import { useState, useCallback } from "react";
-import { useUploadFile } from "@convex-dev/r2/react";
-import { useMutation } from "convex/react";
+import { useConvex, useMutation } from "convex/react";
 import { toast } from "sonner";
 import { Effect, Either } from "effect";
 import { api } from "@/convex/_generated/api";
+import { R2Service, makeConvexLayer } from "@/services/r2";
 import { validateFile } from "../utils";
-import { env } from "@/env";
 import {
-  FileUploadError,
   type FileItem,
   type FileValidationConfig,
   type UseFileUploadReturn,
@@ -16,9 +14,9 @@ import {
 export const useFileUpload = (
   config: FileValidationConfig,
 ): UseFileUploadReturn => {
+  const convex = useConvex();
   const [files, setFiles] = useState<FileItem[]>([]);
-  const uploadFile = useUploadFile(api.r2);
-  const deleteFile = useMutation(api.r2.deleteFile);
+  const deleteFile = useMutation(api.files.deleteFile);
 
   // Add files and start uploading with Effect.ts
   const addFiles = useCallback(
@@ -144,26 +142,22 @@ export const useFileUpload = (
           })),
           ({ file, fileItem }) =>
             Effect.gen(function* () {
+              const r2 = yield* R2Service;
+
               // Wrap upload in Either so failures don't propagate
-              const uploadResult = yield* Effect.tryPromise({
-                try: () => uploadFile(file),
-                catch: (error) =>
-                  new FileUploadError({
-                    filename: file.name,
-                    message: `Failed to upload ${file.name}: ${error}`,
-                  }),
-              }).pipe(Effect.retry({ times: 2 }), Effect.either);
+              const uploadResult = yield* r2
+                .uploadFile(file)
+                .pipe(Effect.retry({ times: 2 }), Effect.either);
 
               if (Either.isRight(uploadResult)) {
                 // Upload succeeded - update state with URL
-                const key = uploadResult.right;
-                const url = `${env.NEXT_PUBLIC_R2_PUBLIC_URL}/${key}`;
+                const { publicUrl } = uploadResult.right;
 
                 yield* Effect.sync(() =>
                   setFiles((prev) =>
                     prev.map((f) =>
                       f.id === fileItem.id
-                        ? { ...f, url, status: "complete" as const }
+                        ? { ...f, url: publicUrl, status: "complete" as const }
                         : f,
                     ),
                   ),
@@ -172,10 +166,19 @@ export const useFileUpload = (
                 // Upload failed - remove from state and show error
                 yield* Effect.sync(() => {
                   setFiles((prev) => prev.filter((f) => f.id !== fileItem.id));
-                  toast.error(uploadResult.left.message);
+                  const error = uploadResult.left;
+                  // Show user-friendly message, log technical details
+                  toast.error(error.message);
+                  console.error(
+                    `Upload error for ${error.filename}:`,
+                    error.originalError,
+                  );
                 });
               }
-            }),
+            }).pipe(
+              Effect.provide(R2Service.Default),
+              Effect.provide(makeConvexLayer(convex)),
+            ),
           { concurrency: 5 },
         );
       });
@@ -183,7 +186,7 @@ export const useFileUpload = (
       // Run the upload effect in background
       Effect.runFork(uploadEffect);
     },
-    [files, config, uploadFile],
+    [files, config, convex],
   );
 
   // Remove file from state and delete from R2

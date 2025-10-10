@@ -11,23 +11,23 @@ import {
 } from "lucide-react";
 
 export const isImage = (mediaType: string): boolean => {
-  return mediaType.startsWith("image/");
+  return mediaType.toLowerCase().startsWith("image/");
 };
 
 export const isPDF = (mediaType: string): boolean => {
-  return mediaType === "application/pdf";
+  return mediaType.toLowerCase() === "application/pdf";
 };
 
 export const isVideo = (mediaType: string): boolean => {
-  return mediaType.startsWith("video/");
+  return mediaType.toLowerCase().startsWith("video/");
 };
 
 export const isAudio = (mediaType: string): boolean => {
-  return mediaType.startsWith("audio/");
+  return mediaType.toLowerCase().startsWith("audio/");
 };
 
 export const isText = (mediaType: string): boolean => {
-  return mediaType.startsWith("text/");
+  return mediaType.toLowerCase().startsWith("text/");
 };
 
 // Get appropriate icon based on MIME type

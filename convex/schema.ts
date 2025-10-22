@@ -78,16 +78,19 @@ export default defineSchema({
     .index("by_message_id", ["messageId"])
     .index("by_user", ["userId"]),
   attachments: defineTable({
-    attachmentId: v.string(),
+    key: v.string(),
     filename: v.string(),
     mediaType: v.string(),
     url: v.string(),
-    size: v.number(),
-    uploadedAt: v.number(),
+    size: v.number(), // Client-provided size
+    status: v.union(v.literal("pending"), v.literal("uploaded")),
+    createdAt: v.number(),
+    uploadedAt: v.optional(v.number()),
     userId: v.id("users"),
     threadId: v.optional(v.string()),
   })
     .index("by_user", ["userId"])
-    .index("by_attachment_id", ["attachmentId"])
-    .index("by_thread", ["threadId"]),
+    .index("by_key", ["key"])
+    .index("by_thread", ["threadId"])
+    .index("by_status", ["status"]),
 });

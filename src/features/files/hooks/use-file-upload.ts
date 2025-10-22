@@ -147,7 +147,7 @@ export const useFileUpload = (
               // Wrap upload in Either so failures don't propagate
               const uploadResult = yield* r2
                 .uploadFile(file)
-                .pipe(Effect.retry({ times: 2 }), Effect.either);
+                .pipe(Effect.either);
 
               if (Either.isRight(uploadResult)) {
                 // Upload succeeded - update state with URL

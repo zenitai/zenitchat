@@ -1,8 +1,15 @@
-import { mutation, internalAction } from "./_generated/server";
+import {
+  mutation,
+  action,
+  internalAction,
+  internalMutation,
+  internalQuery,
+} from "./_generated/server";
 import {
   S3Client,
   PutObjectCommand,
   DeleteObjectCommand,
+  HeadObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { v } from "convex/values";
@@ -13,8 +20,9 @@ import type { Id } from "./_generated/dataModel";
 /**
  * Create R2 client with credentials from environment variables.
  * This runs server-side in Convex (Node.js environment).
+ * Single instance created once when module loads.
  */
-const createR2Client = () => {
+const r2Client = (() => {
   const config = {
     accessKeyId: process.env.R2_ACCESS_KEY_ID,
     secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
@@ -44,7 +52,7 @@ const createR2Client = () => {
     }),
     bucket: config.bucket!,
   };
-};
+})();
 
 /**
  * Generate public URL for an uploaded file
@@ -84,8 +92,8 @@ export const generateUploadUrl = mutation({
       throw new Error(`File too large. Maximum size is ${MAX_FILE_SIZE} bytes`);
     }
 
-    // 3. Create R2 client
-    const { client, bucket } = createR2Client();
+    // 3. Use R2 client
+    const { client, bucket } = r2Client;
 
     // 4. Generate unique key for the file
     const key = crypto.randomUUID();
@@ -104,23 +112,115 @@ export const generateUploadUrl = mutation({
     });
 
     // 6. Create pending attachment record
-    await ctx.db.insert("attachments", {
-      attachmentId: key,
+    const attachmentId = await ctx.db.insert("attachments", {
+      key: key,
       filename: args.fileName,
       mediaType: args.fileType,
       url: getPublicUrl(key),
       size: args.fileSize,
-      uploadedAt: Date.now(),
+      status: "pending",
+      createdAt: Date.now(),
       userId: authUser.userId as Id<"users">,
       // threadId is optional - will be set when attached to a message
     });
 
     // 7. Return URLs to client
     return {
+      attachmentId,
       uploadUrl,
       key,
       publicUrl: getPublicUrl(key),
     };
+  },
+});
+
+/**
+ * Internal query to get attachment by ID
+ */
+export const getAttachment = internalQuery({
+  args: { attachmentId: v.id("attachments") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.attachmentId);
+  },
+});
+
+/**
+ * Confirm file upload and validate actual file size using HEAD command
+ * Called by client after successful upload to R2
+ *
+ * This action:
+ * 1. Gets actual file size from R2 using HeadObjectCommand
+ * 2. If size exceeds limit: deletes file from R2 and attachment record, returns passed_validation: false
+ * 3. If size is valid: updates attachment status to "uploaded", returns passed_validation: true
+ *
+ * Note: Does not throw on validation failure - caller should check passed_validation
+ */
+export const confirmUpload = action({
+  args: {
+    attachmentId: v.id("attachments"),
+  },
+  returns: v.object({
+    passed_validation: v.boolean(),
+  }),
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    const { client, bucket } = r2Client;
+    const MAX_FILE_SIZE = 15 * 1024 * 1024; // 15MB
+
+    // 1. Get the attachment record
+    const attachment = await ctx.runQuery(internal.files.getAttachment, {
+      attachmentId: args.attachmentId,
+    });
+
+    if (!attachment) {
+      throw new Error("Attachment not found");
+    }
+
+    // 2. Check if already confirmed
+    if (attachment.status === "uploaded") {
+      return { passed_validation: true };
+    }
+
+    const key = attachment.key;
+
+    // 3. Get actual file metadata from R2
+    const headCommand: HeadObjectCommand = new HeadObjectCommand({
+      Bucket: bucket,
+      Key: key,
+    });
+    const metadata = await client.send(headCommand);
+    const actualSize: number = metadata.ContentLength || 0;
+
+    // 4. Check if file exceeds size limit
+    if (actualSize > MAX_FILE_SIZE) {
+      // Delete attachment record first
+      await ctx.runMutation(internal.files.deleteAttachment, {
+        attachmentId: args.attachmentId,
+      });
+
+      // Then delete from R2
+      const deleteCommand = new DeleteObjectCommand({
+        Bucket: bucket,
+        Key: key,
+      });
+      await client.send(deleteCommand);
+
+      // Return validation failure (don't throw - let caller handle)
+      return { passed_validation: false };
+    }
+
+    // 5. Mark as uploaded (we no longer persist actual size)
+    await ctx.runMutation(internal.files.updateAttachment, {
+      attachmentId: args.attachmentId,
+      status: "uploaded",
+      uploadedAt: Date.now(),
+    });
+
+    return { passed_validation: true };
   },
 });
 
@@ -141,7 +241,7 @@ export const deleteFile = mutation({
     // 2. Find the attachment
     const attachment = await ctx.db
       .query("attachments")
-      .withIndex("by_attachment_id", (q) => q.eq("attachmentId", args.key))
+      .withIndex("by_key", (q) => q.eq("key", args.key))
       .first();
 
     if (!attachment) {
@@ -166,13 +266,46 @@ export const deleteFile = mutation({
 });
 
 /**
+ * Internal mutation to delete attachment record
+ */
+export const deleteAttachment = internalMutation({
+  args: { attachmentId: v.id("attachments") },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.attachmentId);
+  },
+});
+
+/**
+ * Internal mutation to update attachment status and size
+ */
+export const updateAttachment = internalMutation({
+  args: {
+    attachmentId: v.id("attachments"),
+    status: v.union(v.literal("pending"), v.literal("uploaded")),
+    uploadedAt: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const updates: {
+      status: "pending" | "uploaded";
+      uploadedAt?: number;
+    } = { status: args.status };
+
+    if (args.uploadedAt !== undefined) {
+      updates.uploadedAt = args.uploadedAt;
+    }
+
+    await ctx.db.patch(args.attachmentId, updates);
+  },
+});
+
+/**
  * Internal action to delete file from R2 storage
  * Scheduled by deleteFile mutation
  */
 export const deleteFromR2 = internalAction({
   args: { key: v.string() },
   handler: async (_ctx, args) => {
-    const { client, bucket } = createR2Client();
+    const { client, bucket } = r2Client;
 
     const command = new DeleteObjectCommand({
       Bucket: bucket,

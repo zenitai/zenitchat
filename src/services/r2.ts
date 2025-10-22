@@ -73,28 +73,29 @@ export class R2Service extends Effect.Service<R2Service>()("R2Service", {
        * Steps:
        * 1. Call Convex mutation to get presigned URL
        * 2. Upload file directly to R2 using presigned URL
-       * 3. Return public URL
+       * 3. Trigger upload confirmation (validates size with HEAD command)
+       * 4. Return public URL
        */
       uploadFile: (file: File) =>
         Effect.gen(function* () {
           // Step 1: Get presigned upload URL from Convex
-          const { uploadUrl, key, publicUrl } = yield* Effect.tryPromise({
-            try: () =>
-              convex.mutation(api.files.generateUploadUrl, {
-                fileName: file.name,
-                fileType: file.type,
-                fileSize: file.size,
-              }),
-            catch: (error) =>
-              new R2UploadFailedError({
-                filename: file.name,
-                message: `Unable to prepare upload for "${file.name}"`,
-                originalError: String(error),
-              }),
-          });
+          const { attachmentId, uploadUrl, key, publicUrl } =
+            yield* Effect.tryPromise({
+              try: () =>
+                convex.mutation(api.files.generateUploadUrl, {
+                  fileName: file.name,
+                  fileType: file.type,
+                  fileSize: file.size,
+                }),
+              catch: (error) =>
+                new R2UploadFailedError({
+                  filename: file.name,
+                  message: `Unable to prepare upload for "${file.name}"`,
+                  originalError: String(error),
+                }),
+            });
 
           // Step 2: Upload file to R2 using presigned URL
-          // Use raw fetch (like R2 component) - browser handles streaming automatically
           yield* Effect.tryPromise({
             try: async () => {
               const response = await fetch(uploadUrl, {
@@ -113,9 +114,35 @@ export class R2Service extends Effect.Service<R2Service>()("R2Service", {
                 message: `Failed to upload file "${file.name}"`,
                 originalError: String(error),
               }),
+          }).pipe(Effect.retry({ times: 2 }));
+
+          // Step 3: Confirm upload and check result
+          const validationResult = yield* Effect.tryPromise({
+            try: () =>
+              convex.action(api.files.confirmUpload, {
+                attachmentId,
+              }),
+            catch: (error) =>
+              new R2UploadFailedError({
+                filename: file.name,
+                message: `Upload validation failed for "${file.name}"`,
+                originalError: String(error),
+              }),
           });
 
-          // Step 3: Return the result
+          // Step 4: Check if validation passed
+          if (!validationResult.passed_validation) {
+            const maxSizeMB = 100;
+            return yield* Effect.fail(
+              new R2UploadFailedError({
+                filename: file.name,
+                message: `File "${file.name}" exceeds ${maxSizeMB}MB limit`,
+                originalError: `File size validation failed`,
+              }),
+            );
+          }
+
+          // Step 5: Return the result
           return { key, publicUrl };
         }),
 
